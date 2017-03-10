@@ -51,15 +51,15 @@ namespace Microsoft.Bot.Builder.Base
 
         public LocalizedScope(string locale)
         {
-            this.previousCulture = Thread.CurrentThread.CurrentCulture;
-            this.previousUICulture = Thread.CurrentThread.CurrentUICulture;
+            this.previousCulture = CultureInfo.CurrentCulture;
+            this.previousUICulture = CultureInfo.CurrentUICulture;
 
             if (!string.IsNullOrWhiteSpace(locale))
             {
                 CultureInfo found = null;
                 try
                 {
-                    found = CultureInfo.GetCultureInfo(locale);
+                    found = new CultureInfo(locale);
                 }
                 catch (CultureNotFoundException)
                 {
@@ -67,16 +67,16 @@ namespace Microsoft.Bot.Builder.Base
 
                 if (found != null)
                 {
-                    Thread.CurrentThread.CurrentCulture = found;
-                    Thread.CurrentThread.CurrentUICulture = found;
+                    CultureInfo.CurrentCulture = found;
+                    CultureInfo.CurrentUICulture = found;
                 }
             }
         }
 
         public void Dispose()
         {
-            Thread.CurrentThread.CurrentCulture = previousCulture;
-            Thread.CurrentThread.CurrentUICulture = previousUICulture;
+            CultureInfo.CurrentCulture = previousCulture;
+            CultureInfo.CurrentUICulture = previousUICulture;
         }
     }
 }

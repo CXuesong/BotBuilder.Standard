@@ -247,7 +247,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         /// </remarks>
         public static string ANormalization(string input)
         {
-            if (System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName == "en")
+            if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "en")
             {
                 var builder = new StringBuilder();
                 var last = 0;

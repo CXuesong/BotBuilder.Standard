@@ -43,7 +43,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Compatibility;
 
 namespace Microsoft.Bot.Builder.Scorables.Internals
 {
@@ -111,7 +110,7 @@ namespace Microsoft.Bot.Builder.Scorables
 
 namespace Microsoft.Bot.Builder.Scorables.Internals
 {
-    public sealed class RegexMatchScorableFactory : IScorableFactory<IResolver, ScorableMatch>
+    public sealed class RegexMatchScorableFactory : IScorableFactory<IResolver, Match>
     {
         private readonly Func<string, Regex> make;
 
@@ -120,14 +119,14 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
             SetField.NotNull(out this.make, nameof(make), make);
         }
 
-        IScorable<IResolver, ScorableMatch> IScorableFactory<IResolver, ScorableMatch>.ScorableFor(IEnumerable<MethodInfo> methods)
+        IScorable<IResolver, Match> IScorableFactory<IResolver, Match>.ScorableFor(IEnumerable<MethodInfo> methods)
         {
-            var scorableByMethod = methods.ToDictionary(m => m, m => new MethodScorable(m));
-
             var specs =
-                from method in scorableByMethod.Keys
+                from method in methods
                 from pattern in InheritedAttributes.For<RegexPatternAttribute>(method)
                 select new { method, pattern };
+
+            var scorableByMethod = methods.ToDictionary(m => m, m => new MethodScorable(m));
 
             // for a given regular expression pattern, fold the corresponding method scorables together to enable overload resolution
             var scorables =
@@ -137,7 +136,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
                 let regex = this.make(patterns.Key.Pattern)
                 select new RegexMatchScorable<IBinding, IBinding>(regex, method);
 
-            var all = scorables.ToArray().Fold();
+            var all = scorables.ToArray().Fold(MatchComparer.Instance);
 
             return all;
         }
@@ -148,14 +147,19 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
     /// </summary>
     public static partial class RegexMatchScorable
     {
+        public static readonly Func<Capture, string> GetOriginalString
+            = (Func<Capture, string>)
+            typeof(Capture)
+            .GetMethod("GetOriginalString", BindingFlags.Instance | BindingFlags.NonPublic)
+            .CreateDelegate(typeof(Func<Capture, string>));
 
         /// <summary>
         /// Calculate a normalized 0-1 score for a regular expression match.
         /// </summary>
-        public static double ScoreFor(Match match, int originalTextLength)
+        public static double ScoreFor(Match match)
         {
             var numerator = match.Value.Length;
-            var denominator = originalTextLength;
+            var denominator = GetOriginalString(match).Length;
             var score = ((double)numerator) / denominator;
             return score;
         }
@@ -165,21 +169,20 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
     /// Scorable to represent a regular expression match against an activity's text.
     /// </summary>
     [DataContract]
-    public sealed class RegexMatchScorable<InnerState, InnerScore> : ResolverScorable<RegexMatchScorable<InnerState, InnerScore>.Scope, ScorableMatch, InnerState, InnerScore>
+    public sealed class RegexMatchScorable<InnerState, InnerScore> : ResolverScorable<RegexMatchScorable<InnerState, InnerScore>.Scope, Match, InnerState, InnerScore>
     {
         private readonly Regex regex;
 
         public sealed class Scope : ResolverScope<InnerScore>
         {
             public readonly Regex Regex;
-            public readonly ScorableMatch Match;
+            public readonly Match Match;
 
-            public Scope(Regex regex, ScorableMatch match, IResolver inner)
+            public Scope(Regex regex, Match match, IResolver inner)
                 : base(inner)
             {
                 SetField.NotNull(out this.Regex, nameof(regex), regex);
-                if (match.IsEmpty) throw new ArgumentNullException(nameof(match));
-                Match = match;
+                SetField.NotNull(out this.Match, nameof(match), match);
             }
 
             public override bool TryResolve(Type type, object tag, out object value)
@@ -187,7 +190,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
                 var name = tag as string;
                 if (name != null)
                 {
-                    var capture = this.Match.Match.Groups[name];
+                    var capture = this.Match.Groups[name];
                     if (capture != null && capture.Success)
                     {
                         if (type.IsAssignableFrom(typeof(Capture)))
@@ -215,7 +218,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
                     return true;
                 }
 
-                var captures = this.Match.Match.Captures;
+                var captures = this.Match.Captures;
                 if (type.IsAssignableFrom(typeof(CaptureCollection)))
                 {
                     value = captures;
@@ -258,91 +261,38 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
                 return null;
             }
 
-            var scope = new Scope(this.regex, new ScorableMatch(match, text.Length), resolver);
+            var scope = new Scope(this.regex, match, resolver);
             scope.Item = resolver;
             scope.Scorable = this.inner;
             scope.State = await this.inner.PrepareAsync(scope, token);
             return scope;
         }
 
-        protected override ScorableMatch GetScore(IResolver resolver, Scope state)
+        protected override Match GetScore(IResolver resolver, Scope state)
         {
             return state.Match;
         }
     }
 
-    //public sealed class MatchComparer : IComparer<Match>
-    //{
-    //    public static readonly IComparer<Match> Instance = new MatchComparer();
-
-    //    private MatchComparer()
-    //    {
-    //    }
-
-    //    int IComparer<Match>.Compare(Match one, Match two)
-    //    {
-    //        Func<Match, Pair<bool, double>> PairFor = match => Pair.Create
-    //        (
-    //            match.Success,
-    //            RegexMatchScorable.ScoreFor(match)
-    //        );
-
-    //        var pairOne = PairFor(one);
-    //        var pairTwo = PairFor(two);
-    //        return pairOne.CompareTo(pairTwo);
-    //    }
-    //}
-
-    /// <summary>
-    /// A combination of regex Match and original text length, used for scoring.
-    /// </summary>
-    public struct ScorableMatch : IEquatable<ScorableMatch>, IComparable<ScorableMatch>
+    public sealed class MatchComparer : IComparer<Match>
     {
-        public readonly Match Match;
+        public static readonly IComparer<Match> Instance = new MatchComparer();
 
-        public readonly int OriginalTextLength;
-
-        public readonly double Score;
-
-        public bool IsEmpty => Match == null;
-
-        public ScorableMatch(Match match, int originalTextLength)
+        private MatchComparer()
         {
-            if (match == null) throw new ArgumentNullException(nameof(match));
-            if (originalTextLength <= 0) throw new ArgumentOutOfRangeException(nameof(originalTextLength));
-            Match = match;
-            OriginalTextLength = originalTextLength;
-            Score = RegexMatchScorable.ScoreFor(match, originalTextLength);
         }
 
-        /// <inheritdoc />
-        public bool Equals(ScorableMatch other)
+        int IComparer<Match>.Compare(Match one, Match two)
         {
-            return Equals(Match, other.Match) && OriginalTextLength == other.OriginalTextLength;
-        }
+            Func<Match, Pair<bool, double>> PairFor = match => Pair.Create
+            (
+                match.Success,
+                RegexMatchScorable.ScoreFor(match)
+            );
 
-        /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            return obj is ScorableMatch && Equals((ScorableMatch) obj);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return ((Match?.GetHashCode() ?? 0) * 397) ^ OriginalTextLength;
-            }
-        }
-
-        /// <inheritdoc />
-        public int CompareTo(ScorableMatch other)
-        {
-            // CXuesong: Referred from MatchComparer class.
-            if (this.Match.Success != other.Match.Success) return this.Match.Success ? 1 : -1;
-            return this.Score.CompareTo(other.Score);
+            var pairOne = PairFor(one);
+            var pairTwo = PairFor(two);
+            return pairOne.CompareTo(pairTwo);
         }
     }
 }

@@ -346,7 +346,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 try
                 {
-                    intentHandler = (IntentActivityHandler)Delegate.CreateDelegate(typeof(IntentActivityHandler), dialog, method, throwOnBindFailure: false);
+                    intentHandler = (IntentActivityHandler) method.CreateDelegate(typeof(IntentActivityHandler), dialog);
+                    //intentHandler = (IntentActivityHandler)Delegate.CreateDelegate(typeof(IntentActivityHandler), dialog, method, throwOnBindFailure: false);
                 }
                 catch (ArgumentException)
                 {
@@ -354,13 +355,14 @@ namespace Microsoft.Bot.Builder.Dialogs
                     // https://github.com/Microsoft/BotBuilder/issues/634
                     // https://github.com/Microsoft/BotBuilder/issues/435
                 }
-                
+
                 // fall back for compatibility
                 if (intentHandler == null)
                 {
                     try
                     {
-                        var handler = (IntentHandler)Delegate.CreateDelegate(typeof(IntentHandler), dialog, method, throwOnBindFailure: false);
+                        var handler = (IntentHandler) method.CreateDelegate(typeof(IntentHandler), dialog);
+                        //var handler = (IntentHandler)Delegate.CreateDelegate(typeof(IntentHandler), dialog, method, throwOnBindFailure: false);
 
                         if (handler != null)
                         {

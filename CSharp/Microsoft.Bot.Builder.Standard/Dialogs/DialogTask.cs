@@ -34,6 +34,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -121,7 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
 
             public override string ToString()
             {
-                return $"{this.start.Target}.{this.start.Method.Name}";
+                return $"{this.start.Target}.{this.start.GetMethodInfo().Name}";
             }
 
             Delegate IThunk.Method => this.start;
@@ -154,7 +156,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
 
             public override string ToString()
             {
-                return $"{this.resume.Target}.{this.resume.Method.Name}";
+                return $"{this.resume.Target}.{this.resume.GetMethodInfo().Name}";
             }
 
             Delegate IThunk.Method => this.resume;

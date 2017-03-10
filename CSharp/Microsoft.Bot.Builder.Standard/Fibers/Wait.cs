@@ -42,6 +42,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Bot.Builder.Base;
+using Microsoft.Bot.Builder.Compatibility;
 using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Internals.Fibers
@@ -116,7 +117,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
         void Fail(Exception error);
     }
 
-    public interface IWait<C> : IWait, ICloneable
+    public interface IWait<C> : IWait, IDeepCloneable
     {
         Task<IWait<C>> PollAsync(IFiber<C> fiber, C context, CancellationToken token);
     }
@@ -160,7 +161,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             throw new InvalidNeedException(this, Need.Poll);
         }
 
-        object ICloneable.Clone()
+        object IDeepCloneable.Clone()
         {
             return NullWait<C>.Instance;
         }
@@ -190,10 +191,10 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
     }
 
     [DataContract]
-    public sealed class Wait<C, T> : IItem<T>, IWait<C, T>, IPost<T>, IAwaiter<T>, IEquatable<Wait<C, T>>, ISerializable
+    public sealed class Wait<C, T> : IItem<T>, IWait<C, T>, IPost<T>, IAwaiter<T>, IEquatable<Wait<C, T>>
     {
-        private Rest<C, T> rest;
-        private Need need;
+        [DataMember] private Rest<C, T> rest;
+        [DataMember] private Need need;
         private T item;
         private Exception fail;
 
@@ -201,22 +202,16 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
         {
         }
 
-        private Wait(SerializationInfo info, StreamingContext context)
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
         {
-            SetField.NotNullFrom(out this.rest, nameof(rest), info);
-            SetField.From(out this.need, nameof(need), info);
-        }
-
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue(nameof(this.rest), this.rest);
-            info.AddValue(nameof(this.need), this.need);
+            if (rest == null) throw new ArgumentNullException(nameof(rest));
         }
 
         public override string ToString()
         {
             IWait wait = this;
-            return $"Wait: {wait.Need} {wait.NeedType?.Name} for {this.rest?.Target}.{this.rest?.Method.Name} have {wait.ItemType?.Name} {this.item}";
+            return $"Wait: {wait.Need} {wait.NeedType?.Name} for {this.rest?.Target}.{this.rest?.GetMethodInfo().Name} have {wait.ItemType?.Name} {this.item}";
         }
 
         public override int GetHashCode()
@@ -248,7 +243,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             {
                 if (this.rest != null)
                 {
-                    var method = this.rest.Method;
+                    var method = this.rest.GetMethodInfo();
                     var parameters = method.GetParameters();
                     var itemType = parameters[2].ParameterType;
                     var type = itemType.GenericTypeArguments.Single();
@@ -291,7 +286,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             if (post == null)
             {
                 // then work around lack of generic type variant for value types
-                if (typeof(D).IsValueType)
+                if (typeof(D).GetTypeInfo().IsValueType)
                 {
                     var postBoxed = this as IPost<object>;
                     if (postBoxed != null)
@@ -309,7 +304,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             {
                 // if we have runtime type information, use reflection and recurse
                 var type = item?.GetType();
-                bool reflection = type != null && !type.IsAssignableFrom(typeof(D));
+                bool reflection = type != null && !type.GetTypeInfo().IsAssignableFrom(typeof(D).GetTypeInfo());
                 if (reflection)
                 {
                     var generic = MethodPost.MakeGenericMethod(type);
@@ -391,7 +386,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             throw new NotImplementedException();
         }
 
-        object ICloneable.Clone()
+        object IDeepCloneable.Clone()
         {
             var clone = new Wait<C, T>();
             clone.rest = this.rest;

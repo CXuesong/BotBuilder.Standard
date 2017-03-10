@@ -1,7 +1,10 @@
 ﻿namespace Microsoft.Bot.Builder.Compatibility
 {
-    internal interface IDeepCloneable
+    public interface IDeepCloneable
     {
+        /// <summary>
+        /// Deeply clones this instance.
+        /// </summary>
         object Clone();
     }
 }

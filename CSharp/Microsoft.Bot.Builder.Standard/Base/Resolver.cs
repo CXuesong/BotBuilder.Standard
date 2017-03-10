@@ -35,6 +35,7 @@ using Microsoft.Bot.Builder.Internals.Fibers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -116,7 +117,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
 
         bool IResolver.TryResolve(Type type, object tag, out object value)
         {
-            if (typeof(CancellationToken).IsAssignableFrom(type))
+            if (typeof(CancellationToken).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
             {
                 value = BoxedToken;
                 return true;
@@ -151,7 +152,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
 
         public override bool TryResolve(Type type, object tag, out object value)
         {
-            if (type.IsEnum)
+            if (type.GetTypeInfo().IsEnum)
             {
                 var name = tag as string;
                 if (name != null)
@@ -193,7 +194,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
                     if (service != null)
                     {
                         var serviceType = service.GetType();
-                        if (type.IsAssignableFrom(serviceType))
+                        if (type.GetTypeInfo().IsAssignableFrom(serviceType.GetTypeInfo()))
                         {
                             value = service;
                             return true;

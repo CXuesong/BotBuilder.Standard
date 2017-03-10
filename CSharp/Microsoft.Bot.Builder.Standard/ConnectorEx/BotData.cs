@@ -44,6 +44,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Rest;
 
 namespace Microsoft.Bot.Builder.Dialogs.Internals
 {
@@ -77,7 +78,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
         /// <param name="botStoreType">The bot store type.</param>
         /// <param name="data"> The data that should be saved.</param>
         /// <param name="cancellationToken"> The cancellation token.</param>
-        /// <returns>throw HttpException(HttpStatusCode.PreconditionFailed) if update fails</returns>
+        /// <returns>throw <see cref="HttpOperationException"/> if update fails</returns>
         Task SaveAsync(IAddress key, BotStoreType botStoreType, T data, CancellationToken cancellationToken);
         Task<bool> FlushAsync(IAddress key, CancellationToken cancellationToken);
     }
@@ -138,7 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
         {
             if (botData.ETag != "*" && Deserialize(value).ETag != botData.ETag)
             {
-                throw new HttpException((int)HttpStatusCode.PreconditionFailed, "Inconsistent SaveAsync based on ETag!");
+                throw new HttpOperationException("Inconsistent SaveAsync based on ETag!");
             }
         }
 

@@ -45,6 +45,7 @@ using System.Threading;
 using Microsoft.Bot.Builder.Dialogs;
 using System.Threading.Tasks;
 using System.Text;
+using Microsoft.Bot.Builder.Compatibility;
 
 namespace Microsoft.Bot.Builder.FormFlow
 {
@@ -96,8 +97,8 @@ namespace Microsoft.Bot.Builder.FormFlow
                 if (name != null)
                 {
                     var rm = new ResourceManager(name, resourceAssembly);
-                    var rs = rm.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
-                    _form.Localize(rs.GetEnumerator(), out missing, out extra);
+                    var resourceSetEnumerator = rm.GetResourceSetEnumerator(CultureInfo.CurrentUICulture, true, true);
+                    _form.Localize(resourceSetEnumerator, out missing, out extra);
                     if (missing.Any())
                     {
                         throw new MissingManifestResourceException($"Missing resources {missing}");
@@ -107,6 +108,8 @@ namespace Microsoft.Bot.Builder.FormFlow
             Validate();
             return this._form;
         }
+
+
 
         public FormConfiguration Configuration { get { return _form.Configuration; } }
 
@@ -305,7 +308,7 @@ namespace Microsoft.Bot.Builder.FormFlow
                 }
             }
 
-            public override void SaveResources(ResourceWriter writer)
+            public override void SaveResources(IResourceWriter writer)
             {
                 _resources = new Localizer() { Culture = CultureInfo.CurrentUICulture };
                 foreach (var step in _steps)
@@ -315,7 +318,7 @@ namespace Microsoft.Bot.Builder.FormFlow
                 _resources.Save(writer);
             }
 
-            public override void Localize(ResourceManager rm, out IEnumerable<string> missing, out IEnumerable<string> extra)
+            public override void Localize(IDictionaryEnumerator rm, out IEnumerable<string> missing, out IEnumerable<string> extra)
             {
                 foreach (var step in _steps)
                 {

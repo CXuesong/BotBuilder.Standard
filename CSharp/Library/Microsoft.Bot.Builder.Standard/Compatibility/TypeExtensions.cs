@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Compatibility
         {
             if (self == null) throw new ArgumentNullException(nameof(self));
             if (t == null) throw new ArgumentNullException(nameof(t));
-            return self.IsAssignableFrom(t);
+            return self.GetTypeInfo().IsAssignableFrom(t.GetTypeInfo());
         }
     }
 }

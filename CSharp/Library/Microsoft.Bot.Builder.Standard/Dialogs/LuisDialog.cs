@@ -354,7 +354,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     // https://github.com/Microsoft/BotBuilder/issues/634
                     // https://github.com/Microsoft/BotBuilder/issues/435
                 }
-
+                
                 // fall back for compatibility
                 if (intentHandler == null)
                 {

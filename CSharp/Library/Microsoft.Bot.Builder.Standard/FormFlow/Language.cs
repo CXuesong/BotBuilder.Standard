@@ -34,6 +34,7 @@
 using Microsoft.Bot.Builder.Resource;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -188,7 +189,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         /// <returns>Enumeration of plural word regex.</returns>
         public static IEnumerable<string> OptionalPlurals(IEnumerable<string> words)
         {
-            bool addS = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName == "en";
+            bool addS = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "en";
             foreach (var original in words)
             {
                 var word = original.ToLower();

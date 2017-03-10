@@ -145,13 +145,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         protected readonly IReadOnlyList<ILuisService> services;
 
         /// <summary>   Mapping from intent string to the appropriate handler. </summary>
-        [NonSerialized]
+        //[NonSerialized]
         protected Dictionary<string, IntentActivityHandler> handlerByIntent;
 
         public ILuisService[] MakeServicesFromAttributes()
         {
             var type = this.GetType();
-            var luisModels = type.GetCustomAttributes<LuisModelAttribute>(inherit: true);
+            var luisModels = type.GetTypeInfo().GetCustomAttributes<LuisModelAttribute>(inherit: true);
             return luisModels.Select(m => new LuisService(m)).Cast<ILuisService>().ToArray();
         }
 

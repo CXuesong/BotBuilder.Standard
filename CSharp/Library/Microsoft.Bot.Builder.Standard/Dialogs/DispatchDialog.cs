@@ -55,8 +55,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             context.Wait(ActivityReceivedAsync);
         }
 
-        [NonSerialized]
+        //[NonSerialized]
         private IReadOnlyList<object> services;
+
         protected override IReadOnlyList<object> MakeServices()
         {
             return this.services;

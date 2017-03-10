@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>a89e297f-9b02-40ff-be28-ac63b83473db</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Microsoft.Bot.Builder.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Base\EventLoop.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\LocalizedScope.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Pair.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Range.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Resolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Scope.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\SetField.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Tasks.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Traits.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Types.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectorEx\Address.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectorEx\BotData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectorEx\BotToUser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectorEx\IActivityLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectorEx\IBotData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectorEx\IBotDataBag.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectorEx\IChannelCapability.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectorEx\IConnectorClientFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectorEx\KeyboardCard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectorEx\LocaleFinder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectorEx\PostToBot.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectorEx\Resolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectorEx\ResumptionContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectorEx\ResumptionCookie.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectorEx\UrlToken.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\Chain.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\CommandDialog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\DeleteProfileScorable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\DialogContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\DialogRouter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\DialogSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\DialogTask.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\DialogTaskManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\DispatchDialog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\Exceptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\IDialog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\IDialogContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\IDialogTask.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\LuisDialog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\PromptDialog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\ScoringEventLoop.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fibers\Awaitable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fibers\Exceptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fibers\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fibers\Fiber.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fibers\IStore.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fibers\Methods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fibers\Serialization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fibers\StackStoreFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fibers\Store.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fibers\Wait.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\Attributes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\Confirmation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\Field.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\FieldReflector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\FormBuilder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\FormDialog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\FormState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\IField.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\IForm.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\IFormBuilder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\IFormDialog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\ILocalizer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\IPrompt.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\IRecognize.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\IStep.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\Language.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\Localizer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\MatchAnalyzer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\Recognize.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FormFlow\Steps.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Luis\CalendarPlus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Luis\EntityToType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Luis\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Luis\LuisModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Luis\LuisService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Luis\Models\Action.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Luis\Models\ActionParameter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Luis\Models\CompositeChild.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Luis\Models\CompositeEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Luis\Models\DialogResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Luis\Models\DialogResponseEx.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Luis\Models\EntityRecommendation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Luis\Models\IntentRecommendation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Luis\Models\LuisResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Luis\Resolution.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Resource\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Resource\Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Scorables\Actions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scorables\Binder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scorables\Binding.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scorables\BindingComparer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scorables\Dispatcher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scorables\FoldScorable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scorables\InheritedAttributes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scorables\LuisIntentScorable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scorables\MethodScorable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scorables\OrderScorable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scorables\RegexMatchScorable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scorables\ResolverScorable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scorables\Scorable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scorables\ScorableBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scorables\Scorables.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Luis\generateLuisModels.bat" />
+    <None Include="$(MSBuildThisFileDirectory)Luis\Luis-q.json" />
+    <None Include="$(MSBuildThisFileDirectory)MultilingualResources\Microsoft.Bot.Builder.ar.xlf" />
+    <None Include="$(MSBuildThisFileDirectory)MultilingualResources\Microsoft.Bot.Builder.cs.xlf" />
+    <None Include="$(MSBuildThisFileDirectory)MultilingualResources\Microsoft.Bot.Builder.de-DE.xlf" />
+    <None Include="$(MSBuildThisFileDirectory)MultilingualResources\Microsoft.Bot.Builder.en.xlf" />
+    <None Include="$(MSBuildThisFileDirectory)MultilingualResources\Microsoft.Bot.Builder.es.xlf" />
+    <None Include="$(MSBuildThisFileDirectory)MultilingualResources\Microsoft.Bot.Builder.fa.xlf" />
+    <None Include="$(MSBuildThisFileDirectory)MultilingualResources\Microsoft.Bot.Builder.fr.xlf" />
+    <None Include="$(MSBuildThisFileDirectory)MultilingualResources\Microsoft.Bot.Builder.it.xlf" />
+    <None Include="$(MSBuildThisFileDirectory)MultilingualResources\Microsoft.Bot.Builder.ja.xlf" />
+    <None Include="$(MSBuildThisFileDirectory)MultilingualResources\Microsoft.Bot.Builder.nl.xlf" />
+    <None Include="$(MSBuildThisFileDirectory)MultilingualResources\Microsoft.Bot.Builder.ru.xlf" />
+    <None Include="$(MSBuildThisFileDirectory)MultilingualResources\Microsoft.Bot.Builder.zh-Hans.xlf" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resource\Resources.ar.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resource\Resources.cs.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resource\Resources.de-DE.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resource\Resources.en.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resource\Resources.es.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resource\Resources.fa.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resource\Resources.fr.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resource\Resources.it.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resource\Resources.ja.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resource\Resources.nl.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resource\Resources.resx">
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resource\Resources.ru.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resource\Resources.zh-Hans.resx" />
+  </ItemGroup>
+</Project>

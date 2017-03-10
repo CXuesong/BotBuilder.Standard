@@ -34,7 +34,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-
+using System.Runtime.Serialization;
 using Microsoft.Bot.Builder.FormFlow.Advanced;
 
 namespace Microsoft.Bot.Builder.FormFlow

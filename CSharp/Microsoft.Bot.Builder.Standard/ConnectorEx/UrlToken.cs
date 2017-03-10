@@ -40,7 +40,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -54,6 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </remarks>
     public static class UrlToken
     {
+
         /// <summary>
         /// Encode an item to be stored in a url.
         /// </summary>
@@ -70,8 +70,14 @@ namespace Microsoft.Bot.Builder.Dialogs
                     var serializer = JsonSerializer.CreateDefault();
                     serializer.Serialize(writer, item);
                 }
-                var token = HttpServerUtility.UrlTokenEncode(memory.ToArray());
-                return token;
+                // CXuesong: Do UrlTokenEncode, i.e. Base64 safe encoding, by ourselves...
+                var sb = new StringBuilder(Convert.ToBase64String(memory.ToArray()));
+                sb.Replace('+', '-');
+                sb.Replace('/', '_');
+                // Remove trailing padding
+                if (sb.Length > 2 && sb[2] == '=') sb.Remove(sb.Length - 2, 1);
+                else if (sb.Length > 1 && sb[1] == '=') sb.Remove(sb.Length - 1, 1);
+                return sb.ToString();
             }
         }
 
@@ -83,8 +89,21 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>The item instance.</returns>
         public static T Decode<T>(string token)
         {
-            var buffer = HttpServerUtility.UrlTokenDecode(token);
-            using (var memory = new MemoryStream(buffer))
+            var sb = new StringBuilder(token);
+            sb.Replace('+', '-');
+            sb.Replace('_', '/');
+            switch (sb.Length%4)
+            {
+                case 1:
+                    break;  // No padding needed.
+                case 2:
+                    sb.Append("==");
+                    break;
+                case 3:
+                    sb.Append('=');
+                    break;
+            }
+            using (var memory = new MemoryStream(Convert.FromBase64String(sb.ToString())))
             using (var gzip = new GZipStream(memory, CompressionMode.Decompress))
             using (var reader = new BsonReader(gzip))
             {

@@ -55,17 +55,5 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
                 throw new ArgumentNullException(name);
             }
         }
-
-        public static void NotNullFrom<T>(out T field, string name, SerializationInfo info) where T : class
-        {
-            var value = (T)info.GetValue(name, typeof(T));
-            SetField.NotNull(out field, name, value);
-        }
-
-        public static void From<T>(out T field, string name, SerializationInfo info)
-        {
-            var value = (T)info.GetValue(name, typeof(T));
-            field = value;
-        }
     }
 }

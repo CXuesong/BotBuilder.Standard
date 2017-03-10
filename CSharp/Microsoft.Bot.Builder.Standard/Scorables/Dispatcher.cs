@@ -41,6 +41,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.Bot.Builder.Scorables.Internals;
 using Microsoft.Bot.Builder.Luis;
+using System.Runtime.Serialization;
 
 namespace Microsoft.Bot.Builder.Scorables
 {
@@ -119,10 +120,10 @@ namespace Microsoft.Bot.Builder.Scorables
             return factory;
         }
 
-        protected virtual BindingFlags MakeBindingFlags()
-        {
-            return BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
-        }
+        //protected virtual BindingFlags MakeBindingFlags()
+        //{
+        //    return BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
+        //}
 
         protected virtual Type MakeType()
         {
@@ -131,9 +132,9 @@ namespace Microsoft.Bot.Builder.Scorables
 
         protected virtual IEnumerable<MethodInfo> MakeMethods()
         {
-            var flags = this.MakeBindingFlags();
+            //var flags = this.MakeBindingFlags();
             var type = this.MakeType();
-            var methods = type.GetMethods(flags);
+            var methods = type.GetRuntimeMethods();
             return methods;
         }
 

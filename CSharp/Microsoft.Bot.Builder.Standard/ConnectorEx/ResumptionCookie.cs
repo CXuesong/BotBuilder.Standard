@@ -34,7 +34,7 @@
 using System;
 using System.IO;
 using System.IO.Compression;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
 
@@ -167,8 +167,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             using (var stream = new MemoryStream(bytes))
             using (var gz = new GZipStream(stream, CompressionMode.Decompress))
+            using (var reader = new StreamReader(gz))
             {
-                return (ResumptionCookie)(new BinaryFormatter().Deserialize(gz));
+                return JsonConvert.DeserializeObject<ResumptionCookie>(reader.ReadToEnd());
             }
         }
     }
@@ -184,10 +185,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         public static string GZipSerialize(this ResumptionCookie resumptionCookie)
         {
             using (var cmpStream = new MemoryStream())
-            using (var stream = new GZipStream(cmpStream, CompressionMode.Compress))
             {
-                new BinaryFormatter().Serialize(stream, resumptionCookie);
-                stream.Close();
+                using (var stream = new GZipStream(cmpStream, CompressionMode.Compress))
+                using (var writer = new StreamWriter(stream))
+                {
+                    writer.Write(JsonConvert.SerializeObject(resumptionCookie));
+                }
                 return Convert.ToBase64String(cmpStream.ToArray());
             }
         }

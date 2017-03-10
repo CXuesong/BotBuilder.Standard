@@ -130,14 +130,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
         private readonly IPostToBot inner;
         private readonly IBotToUser botToUser;
         private readonly ResourceManager resources;
-        private readonly TraceListener trace;
+        //private readonly TraceListener trace;
 
-        public PostUnhandledExceptionToUser(IPostToBot inner, IBotToUser botToUser, ResourceManager resources, TraceListener trace)
+        public PostUnhandledExceptionToUser(IPostToBot inner, IBotToUser botToUser, ResourceManager resources/*, TraceListener trace*/)
         {
             SetField.NotNull(out this.inner, nameof(inner), inner);
             SetField.NotNull(out this.botToUser, nameof(botToUser), botToUser);
             SetField.NotNull(out this.resources, nameof(resources), resources);
-            SetField.NotNull(out this.trace, nameof(trace), trace);
+            //SetField.NotNull(out this.trace, nameof(trace), trace);
         }
 
         async Task IPostToBot.PostAsync(IActivity activity, CancellationToken token)
@@ -168,7 +168,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
                 }
                 catch (Exception inner)
                 {
-                    this.trace.WriteLine(inner);
+                    //this.trace.WriteLine(inner);
+                    Debug.WriteLine(inner);
                 }
 
                 throw;

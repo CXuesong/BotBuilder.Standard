@@ -33,7 +33,7 @@
 
 using System;
 using System.Linq;
-
+using System.Runtime.Serialization;
 using Microsoft.Bot.Builder.FormFlow.Advanced;
 
 namespace Microsoft.Bot.Builder.FormFlow

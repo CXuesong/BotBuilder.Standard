@@ -36,6 +36,7 @@ using Microsoft.Bot.Builder.Scorables.Internals;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;

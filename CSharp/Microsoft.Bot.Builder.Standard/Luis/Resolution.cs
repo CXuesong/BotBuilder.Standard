@@ -36,9 +36,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
 
 namespace Microsoft.Bot.Builder.Luis
 {
@@ -47,7 +48,7 @@ namespace Microsoft.Bot.Builder.Luis
         public override string ToString()
         {
             var builder = new StringBuilder();
-            var properties = this.GetType().GetProperties();
+            var properties = this.GetType().GetRuntimeProperties();
             foreach (var property in properties)
             {
                 var value = property.GetValue(this);
@@ -73,25 +74,25 @@ namespace Microsoft.Bot.Builder.Luis
         {
             public enum DayPart
             {
-                [Description("morning")]
+                // [Description("morning")]
                 MO,
-                [Description("midday")]
+                // [Description("midday")]
                 MI,
-                [Description("afternoon")]
+                // [Description("afternoon")]
                 AF,
-                [Description("evening")]
+                // [Description("evening")]
                 EV,
-                [Description("night")]
+                // [Description("night")]
                 NI
             }
 
             public enum Reference
             {
-                [Description("past")]
+                // [Description("past")]
                 PAST_REF,
-                [Description("present")]
+                // [Description("present")]
                 PRESENT_REF,
-                [Description("future")]
+                // [Description("future")]
                 FUTURE_REF
             }
 

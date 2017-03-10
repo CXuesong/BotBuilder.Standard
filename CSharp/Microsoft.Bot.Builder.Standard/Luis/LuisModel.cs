@@ -33,6 +33,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using Microsoft.Bot.Builder.Internals.Fibers;
 
 namespace Microsoft.Bot.Builder.Luis

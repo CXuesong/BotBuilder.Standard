@@ -126,21 +126,21 @@ namespace Microsoft.Bot.Builder.FormFlow
     /// or <see cref="FormDialog.FromType{T}"/>. 
     /// </remarks>
     [DataContract]
-    public sealed class FormDialog<T> : IFormDialog<T>, ISerializable
+    public sealed class FormDialog<T> : IFormDialog<T>
         where T : class
     {
         // constructor arguments
-        private readonly T _state;
-        private readonly BuildFormDelegate<T> _buildForm;
-        private readonly IEnumerable<EntityRecommendation> _entities;
-        private readonly FormOptions _options;
+        [DataMember]private readonly T _state;
+        [DataMember] private readonly BuildFormDelegate<T> _buildForm;
+        [DataMember] private readonly IEnumerable<EntityRecommendation> _entities;
+        [DataMember] private readonly FormOptions _options;
 
         // instantiated in constructor, saved when serialized
-        private readonly FormState _formState;
+        [DataMember] private readonly FormState _formState;
 
         // instantiated in constructor, re-instantiated when deserialized
-        private readonly IForm<T> _form;
-        private readonly IField<T> _commands;
+        private /*readonly*/ IForm<T> _form;
+        private /*readonly*/ IField<T> _commands;
 
         private static IForm<T> BuildDefaultForm()
         {
@@ -183,32 +183,12 @@ namespace Microsoft.Bot.Builder.FormFlow
             this._commands = this._form.BuildCommandRecognizer();
         }
 
-        private FormDialog(SerializationInfo info, StreamingContext context)
+        [OnSerialized]
+        private void OnSerialized(StreamingContext context)
         {
-            // constructor arguments
-            SetField.NotNullFrom(out this._state, nameof(this._state), info);
-            SetField.NotNullFrom(out this._buildForm, nameof(this._buildForm), info);
-            SetField.NotNullFrom(out this._entities, nameof(this._entities), info);
-            this._options = info.GetValue<FormOptions>(nameof(this._options));
-
-            // instantiated in constructor, saved when serialized
-            SetField.NotNullFrom(out this._formState, nameof(this._formState), info);
-
             // instantiated in constructor, re-instantiated when deserialized
             this._form = _buildForm();
             this._commands = this._form.BuildCommandRecognizer();
-        }
-
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            // constructor arguments
-            info.AddValue(nameof(this._state), this._state);
-            info.AddValue(nameof(this._buildForm), this._buildForm);
-            info.AddValue(nameof(this._entities), this._entities);
-            info.AddValue(nameof(this._options), this._options);
-
-            // instantiated in constructor, saved when serialized
-            info.AddValue(nameof(this._formState), this._formState);
         }
 
         #region IFormDialog<T> implementation

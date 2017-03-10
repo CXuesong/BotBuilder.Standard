@@ -187,7 +187,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
             SetField.NotNull(out this.lambda, nameof(lambda), lambda);
         }
 
-        public override MethodBase Method => this.lambda.Method;
+        public override MethodBase Method => this.lambda.GetMethodInfo();
 
         protected override Task<IBinding> PrepareAsync(IResolver item, CancellationToken token)
         {

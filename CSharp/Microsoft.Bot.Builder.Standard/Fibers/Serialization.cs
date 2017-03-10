@@ -44,6 +44,7 @@ using System.Runtime.Serialization;
 
 namespace Microsoft.Bot.Builder.Internals.Fibers
 {
+#if false
     public static class Serialization
     {
         /// <summary>
@@ -295,4 +296,5 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             }
         }
     }
+#endif
 }

@@ -43,6 +43,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Compatibility;
 
 namespace Microsoft.Bot.Builder.Scorables.Internals
 {
@@ -121,12 +122,12 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
 
         IScorable<IResolver, Match> IScorableFactory<IResolver, Match>.ScorableFor(IEnumerable<MethodInfo> methods)
         {
+            var scorableByMethod = methods.ToDictionary(m => m, m => new MethodScorable(m));
+
             var specs =
-                from method in methods
+                from method in scorableByMethod.Keys
                 from pattern in InheritedAttributes.For<RegexPatternAttribute>(method)
                 select new { method, pattern };
-
-            var scorableByMethod = methods.ToDictionary(m => m, m => new MethodScorable(m));
 
             // for a given regular expression pattern, fold the corresponding method scorables together to enable overload resolution
             var scorables =
@@ -147,11 +148,6 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
     /// </summary>
     public static partial class RegexMatchScorable
     {
-        public static readonly Func<Capture, string> GetOriginalString
-            = (Func<Capture, string>)
-            typeof(Capture)
-            .GetMethod("GetOriginalString", BindingFlags.Instance | BindingFlags.NonPublic)
-            .CreateDelegate(typeof(Func<Capture, string>));
 
         /// <summary>
         /// Calculate a normalized 0-1 score for a regular expression match.

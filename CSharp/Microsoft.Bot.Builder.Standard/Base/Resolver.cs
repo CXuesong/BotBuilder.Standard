@@ -39,6 +39,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Compatibility;
 
 namespace Microsoft.Bot.Builder.Scorables.Internals
 {
@@ -117,7 +118,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
 
         bool IResolver.TryResolve(Type type, object tag, out object value)
         {
-            if (typeof(CancellationToken).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+            if (typeof(CancellationToken).IsAssignableFrom(type))
             {
                 value = BoxedToken;
                 return true;
@@ -194,7 +195,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
                     if (service != null)
                     {
                         var serviceType = service.GetType();
-                        if (type.GetTypeInfo().IsAssignableFrom(serviceType.GetTypeInfo()))
+                        if (type.IsAssignableFrom(serviceType))
                         {
                             value = service;
                             return true;

@@ -304,7 +304,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             {
                 // if we have runtime type information, use reflection and recurse
                 var type = item?.GetType();
-                bool reflection = type != null && !type.GetTypeInfo().IsAssignableFrom(typeof(D).GetTypeInfo());
+                bool reflection = type != null && !type.IsAssignableFrom(typeof(D));
                 if (reflection)
                 {
                     var generic = MethodPost.MakeGenericMethod(type);

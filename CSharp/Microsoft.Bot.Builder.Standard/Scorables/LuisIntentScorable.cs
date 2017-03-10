@@ -45,6 +45,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Compatibility;
 
 namespace Microsoft.Bot.Builder.Scorables.Internals
 {

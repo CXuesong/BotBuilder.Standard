@@ -173,8 +173,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
             {
                 var serializedJSon = JsonConvert.SerializeObject(data);
                 streamWriter.Write(serializedJSon);
-                streamWriter.Close();
-                stream.Close();
+                streamWriter.Dispose();
+                stream.Dispose();
                 return Convert.ToBase64String(cmpStream.ToArray());
             }
         }
@@ -710,10 +710,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
             this.bag.SetValue(this.key, blob);
         }
 
-        public override void Close()
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
         {
-            this.Flush();
-            base.Close();
+            if (disposing) this.Flush();
+            base.Dispose(disposing);
         }
     }
 }

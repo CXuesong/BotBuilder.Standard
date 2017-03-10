@@ -68,11 +68,120 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Base\EventLoop.cs" />
+    <Compile Include="Base\Extensions.cs" />
+    <Compile Include="Base\LocalizedScope.cs" />
+    <Compile Include="Base\Resolver.cs" />
+    <Compile Include="Base\Types.cs" />
+    <Compile Include="ConnectorEx\PostToBot.cs" />
+    <Compile Include="ConnectorEx\KeyboardCard.cs" />
+    <Compile Include="Dialogs\DeleteProfileScorable.cs" />
+    <Compile Include="ConnectorEx\BotData.cs" />
+    <Compile Include="ConnectorEx\BotToUser.cs" />
+    <Compile Include="Dialogs\CommandDialog.cs" />
+    <Compile Include="Dialogs\DialogContext.cs" />
+    <Compile Include="Dialogs\Chain.cs" />
+    <Compile Include="Dialogs\DialogRouter.cs" />
+    <Compile Include="Dialogs\DialogSystem.cs" />
+    <Compile Include="Dialogs\Exceptions.cs" />
+    <Compile Include="ConnectorEx\Address.cs" />
+    <Compile Include="ConnectorEx\IActivityLogger.cs" />
+    <Compile Include="Dialogs\DispatchDialog.cs" />
+    <Compile Include="ConnectorEx\ResumptionCookie.cs" />
+    <Compile Include="Dialogs\ScoringEventLoop.cs" />
+    <Compile Include="Dialogs\DialogTask.cs" />
+    <Compile Include="ConnectorEx\IBotDataBag.cs" />
+    <Compile Include="ConnectorEx\IChannelCapability.cs" />
+    <Compile Include="ConnectorEx\IConnectorClientFactory.cs" />
+    <Compile Include="Dialogs\IDialogTask.cs" />
+    <Compile Include="Dialogs\LuisDialog.cs" />
+    <Compile Include="ConnectorEx\UrlToken.cs" />
+    <Compile Include="Dialogs\DialogTaskManager.cs" />
+    <Compile Include="Base\Pair.cs" />
+    <Compile Include="Base\Range.cs" />
+    <Compile Include="Base\Scope.cs" />
+    <Compile Include="Fibers\StackStoreFactory.cs" />
+    <Compile Include="Fibers\Store.cs" />
+    <Compile Include="Fibers\IStore.cs" />
+    <Compile Include="Base\SetField.cs" />
+    <Compile Include="ConnectorEx\IBotData.cs" />
+    <Compile Include="Dialogs\IDialog.cs" />
+    <Compile Include="Dialogs\IDialogContext.cs" />
+    <Compile Include="Base\Tasks.cs" />
+    <Compile Include="FormFlow\FieldReflector.cs" />
+    <Compile Include="Base\Traits.cs" />
+    <Compile Include="FormFlow\Localizer.cs" />
+    <Compile Include="Luis\CalendarPlus.cs" />
+    <Compile Include="Luis\EntityToType.cs" />
+    <Compile Include="Luis\Extensions.cs" />
+    <Compile Include="Luis\LuisModel.cs" />
+    <Compile Include="Luis\Models\CompositeChild.cs" />
+    <Compile Include="Luis\Models\CompositeEntity.cs" />
+    <Compile Include="Luis\Models\DialogResponse.cs" />
+    <Compile Include="Luis\Models\DialogResponseEx.cs" />
+    <Compile Include="Luis\Resolution.cs" />
+    <Compile Include="Luis\LuisService.cs" />
+    <Compile Include="Dialogs\PromptDialog.cs" />
+    <Compile Include="Fibers\Awaitable.cs" />
+    <Compile Include="Fibers\Exceptions.cs" />
+    <Compile Include="Fibers\Extensions.cs" />
+    <Compile Include="Fibers\Fiber.cs" />
+    <Compile Include="Fibers\Methods.cs" />
+    <Compile Include="Fibers\Serialization.cs" />
+    <Compile Include="Fibers\Wait.cs" />
+    <Compile Include="FormFlow\Confirmation.cs" />
+    <Compile Include="FormFlow\Field.cs" />
+    <Compile Include="FormFlow\FormDialog.cs" />
+    <Compile Include="FormFlow\FormBuilder.cs" />
+    <Compile Include="FormFlow\FormState.cs" />
+    <Compile Include="FormFlow\IField.cs" />
+    <Compile Include="FormFlow\ILocalizer.cs" />
+    <Compile Include="FormFlow\IFormBuilder.cs" />
+    <Compile Include="FormFlow\IForm.cs" />
+    <Compile Include="FormFlow\IStep.cs" />
+    <Compile Include="FormFlow\Language.cs" />
+    <Compile Include="FormFlow\MatchAnalyzer.cs" />
+    <Compile Include="FormFlow\Recognize.cs" />
+    <Compile Include="FormFlow\Steps.cs" />
+    <Compile Include="FormFlow\Attributes.cs" />
+    <Compile Include="FormFlow\Extensions.cs" />
+    <Compile Include="FormFlow\IFormDialog.cs" />
+    <Compile Include="FormFlow\IPrompt.cs" />
+    <Compile Include="FormFlow\IRecognize.cs" />
+    <Compile Include="Luis\Models\Action.cs" />
+    <Compile Include="Luis\Models\ActionParameter.cs" />
+    <Compile Include="Luis\Models\EntityRecommendation.cs" />
+    <Compile Include="Luis\Models\IntentRecommendation.cs" />
+    <Compile Include="Luis\Models\LuisResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resource\Extensions.cs" />
+    <Compile Include="Resource\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Scorables\Actions.cs" />
+    <Compile Include="Scorables\Binder.cs" />
+    <Compile Include="Scorables\BindingComparer.cs" />
+    <Compile Include="Scorables\InheritedAttributes.cs" />
+    <Compile Include="Scorables\Binding.cs" />
+    <Compile Include="Scorables\Dispatcher.cs" />
+    <Compile Include="Scorables\ResolverScorable.cs" />
+    <Compile Include="Scorables\Scorable.cs" />
+    <Compile Include="Scorables\ScorableBase.cs" />
+    <Compile Include="Scorables\OrderScorable.cs" />
+    <Compile Include="Scorables\LuisIntentScorable.cs" />
+    <Compile Include="Scorables\MethodScorable.cs" />
+    <Compile Include="Scorables\FoldScorable.cs" />
+    <Compile Include="Scorables\RegexMatchScorable.cs" />
+    <Compile Include="ConnectorEx\Resolver.cs" />
+    <Compile Include="Scorables\Scorables.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="createpackage.cmd" />
+    <None Include="Luis\generateLuisModels.bat" />
+    <None Include="Luis\Luis-q.json" />
     <None Include="Microsoft.Bot.Builder.nuspec">
       <SubType>Designer</SubType>
     </None>
@@ -81,12 +190,48 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resource\Resources.ar.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resource\Resources.de-DE.resx" />
+    <EmbeddedResource Include="Resource\Resources.cs.resx" />
+    <EmbeddedResource Include="Resource\Resources.en.resx" />
+    <EmbeddedResource Include="Resource\Resources.es.resx" />
+    <EmbeddedResource Include="Resource\Resources.fa.resx" />
+    <EmbeddedResource Include="Resource\Resources.fr.resx" />
+    <EmbeddedResource Include="Resource\Resources.it.resx" />
+    <EmbeddedResource Include="Resource\Resources.ja.resx" />
+    <EmbeddedResource Include="Resource\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resource\Resources.ru.resx" />
+    <EmbeddedResource Include="Resource\Resources.zh-Hans.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.ar.xlf" />
+    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.de-DE.xlf" />
+    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.cs.xlf" />
+    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.en.xlf" />
+    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.es.xlf">
+      <SubType>Designer</SubType>
+    </XliffResource>
+    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.fa.xlf" />
+    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.fr.xlf" />
+    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.it.xlf">
+      <SubType>Designer</SubType>
+    </XliffResource>
+    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.ja.xlf" />
+    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.ru.xlf" />
+    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.zh-Hans.xlf" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Connector.NetFramework\Microsoft.Bot.Connector.csproj">
       <Project>{df397efc-91db-4911-9971-c509926fc288}</Project>
       <Name>Microsoft.Bot.Connector</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="..\..\Microsoft.Bot.Builder.Shared\Microsoft.Bot.Builder.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.ResxResources.targets" Label="MultilingualAppToolkit" Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.ResxResources.targets') And Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\v$(MultilingualAppToolkitVersion)\Microsoft.Multilingual.ResxResources.targets')" />
   <Target Name="MATPrerequisite" BeforeTargets="PrepareForBuild" Condition="!Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.ResxResources.targets') And !Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\v$(MultilingualAppToolkitVersion)\Microsoft.Multilingual.ResxResources.targets')" Label="MultilingualAppToolkit">

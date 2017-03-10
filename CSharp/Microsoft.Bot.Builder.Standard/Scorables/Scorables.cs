@@ -36,6 +36,7 @@ using Microsoft.Bot.Builder.Scorables.Internals;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -101,7 +102,7 @@ namespace Microsoft.Bot.Builder.Scorables
             // complicated because IScorable<Item, Score> is variant on generic parameter,
             // so generic type arguments of NullScorable<,> may not match generic type
             // arguments of IScorable<,>
-            var type = scorable.GetType();
+            var type = scorable.GetType().GetTypeInfo();
             if (type.IsGenericType)
             {
                 var definition = type.GetGenericTypeDefinition();

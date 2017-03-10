@@ -78,8 +78,8 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
 
         public static bool TryResolveReturnType<R>(MethodInfo method)
         {
-            var type = method.ReturnType;
-            if (typeof(R).IsAssignableFrom(type))
+            var type = method.ReturnType.GetTypeInfo();
+            if (typeof(R).GetTypeInfo().IsAssignableFrom(type))
             {
                 return true;
             }
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
                 var definition = type.GetGenericTypeDefinition();
                 if (definition == typeof(Task<>))
                 {
-                    var arguments = type.GetGenericArguments();
+                    var arguments = type.GenericTypeArguments;
                     if (typeof(R).IsAssignableFrom(arguments[0]))
                     {
                         return true;
@@ -228,7 +228,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
 
         bool IBinder.TryBind(Delegate lambda, IResolver resolver, out IBinding binding)
         {
-            return TryBind(lambda.Method, lambda.Target, resolver, out binding);
+            return TryBind(lambda.GetMethodInfo(), lambda.Target, resolver, out binding);
         }
 
         bool IBinder.TryBind<R>(MethodInfo method, IResolver resolver, out IBinding<R> binding)
@@ -238,7 +238,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
 
         bool IBinder.TryBind<R>(Delegate lambda, IResolver resolver, out IBinding<R> binding)
         {
-            return TryBind(lambda.Method, lambda.Target, resolver, out binding);
+            return TryBind(lambda.GetMethodInfo(), lambda.Target, resolver, out binding);
         }
     }
 }

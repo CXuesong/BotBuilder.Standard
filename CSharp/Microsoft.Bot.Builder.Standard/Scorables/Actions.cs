@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.Scorables
             return new WhereScorable<Score>(scorable, predicate);
         }
 
-        public static IScorable<IResolver, Match> When<InnerScore>(this IScorable<IResolver, InnerScore> scorable, Regex regex)
+        public static IScorable<IResolver, ScorableMatch> When<InnerScore>(this IScorable<IResolver, InnerScore> scorable, Regex regex)
         {
             return new RegexMatchScorable<object, InnerScore>(regex, scorable);
         }
@@ -196,9 +196,9 @@ namespace Microsoft.Bot.Builder.Scorables
             return scorable.SelectScore((r, b) => 1.0);
         }
 
-        public static IScorable<IResolver, double> Normalize(this IScorable<IResolver, Match> scorable)
+        public static IScorable<IResolver, double> Normalize(this IScorable<IResolver, ScorableMatch> scorable)
         {
-            return scorable.SelectScore((r, m) => RegexMatchScorable.ScoreFor(m));
+            return scorable.SelectScore((r, m) => m.Score);
         }
 
         public static IScorable<IResolver, double> Normalize(this IScorable<IResolver, IntentRecommendation> scorable)

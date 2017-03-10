@@ -120,9 +120,9 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Microsoft.Bot.Connector.Sha
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Sample.TemplateBot", "Samples\TemplateBot\Microsoft.Bot.Sample.TemplateBot.csproj", "{BFAB8046-9ABD-44C2-8992-9F3A5D28E5C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Standard", "Microsoft.Bot.Builder.Standard\Microsoft.Bot.Builder.Standard.csproj", "{4BCF6FC6-A411-441F-BC7C-2127449DF41C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Standard", "Library\Microsoft.Bot.Connector.Standard\Microsoft.Bot.Connector.Standard.csproj", "{5F624843-42D4-4478-966B-1A5F2493D0DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Connector.Standard", "Microsoft.Bot.Connector.Standard\Microsoft.Bot.Connector.Standard.csproj", "{4927A17A-6088-495E-9317-F2109B37E124}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Standard", "Library\Microsoft.Bot.Builder.Standard\Microsoft.Bot.Builder.Standard.csproj", "{0E7C256A-741F-4354-B472-C5EF9E636986}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -284,18 +284,18 @@ Global
 		{BFAB8046-9ABD-44C2-8992-9F3A5D28E5C7}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{BFAB8046-9ABD-44C2-8992-9F3A5D28E5C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFAB8046-9ABD-44C2-8992-9F3A5D28E5C7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4BCF6FC6-A411-441F-BC7C-2127449DF41C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4BCF6FC6-A411-441F-BC7C-2127449DF41C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4BCF6FC6-A411-441F-BC7C-2127449DF41C}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
-		{4BCF6FC6-A411-441F-BC7C-2127449DF41C}.Documentation|Any CPU.Build.0 = Debug|Any CPU
-		{4BCF6FC6-A411-441F-BC7C-2127449DF41C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4BCF6FC6-A411-441F-BC7C-2127449DF41C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4927A17A-6088-495E-9317-F2109B37E124}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4927A17A-6088-495E-9317-F2109B37E124}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4927A17A-6088-495E-9317-F2109B37E124}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
-		{4927A17A-6088-495E-9317-F2109B37E124}.Documentation|Any CPU.Build.0 = Debug|Any CPU
-		{4927A17A-6088-495E-9317-F2109B37E124}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4927A17A-6088-495E-9317-F2109B37E124}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F624843-42D4-4478-966B-1A5F2493D0DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F624843-42D4-4478-966B-1A5F2493D0DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F624843-42D4-4478-966B-1A5F2493D0DA}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F624843-42D4-4478-966B-1A5F2493D0DA}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{5F624843-42D4-4478-966B-1A5F2493D0DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F624843-42D4-4478-966B-1A5F2493D0DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E7C256A-741F-4354-B472-C5EF9E636986}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E7C256A-741F-4354-B472-C5EF9E636986}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E7C256A-741F-4354-B472-C5EF9E636986}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E7C256A-741F-4354-B472-C5EF9E636986}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{0E7C256A-741F-4354-B472-C5EF9E636986}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E7C256A-741F-4354-B472-C5EF9E636986}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -327,7 +327,7 @@ Global
 		{A91F876C-BC71-49A8-BD24-444F80DF62BB} = {FAEFFF66-7944-48F4-972A-9A1C13A5C206}
 		{133E6973-CF90-4691-8685-D42D79C8884B} = {28BCEB2C-F4BE-416D-A4FD-A311E99A9EB5}
 		{BFAB8046-9ABD-44C2-8992-9F3A5D28E5C7} = {FAEFFF66-7944-48F4-972A-9A1C13A5C206}
-		{4BCF6FC6-A411-441F-BC7C-2127449DF41C} = {28BCEB2C-F4BE-416D-A4FD-A311E99A9EB5}
-		{4927A17A-6088-495E-9317-F2109B37E124} = {28BCEB2C-F4BE-416D-A4FD-A311E99A9EB5}
+		{5F624843-42D4-4478-966B-1A5F2493D0DA} = {28BCEB2C-F4BE-416D-A4FD-A311E99A9EB5}
+		{0E7C256A-741F-4354-B472-C5EF9E636986} = {28BCEB2C-F4BE-416D-A4FD-A311E99A9EB5}
 	EndGlobalSection
 EndGlobal

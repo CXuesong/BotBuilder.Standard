@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.FormFlow
         {
             if (resourceAssembly == null)
             {
-                resourceAssembly = typeof(T).Assembly;
+                resourceAssembly = typeof(T).GetTypeInfo().Assembly;
             }
             if (resourceName == null)
             {
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.FormFlow
                 if (name != null)
                 {
                     var rm = new ResourceManager(name, resourceAssembly);
-                    var rs = rm.GetResourceSet(Thread.CurrentThread.CurrentUICulture, true, true);
+                    var rs = rm.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
                     _form.Localize(rs.GetEnumerator(), out missing, out extra);
                     if (missing.Any())
                     {
@@ -305,7 +305,7 @@ namespace Microsoft.Bot.Builder.FormFlow
                 }
             }
 
-            public override void SaveResources(IResourceWriter writer)
+            public override void SaveResources(ResourceWriter writer)
             {
                 _resources = new Localizer() { Culture = CultureInfo.CurrentUICulture };
                 foreach (var step in _steps)
@@ -315,13 +315,13 @@ namespace Microsoft.Bot.Builder.FormFlow
                 _resources.Save(writer);
             }
 
-            public override void Localize(IDictionaryEnumerator reader, out IEnumerable<string> missing, out IEnumerable<string> extra)
+            public override void Localize(ResourceManager rm, out IEnumerable<string> missing, out IEnumerable<string> extra)
             {
                 foreach (var step in _steps)
                 {
                     step.SaveResources();
                 }
-                _resources = _resources.Load(reader, out missing, out extra);
+                _resources = _resources.Load(rm, out missing, out extra);
                 foreach (var step in _steps)
                 {
                     step.Localize();
@@ -470,7 +470,7 @@ namespace Microsoft.Bot.Builder.FormFlow
 
         private void TypePaths(Type type, string path, List<string> paths)
         {
-            if (type.IsClass)
+            if (type.GetTypeInfo().IsClass)
             {
                 if (type == typeof(string))
                 {
@@ -479,7 +479,7 @@ namespace Microsoft.Bot.Builder.FormFlow
                 else if (type.IsIEnumerable())
                 {
                     var elt = type.GetGenericElementType();
-                    if (elt.IsEnum)
+                    if (elt.GetTypeInfo().IsEnum)
                     {
                         paths.Add(path);
                     }
@@ -493,7 +493,7 @@ namespace Microsoft.Bot.Builder.FormFlow
                     FieldPaths(type, path, paths);
                 }
             }
-            else if (type.IsEnum)
+            else if (type.GetTypeInfo().IsEnum)
             {
                 paths.Add(path);
             }
@@ -509,7 +509,7 @@ namespace Microsoft.Bot.Builder.FormFlow
             {
                 paths.Add(path);
             }
-            else if (type.IsNullable() && type.IsValueType)
+            else if (type.IsNullable() && type.GetTypeInfo().IsValueType)
             {
                 paths.Add(path);
             }

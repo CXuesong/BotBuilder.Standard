@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// An exception for invalid intent handlers.
     /// </summary>
-    [DataContract]
+    //[Serializable]
     public sealed class InvalidIntentHandlerException : InvalidOperationException
     {
         public readonly MethodInfo Method;
@@ -109,10 +109,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             SetField.NotNull(out this.Method, nameof(method), method);
         }
 
-        private InvalidIntentHandlerException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+        //private InvalidIntentHandlerException(SerializationInfo info, StreamingContext context)
+        //    : base(info, context)
+        //{
+        //}
     }
 
     /// <summary>

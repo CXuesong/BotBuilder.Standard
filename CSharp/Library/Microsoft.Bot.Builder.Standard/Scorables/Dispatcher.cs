@@ -120,10 +120,10 @@ namespace Microsoft.Bot.Builder.Scorables
             return factory;
         }
 
-        //protected virtual BindingFlags MakeBindingFlags()
-        //{
-        //    return BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
-        //}
+        protected virtual BindingFlags MakeBindingFlags()
+        {
+            return BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
+        }
 
         protected virtual Type MakeType()
         {
@@ -132,9 +132,9 @@ namespace Microsoft.Bot.Builder.Scorables
 
         protected virtual IEnumerable<MethodInfo> MakeMethods()
         {
-            //var flags = this.MakeBindingFlags();
+            var flags = this.MakeBindingFlags();
             var type = this.MakeType();
-            var methods = type.GetRuntimeMethods();
+            var methods = type.GetMethods(flags);
             return methods;
         }
 

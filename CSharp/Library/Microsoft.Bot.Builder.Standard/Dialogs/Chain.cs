@@ -629,7 +629,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// The exception that is thrown when the where is canceled.
         /// </summary>
-        [DataContract]
+        //[DataContract]
         public sealed class WhereCanceledException : OperationCanceledException
         {
             /// <summary>
@@ -639,15 +639,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
             }
 
-            /// <summary>
-            /// This is the serialization constructor.
-            /// </summary>
-            /// <param name="info">The serialization info.</param>
-            /// <param name="context">The streaming context.</param>
-            private WhereCanceledException(SerializationInfo info, StreamingContext context)
-                : base(info, context)
-            {
-            }
+            ///// <summary>
+            ///// This is the serialization constructor.
+            ///// </summary>
+            ///// <param name="info">The serialization info.</param>
+            ///// <param name="context">The streaming context.</param>
+            //private WhereCanceledException(SerializationInfo info, StreamingContext context)
+            //    : base(info, context)
+            //{
+            //}
         }
 
         [DataContract]

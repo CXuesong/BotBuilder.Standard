@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder.FormFlow
     /// through the factory methods <see cref="FormDialog.FromForm{T}(BuildFormDelegate{T}, FormOptions)"/>
     /// or <see cref="FormDialog.FromType{T}"/>. 
     /// </remarks>
-    [Serializable]
+    [DataContract]
     public sealed class FormDialog<T> : IFormDialog<T>, ISerializable
         where T : class
     {
@@ -836,12 +836,12 @@ namespace Microsoft.Bot.Builder.FormFlow
 
 namespace Microsoft.Bot.Builder.Luis.Models
 {
-    [Serializable]
+    [DataContract]
     public partial class EntityRecommendation
     {
     }
 
-    [Serializable]
+    [DataContract]
     public partial class IntentRecommendation
     {
     }

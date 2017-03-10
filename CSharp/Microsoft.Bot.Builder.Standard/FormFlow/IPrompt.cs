@@ -38,10 +38,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Compatibility;
 
 namespace Microsoft.Bot.Builder.FormFlow.Advanced
 {
@@ -81,8 +82,8 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
     /// <summary>
     /// The prompt that is returned by form prompter. 
     /// </summary>
-    [Serializable]
-    public sealed class FormPrompt : ICloneable
+    [DataContract]
+    public sealed class FormPrompt : IDeepCloneable
     {
         /// <summary>
         /// The text prompt that corresponds to Message.Text.
@@ -128,8 +129,8 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
     /// <summary>
     /// A Form button that will be mapped to Connector.Action.
     /// </summary>
-    [Serializable]
-    public sealed class FormButton : ICloneable
+    [DataContract]
+    public sealed class FormButton : IDeepCloneable
     {
         /// <summary>
         /// Picture which will appear on the button.
@@ -317,7 +318,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
             }
         }
 
-        internal static IList<T> Clone<T>(this IList<T> listToClone) where T : ICloneable
+        internal static IList<T> Clone<T>(this IList<T> listToClone) where T : IDeepCloneable
         {
             return listToClone.Select(item => (T)item.Clone()).ToList();
         }

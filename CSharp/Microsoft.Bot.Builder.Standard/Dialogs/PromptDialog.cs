@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// Options for <see cref="PromptDialog"/>.
     /// </summary>
     /// <typeparam name="T"> The type of the options.</typeparam>
-    [Serializable]
+    [DataContract]
     public class PromptOptions<T>
     {
         /// <summary>
@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Styles a prompt
     /// </summary>
-    [Serializable]
+    [DataContract]
     public class PromptStyler
     {
         /// <summary>
@@ -379,7 +379,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         /// <summary>   Prompt for a text string. </summary>
         /// <remarks>   Normally used through <see cref="PromptDialog.Text(IDialogContext, ResumeAfter{string}, string, string, int)"/>.</remarks>
-        [Serializable]
+        [DataContract]
         public sealed class PromptString : Prompt<string, string>
         {
             /// <summary>   Constructor for a prompt string dialog. </summary>
@@ -422,7 +422,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         /// <summary>   Prompt for a confirmation. </summary>
         /// <remarks>   Normally used through <see cref="PromptDialog.Confirm(IDialogContext, ResumeAfter{bool}, string, string, int, PromptStyle)"/>.</remarks>
-        [Serializable]
+        [DataContract]
         public sealed class PromptConfirm : Prompt<bool, string>
         {
             /// <summary>
@@ -498,7 +498,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         /// <summary>   Prompt for a confirmation. </summary>
         /// <remarks>   Normally used through <see cref="PromptDialog.Number(IDialogContext, ResumeAfter{long}, string, string, int)"/>.</remarks>
-        [Serializable]
+        [DataContract]
         public sealed class PromptInt64 : Prompt<long, long>
         {
             /// <summary>   Constructor for a prompt int64 dialog. </summary>
@@ -521,7 +521,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         /// <summary>   Prompt for a double. </summary>
         /// <remarks>   Normally used through <see cref="PromptDialog.Number(IDialogContext, ResumeAfter{double}, string, string, int)"/>.</remarks>
-        [Serializable]
+        [DataContract]
         public sealed class PromptDouble : Prompt<double, double>
         {
             /// <summary>   Constructor for a prompt double dialog. </summary>
@@ -544,7 +544,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         /// <summary>   Prompt for a choice from a set of choices. </summary>
         /// <remarks>   Normally used through <see cref="PromptDialog.Choice{T}(IDialogContext, ResumeAfter{T}, IEnumerable{T}, string, string, int, PromptStyle, IEnumerable{string})"/>.</remarks>
-        [Serializable]
+        [DataContract]
         public class PromptChoice<T> : Prompt<T, T>
         {
             /// <summary>   Constructor for a prompt choice dialog. </summary>
@@ -603,7 +603,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         /// <summary> Prompt for an attachment</summary>
         /// <remarks> Normally used through <see cref="PromptDialog.Attachment(IDialogContext, ResumeAfter{IEnumerable{Connector.Attachment}}, string, IEnumerable{string}, string, int)"/>.</remarks>
-        [Serializable]
+        [DataContract]
         public sealed class PromptAttachment : Prompt<IEnumerable<Attachment>, Attachment>
         {
             public IEnumerable<string> ContentTypes
@@ -724,7 +724,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 namespace Microsoft.Bot.Builder.Dialogs.Internals
 {
 
-    [Serializable]
+    [DataContract]
     public abstract class Prompt<T, U> : IDialog<T>
     {
         protected readonly PromptOptions<U> promptOptions;

@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Scorables
     /// scoring process for overload resolution.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
-    [Serializable]
+    [DataContract]
     public sealed class MethodBindAttribute : Attribute
     {
     }
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Scorables
     /// that can be resolved by an implementation of <see cref="IResolver"/>. 
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = true, Inherited = true)]
-    [Serializable]
+    [DataContract]
     public sealed class EntityAttribute : Attribute
     {
         /// <summary>
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
         }
     }
 
-    [Serializable]
+    [DataContract]
     public abstract class MethodScorableBase : ScorableBase<IResolver, IBinding, IBinding>
     {
         public abstract MethodBase Method { get; }
@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
     /// <summary>
     /// Scorable to represent binding arguments to a method's parameters.
     /// </summary>
-    [Serializable]
+    [DataContract]
     public sealed class MethodScorable : MethodScorableBase
     {
         private readonly MethodBase method;
@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
         }
     }
 
-    [Serializable]
+    [DataContract]
     public sealed class DelegateScorable : MethodScorableBase
     {
         private readonly Delegate lambda;

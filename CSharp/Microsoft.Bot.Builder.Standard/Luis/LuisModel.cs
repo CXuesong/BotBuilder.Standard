@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Luis
     /// The LUIS model information.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Method, AllowMultiple = true)]
-    [Serializable]
+    [DataContract]
     public class LuisModelAttribute : Attribute, ILuisModel, IEquatable<ILuisModel>
     {
         private readonly string modelID;

@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
 
         public sealed class StoreInstanceByTypeSurrogate : ISurrogateProvider
         {
-            [Serializable]
+            [DataContract]
             public sealed class ObjectReference : IObjectReference
             {
                 public readonly Type Type = null;

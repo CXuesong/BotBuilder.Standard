@@ -189,7 +189,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
         }
     }
 
-    [Serializable]
+    [DataContract]
     public sealed class Wait<C, T> : IItem<T>, IWait<C, T>, IPost<T>, IAwaiter<T>, IEquatable<Wait<C, T>>, ISerializable
     {
         private Rest<C, T> rest;
@@ -407,7 +407,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
         IWait<C, T> Make<T>();
     }
 
-    [Serializable]
+    [DataContract]
     public sealed class WaitFactory<C> : IWaitFactory<C>
     {
         IWait<C, T> IWaitFactory<C>.Make<T>()

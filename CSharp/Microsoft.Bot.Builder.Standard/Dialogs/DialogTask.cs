@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
         /// Adjust the calling convention from Dialog's to Fiber's delegates
         /// for IDialog.StartAsync.
         /// </summary>
-        [Serializable]
+        [DataContract]
         private sealed class ThunkStart : IThunk
         {
             private readonly StartAsync start;
@@ -143,7 +143,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
         /// Adjust the calling convention from Dialog's to Fiber's delegates
         /// for IDialog's <see cref="ResumeAfter{T}"/>. 
         /// </summary>
-        [Serializable]
+        [DataContract]
         private sealed class ThunkResume<T> : IThunk
         {
             private readonly ResumeAfter<T> resume;

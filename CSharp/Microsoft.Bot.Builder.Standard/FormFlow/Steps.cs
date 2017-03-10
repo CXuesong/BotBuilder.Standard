@@ -494,7 +494,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
 
         internal enum FieldStepStates { Unknown, SentPrompt, SentClarify };
 
-        [Serializable]
+        [DataContract]
         internal class Ambiguous
         {
             public readonly string Response;
@@ -506,7 +506,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
             }
         }
 
-        [Serializable]
+        [DataContract]
         internal class FieldStepState
         {
             internal FieldStepStates State;

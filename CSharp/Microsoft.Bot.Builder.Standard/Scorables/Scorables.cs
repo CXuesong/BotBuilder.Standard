@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.Scorables
 
 namespace Microsoft.Bot.Builder.Scorables.Internals
 {
-    [Serializable]
+    [DataContract]
     public sealed class NullScorable<Item, Score> : IScorable<Item, Score>
     {
         public static readonly IScorable<Item, Score> Instance = new NullScorable<Item, Score>();
@@ -246,7 +246,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
         }
     }
 
-    [Serializable]
+    [DataContract]
     public sealed class WhereScoreScorable<Item, Score> : DelegatingScorable<Item, Score>
     {
         private readonly Func<Item, Score, bool> predicate;
@@ -272,7 +272,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
         }
     }
 
-    [Serializable]
+    [DataContract]
     public sealed class SelectItemScorable<OuterItem, InnerItem, Score> : ScorableAggregator<OuterItem, Token<InnerItem, Score>, Score, InnerItem, object, Score>
     {
         private readonly IScorable<InnerItem, Score> scorable;
@@ -302,7 +302,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
         }
     }
 
-    [Serializable]
+    [DataContract]
     public sealed class SelectScoreScorable<Item, SourceScore, TargetScore> : DelegatingScorable<Item, SourceScore>, IScorable<Item, TargetScore>
     {
         private readonly Func<Item, SourceScore, TargetScore> selector;

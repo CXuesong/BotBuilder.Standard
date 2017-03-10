@@ -281,7 +281,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
     /// <summary>
     /// Next step to take.
     /// </summary>
-    [Serializable]
+    [DataContract]
     public class NextStep
     {
         /// <summary>

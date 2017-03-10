@@ -128,6 +128,7 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Library\Microsoft.Bot.Connector.Shared\Microsoft.Bot.Connector.Shared.projitems*{133e6973-cf90-4691-8685-d42d79c8884b}*SharedItemsImports = 13
 		Library\Microsoft.Bot.Connector.Shared\Microsoft.Bot.Connector.Shared.projitems*{992f6a37-10d0-4676-a18e-8343a1f09fff}*SharedItemsImports = 4
+		Microsoft.Bot.Builder.Shared\Microsoft.Bot.Builder.Shared.projitems*{cdfec7d6-847e-4c13-956b-0a960ae3eb60}*SharedItemsImports = 4
 		Library\Microsoft.Bot.Connector.Shared\Microsoft.Bot.Connector.Shared.projitems*{df397efc-91db-4911-9971-c509926fc288}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

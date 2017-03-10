@@ -187,7 +187,7 @@ namespace Microsoft.Bot.Builder.Luis
     /// <summary>
     /// Standard implementation of ILuisService against actual LUIS service.
     /// </summary>
-    [Serializable]
+    [DataContract]
     public sealed class LuisService : ILuisService
     {
         private readonly ILuisModel model;

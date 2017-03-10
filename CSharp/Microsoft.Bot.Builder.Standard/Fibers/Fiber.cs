@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
     {
     }
 
-    [Serializable]
+    [DataContract]
     public sealed class Frame<C> : IFrame<C>
     {
         private IWait<C> mark = NullWait<C>.Instance;
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
         IFrame<C> Make();
     }
 
-    [Serializable]
+    [DataContract]
     public sealed class FrameFactory<C> : IFrameFactory<C>
     {
         IFrame<C> IFrameFactory<C>.Make()
@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
         }
     }
 
-    [Serializable]
+    [DataContract]
     public sealed class Fiber<C> : IFiber<C>, IFiberLoop<C>
     {
         private readonly List<IFrame<C>> stack = new List<IFrame<C>>();

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization.Formatters;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Builder.ConnectorEx
             using (var stream = new GZipStream(cmpStream, CompressionMode.Compress))
             {
                 new BinaryFormatter().Serialize(stream, conversationReference);
-                stream.Close();
+                stream.Dispose();
                 return Convert.ToBase64String(cmpStream.ToArray());
             }
         }

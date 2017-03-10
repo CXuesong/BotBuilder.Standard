@@ -39,7 +39,7 @@ using Microsoft.Bot.Builder.FormFlow.Advanced;
 
 namespace Microsoft.Bot.Builder.FormFlow
 {
-    [Serializable]
+    [DataContract]
     internal class FormState
     {
         // Last sent prompt which is used when feedback is supplied

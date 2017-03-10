@@ -430,7 +430,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return new DefaultCase<T, R>(selector);
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class FromDialog<T> : IDialog<T>
         {
             public readonly Func<IDialog<T>> MakeDialog;
@@ -449,7 +449,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class DoDialog<T> : IDialog<T>
         {
             public readonly IDialog<T> Antecedent;
@@ -470,7 +470,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class ThenDialog<T, R> : IDialog<R>
         {
             public readonly IDialog<T> Antecedent;
@@ -491,7 +491,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class PostToUserDialog<T> : IDialog<T>
         {
             public readonly IDialog<T> Antecedent;
@@ -511,7 +511,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class WaitToBotDialog<T> : IDialog<IMessageActivity>
         {
             public readonly IDialog<T> Antecedent;
@@ -534,7 +534,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class PostEventDialog<T, E> : IDialog<T>
         {
             public readonly IDialog<T> Antecedent;
@@ -575,7 +575,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class ContinueWithDialog<T, R> : IDialog<R>
         {
             public readonly IDialog<T> Antecedent;
@@ -604,7 +604,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class SelectDialog<T, R> : IDialog<R>
         {
             public readonly IDialog<T> Antecedent;
@@ -629,7 +629,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// The exception that is thrown when the where is canceled.
         /// </summary>
-        [Serializable]
+        [DataContract]
         public sealed class WhereCanceledException : OperationCanceledException
         {
             /// <summary>
@@ -650,7 +650,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class WhereDialog<T> : IDialog<T>
         {
             public readonly IDialog<T> Antecedent;
@@ -679,7 +679,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class UnwrapDialog<T> : IDialog<T>
         {
             public readonly IDialog<IDialog<T>> Antecedent;
@@ -704,7 +704,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         // http://blogs.msdn.com/b/pfxteam/archive/2013/04/03/tasks-monads-and-linq.aspx
-        [Serializable]
+        [DataContract]
         private sealed class SelectManyDialog<T, C, R> : IDialog<R>
         {
             public readonly IDialog<T> Antecedent;
@@ -735,7 +735,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class LoopDialog<T> : IDialog<T>
         {
             public readonly IDialog<T> Antecedent;
@@ -754,7 +754,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class VoidDialog<T, R> : IDialog<R>
         {
             public readonly IDialog<T> Antecedent;
@@ -778,7 +778,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class CatchDialog<T, E> : IDialog<T> where E : Exception
         {
             public readonly IDialog<T> Antecedent;
@@ -805,7 +805,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class DefaultIfExceptionDialog<T, E> : IDialog<T> where E : Exception
         {
             public readonly IDialog<T> Antecedent;
@@ -830,7 +830,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class SwitchDialog<T, R> : IDialog<R>
         {
             public readonly IDialog<T> Antecedent;
@@ -869,7 +869,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// The type of the value should be serializable.
         /// </remarks>
         /// <typeparam name="T">The result type of the Dialog. </typeparam>
-        [Serializable]
+        [DataContract]
         private sealed class ReturnDialog<T> : IDialog<T>
         {
             public readonly T Value;
@@ -885,7 +885,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class WhileDialog<T> : IDialog<T>
         {
             public readonly IDialog<T> Zero;
@@ -925,7 +925,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class FoldDialog<T> : IDialog<T>
         {
             public readonly IDialog<IEnumerable<IDialog<T>>> Antecedent;
@@ -977,7 +977,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class WithScorableDialog<T, Item, Score> : DelegatingScorable<Item, Score>, IDialog<T>
         {
             public readonly IDialog<T> Antecedent;
@@ -1027,7 +1027,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// The default implementation of <see cref="ICase{T, R}"/>.
     /// </summary>
-    [Serializable]
+    [DataContract]
     public class Case<T, R> : ICase<T, R>
     {
         public Func<T, bool> Condition { get; protected set; }
@@ -1057,7 +1057,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <remarks>
     /// The condition will be true if the regex matches the text.
     /// </remarks>
-    [Serializable]
+    [DataContract]
     public sealed class RegexCase<R> : Case<string, R>
     {
         private readonly Regex Regex;
@@ -1084,7 +1084,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// The default case for switch. <see cref="ICase{T, R}"/>
     /// </summary>
-    [Serializable]
+    [DataContract]
     public sealed class DefaultCase<T, R> : Case<T, R>
     {
         /// <summary>

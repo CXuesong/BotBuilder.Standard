@@ -46,13 +46,13 @@ namespace Microsoft.Bot.Builder.Dialogs
     #region Documentation
     /// <summary> Dialog that dispatches based on a regex matching input. </summary>
     #endregion
-    [Serializable]
+    [DataContract]
     public class CommandDialog<T> : IDialog<T>
     {
         #region Documentation
         /// <summary>   A single command. </summary>
         #endregion
-        [Serializable]
+        [DataContract]
         public class Command
         {
             #region Documentation

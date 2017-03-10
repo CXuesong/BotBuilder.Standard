@@ -33,7 +33,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Net.Mime;
 using System.Resources;
 using System.Threading;
 using System.Threading.Tasks;
@@ -157,7 +156,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
                         message.Text = $"Exception: { error.Message}";
                         message.Attachments = new[]
                         {
-                            new Attachment(contentType: MediaTypeNames.Text.Plain, content: error.StackTrace)
+                            new Attachment(contentType: "text/plain", content: error.StackTrace)
                         };
 
                         await this.botToUser.PostAsync(message);

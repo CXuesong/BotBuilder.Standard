@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
     /// safety of the derived class that implements the abstract State-typed methods, these DebuggerStepThrough
     /// methods will not throw exceptions due to runtime type errors.
     /// </remarks>
-    [Serializable]
+    [DataContract]
     public abstract class ScorableBase<Item, State, Score> : IScorable<Item, Score>
     {
         protected abstract Task<State> PrepareAsync(Item item, CancellationToken token);
@@ -133,7 +133,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
     }
 
 
-    [Serializable]
+    [DataContract]
     public abstract class DelegatingScorable<Item, Score> : IScorable<Item, Score>
     {
         protected readonly IScorable<Item, Score> inner;
@@ -220,7 +220,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
     /// <summary>
     /// Aggregates some non-empty set of inner scorables to produce an outer scorable.
     /// </summary>
-    [Serializable]
+    [DataContract]
     public abstract class ScorableAggregator<OuterItem, OuterState, OuterScore, InnerItem, InnerState, InnerScore> : ScorableBase<OuterItem, OuterState, OuterScore>
         where OuterState : Token<InnerItem, InnerScore>
     {

@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Scorables
         Task<bool> TryPostAsync(CancellationToken token);
     }
 
-    [Serializable]
+    [DataContract]
     public class Dispatcher : IDispatcher
     {
         protected virtual IReadOnlyList<object> MakeServices()

@@ -36,6 +36,7 @@ using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -54,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// The key that minimally and completely identifies a bot's conversation with a user on a channel. 
     /// </summary>
-    [Serializable]
+    [DataContract]
     public sealed class Address : IAddress, IEquatable<IAddress>
     {
         public static Address FromActivity(IActivity activity)

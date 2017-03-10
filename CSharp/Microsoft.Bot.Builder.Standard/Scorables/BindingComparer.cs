@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
         }
     }
 
-    [Serializable]
+    [DataContract]
     public sealed class MethodResolutionException : Exception
     {
         public MethodResolutionException(string message, IBinding one, IBinding two)

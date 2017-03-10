@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// The root of the exception hierarchy related to <see cref="Internals.IDialogStack"/> .
     /// </summary>
-    [Serializable]
+    [DataContract]
     public abstract class DialogStackException : Exception
     {
         /// <summary>
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// The exception representing no resume handler specified for the dialog stack.
     /// </summary>
-    [Serializable]
+    [DataContract]
     public sealed class NoResumeHandlerException : DialogStackException
     {
         /// <summary>
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// The exception representing multiple resume handlers specified for the dialog stack.
     /// </summary>
-    [Serializable]
+    [DataContract]
     public sealed class MultipleResumeHandlerException : DialogStackException
     {
         /// <summary>
@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// The root of the exception hierarchy related to prompts.
     /// </summary>
-    [Serializable]
+    [DataContract]
     public abstract class PromptException : Exception
     {
         /// <summary>
@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// The exception representing too many attempts by the user to answer the question asked by the prompt.
     /// </summary>
-    [Serializable]
+    [DataContract]
     public sealed class TooManyAttemptsException : PromptException
     {
         /// <summary>

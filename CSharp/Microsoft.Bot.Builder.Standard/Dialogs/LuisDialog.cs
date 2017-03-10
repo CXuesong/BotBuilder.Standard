@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// Associate a LUIS intent with a dialog method.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
-    [Serializable]
+    [DataContract]
     public class LuisIntentAttribute : AttributeString
     {
         /// <summary>
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// An exception for invalid intent handlers.
     /// </summary>
-    [Serializable]
+    [DataContract]
     public sealed class InvalidIntentHandlerException : InvalidOperationException
     {
         public readonly MethodInfo Method;
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// A dialog specialized to handle intents and entities from LUIS.
     /// </summary>
     /// <typeparam name="TResult">The result type.</typeparam>
-    [Serializable]
+    [DataContract]
     public class LuisDialog<TResult> : IDialog<TResult>
     {
         protected readonly IReadOnlyList<ILuisService> services;
@@ -282,7 +282,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// The dialog wrapping Luis dialog feature.
     /// </summary>
-    [Serializable]
+    [DataContract]
     public class LuisActionDialog : IDialog<LuisResult>
     {
         private readonly ILuisService luisService;

@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             return root.RootAsync;
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class IdentityMethod<C, T>
         {
             public static readonly IdentityMethod<C, T> Instance = new IdentityMethod<C, T>();
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             }
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class LoopMethod<C, T>
         {
             private readonly Rest<C, T> rest;
@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             }
         }
 
-        [Serializable]
+        [DataContract]
         private sealed class VoidMethod<C, T>
         {
             private readonly Rest<C, T> rest;

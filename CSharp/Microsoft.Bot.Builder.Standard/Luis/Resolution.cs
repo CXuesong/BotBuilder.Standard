@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Luis
             }
 
 
-            [Serializable]
+            [DataContract]
             public sealed class DateTimeResolution : Resolution, IEquatable<DateTimeResolution>
             {
                 public Reference? Reference { get; }

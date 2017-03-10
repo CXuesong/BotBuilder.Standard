@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Scorables
             return Bind((Delegate)method);
         }
 
-        [Serializable]
+        [DataContract]
         public sealed class WhereScorable<Score> : ScorableAggregator<IResolver, WhereScorable<Score>.Token, Score, IResolver, object, Score>
         {
             public sealed class Token : Token<IResolver, Score>

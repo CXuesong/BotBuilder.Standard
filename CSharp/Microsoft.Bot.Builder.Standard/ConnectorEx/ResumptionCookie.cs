@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// The resumption cookie that can be used to resume a conversation with a user. 
     /// </summary>
     [Obsolete("Use ConversationReference.")]
-    [Serializable]
+    [DataContract]
     public sealed class ResumptionCookie : IEquatable<ResumptionCookie>
     {
         /// <summary>

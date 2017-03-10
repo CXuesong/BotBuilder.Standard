@@ -37,19 +37,21 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 
 namespace Microsoft.Bot.Builder.Internals.Fibers
 {
-    public sealed class FormatterStore<T> : IStore<T>
+
+    public sealed class DataContractJsonStore<T> : IStore<T>
     {
         private readonly Stream stream;
-        private readonly IFormatter formatter;
-        public FormatterStore(Stream stream, IFormatter formatter)
+        private readonly DataContractJsonSerializer serializer;
+
+        public DataContractJsonStore(Stream stream, DataContractJsonSerializer serializer)
         {
             SetField.NotNull(out this.stream, nameof(stream), stream);
-            SetField.NotNull(out this.formatter, nameof(formatter), formatter);
+            SetField.NotNull(out this.serializer, nameof(serializer), serializer);
         }
-
         void IStore<T>.Reset()
         {
             this.stream.SetLength(0);
@@ -62,7 +64,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
                 this.stream.Position = 0;
                 using (var gzip = new GZipStream(this.stream, CompressionMode.Decompress, leaveOpen: true))
                 {
-                    item = (T)this.formatter.Deserialize(gzip);
+                    item = (T)serializer.ReadObject(gzip);
                     return true;
                 }
             }
@@ -76,7 +78,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             this.stream.Position = 0;
             using (var gzip = new GZipStream(this.stream, CompressionMode.Compress, leaveOpen: true))
             {
-                formatter.Serialize(gzip, item);
+                serializer.WriteObject(gzip, item);
             }
 
             this.stream.SetLength(this.stream.Position);
@@ -86,7 +88,56 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
         {
             this.stream.Flush();
         }
+
     }
+
+    //public sealed class FormatterStore<T> : IStore<T>
+    //{
+    //    private readonly Stream stream;
+    //    private readonly IFormatter formatter;
+    //    public FormatterStore(Stream stream, IFormatter formatter)
+    //    {
+    //        SetField.NotNull(out this.stream, nameof(stream), stream);
+    //        SetField.NotNull(out this.formatter, nameof(formatter), formatter);
+    //    }
+
+    //    void IStore<T>.Reset()
+    //    {
+    //        this.stream.SetLength(0);
+    //    }
+
+    //    bool IStore<T>.TryLoad(out T item)
+    //    {
+    //        if (this.stream.Length > 0)
+    //        {
+    //            this.stream.Position = 0;
+    //            using (var gzip = new GZipStream(this.stream, CompressionMode.Decompress, leaveOpen: true))
+    //            {
+    //                item = (T)this.formatter.Deserialize(gzip);
+    //                return true;
+    //            }
+    //        }
+
+    //        item = default(T);
+    //        return false;
+    //    }
+
+    //    void IStore<T>.Save(T item)
+    //    {
+    //        this.stream.Position = 0;
+    //        using (var gzip = new GZipStream(this.stream, CompressionMode.Compress, leaveOpen: true))
+    //        {
+    //            formatter.Serialize(gzip, item);
+    //        }
+
+    //        this.stream.SetLength(this.stream.Position);
+    //    }
+
+    //    void IStore<T>.Flush()
+    //    {
+    //        this.stream.Flush();
+    //    }
+    //}
 
     public sealed class ErrorResilientStore<T> : IStore<T>
     {

@@ -126,6 +126,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Stand
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Sample.AspNetCore.Standard.EchoBot", "Samples\Microsoft.Bot.Sample.AspNetCore.Standard.EchoBot\Microsoft.Bot.Sample.AspNetCore.Standard.EchoBot.csproj", "{7852928D-8AE1-4FCF-A272-082C529E0869}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.AspNetCore", "Library\Microsoft.Bot.Connector.AspNetCore\Microsoft.Bot.Connector.AspNetCore.csproj", "{99A2648F-57AF-4D55-A98F-88FD5AABB97F}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Library\Microsoft.Bot.Connector.Shared\Microsoft.Bot.Connector.Shared.projitems*{133e6973-cf90-4691-8685-d42d79c8884b}*SharedItemsImports = 13
@@ -304,6 +306,12 @@ Global
 		{7852928D-8AE1-4FCF-A272-082C529E0869}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{7852928D-8AE1-4FCF-A272-082C529E0869}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7852928D-8AE1-4FCF-A272-082C529E0869}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99A2648F-57AF-4D55-A98F-88FD5AABB97F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99A2648F-57AF-4D55-A98F-88FD5AABB97F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99A2648F-57AF-4D55-A98F-88FD5AABB97F}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{99A2648F-57AF-4D55-A98F-88FD5AABB97F}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{99A2648F-57AF-4D55-A98F-88FD5AABB97F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99A2648F-57AF-4D55-A98F-88FD5AABB97F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -338,5 +346,6 @@ Global
 		{5F624843-42D4-4478-966B-1A5F2493D0DA} = {28BCEB2C-F4BE-416D-A4FD-A311E99A9EB5}
 		{0E7C256A-741F-4354-B472-C5EF9E636986} = {28BCEB2C-F4BE-416D-A4FD-A311E99A9EB5}
 		{7852928D-8AE1-4FCF-A272-082C529E0869} = {FAEFFF66-7944-48F4-972A-9A1C13A5C206}
+		{99A2648F-57AF-4D55-A98F-88FD5AABB97F} = {28BCEB2C-F4BE-416D-A4FD-A311E99A9EB5}
 	EndGlobalSection
 EndGlobal

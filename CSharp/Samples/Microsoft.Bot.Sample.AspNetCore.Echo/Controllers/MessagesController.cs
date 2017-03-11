@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -10,23 +11,25 @@ using Microsoft.Bot.Sample.EchoBot;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Internals;
+using Autofac;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Sample.AspNetCore.Echo.Controllers
 {
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
-        private readonly IConfigurationRoot configuration;
+        private readonly ILogger<MessagesController> logger;
 
-        public MessagesController(IConfigurationRoot configuration)
+        public MessagesController(ILoggerFactory loggerFactory)
         {
-            this.configuration = configuration;
+            logger = loggerFactory.CreateLogger<MessagesController>();
         }
 
         [Authorize(Roles = "Bot")]
         // POST api/values
         [HttpPost]
-        public virtual async Task<OkResult> Post([FromBody]Activity activity)
+        public virtual async Task<IActionResult> Post([FromBody]Activity activity)
         {
             if (activity == null) goto FINAL;
             // one of these will have an interface and process it
@@ -67,11 +70,11 @@ namespace Microsoft.Bot.Sample.AspNetCore.Echo.Controllers
                 case ActivityTypes.DeleteUserData:
                 case ActivityTypes.Ping:
                 default:
-                    Trace.TraceError($"Unknown activity type ignored: {activity.GetActivityType()}");
+                    logger.LogWarning("Unknown activity type ignored: {0}", activity.GetActivityType());
                     break;
             }
             FINAL:
-            return new HttpResponseMessage(System.Net.HttpStatusCode.Accepted);
+            return new StatusCodeResult((int) HttpStatusCode.Accepted);
         }
     }
 }

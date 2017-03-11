@@ -19,6 +19,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.Echo
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddJsonFile("_private/appsettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
@@ -29,7 +30,9 @@ namespace Microsoft.Bot.Sample.AspNetCore.Echo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(_ => Configuration);
-
+            // Authentication for Microsoft Bot Framework.
+            services.AddSingleton<ICredentialProvider>(_ => new ConfigurationCredentialProvider(Configuration));
+            
             // Add framework services.
             services.AddMvc(options =>
             {
@@ -44,7 +47,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.Echo
             loggerFactory.AddDebug();
 
             app.UseStaticFiles();
-
+            // Authentication for this API service
             app.UseBotAuthentication(new StaticCredentialProvider(
                 Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
                 Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value));

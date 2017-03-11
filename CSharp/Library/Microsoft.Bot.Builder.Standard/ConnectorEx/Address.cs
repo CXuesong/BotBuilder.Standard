@@ -61,14 +61,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         public static Address FromActivity(IActivity activity)
         {
             return new Address
-                (
-                    // purposefully using named arguments because these all have the same type
-                    botId: activity.Recipient.Id,
-                    channelId: activity.ChannelId,
-                    userId: activity.From.Id,
-                    conversationId: activity.Conversation.Id,
-                    serviceUrl: activity.ServiceUrl
-                );
+            (
+                // purposefully using named arguments because these all have the same type
+                botId: activity.Recipient.Id,
+                channelId: activity.ChannelId,
+                userId: activity.From.Id,
+                conversationId: activity.Conversation.Id,
+                serviceUrl: activity.ServiceUrl
+            );
         }
 
         [JsonConstructor]
@@ -86,20 +86,30 @@ namespace Microsoft.Bot.Builder.Dialogs
             this.ConversationId = conversationId;
             this.ServiceUrl = serviceUrl;
         }
+
+        [DataMember]
         public string BotId { get; }
+
+        [DataMember]
         public string ChannelId { get; }
+
+        [DataMember]
         public string UserId { get; }
+
+        [DataMember]
         public string ConversationId { get; }
+
+        [DataMember]
         public string ServiceUrl { get; }
 
         public bool Equals(IAddress other)
         {
             return other != null
-                && object.Equals(this.BotId, other.BotId)
-                && object.Equals(this.ChannelId, other.ChannelId)
-                && object.Equals(this.UserId, other.UserId)
-                && object.Equals(this.ConversationId, other.ConversationId)
-                && object.Equals(this.ServiceUrl, other.ServiceUrl)
+                   && object.Equals(this.BotId, other.BotId)
+                   && object.Equals(this.ChannelId, other.ChannelId)
+                   && object.Equals(this.UserId, other.UserId)
+                   && object.Equals(this.ConversationId, other.ConversationId)
+                   && object.Equals(this.ServiceUrl, other.ServiceUrl)
                 ;
         }
 
@@ -111,11 +121,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         public override int GetHashCode()
         {
             var code
-                = this.BotId.GetHashCode()
-                ^ this.ChannelId.GetHashCode()
-                ^ this.UserId.GetHashCode()
-                ^ this.ConversationId.GetHashCode()
-                ^ this.ServiceUrl.GetHashCode()
+                    = this.BotId.GetHashCode()
+                      ^ this.ChannelId.GetHashCode()
+                      ^ this.UserId.GetHashCode()
+                      ^ this.ConversationId.GetHashCode()
+                      ^ this.ServiceUrl.GetHashCode()
                 ;
 
             return code;

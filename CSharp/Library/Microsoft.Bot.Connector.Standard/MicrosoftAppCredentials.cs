@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 #endif
 using Microsoft.Rest;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 #if NET45
 using System.Configuration;
@@ -63,10 +64,13 @@ namespace Microsoft.Bot.Connector
             TokenCacheKey = $"{MicrosoftAppId}-cache";
         }
 #else
-        public MicrosoftAppCredentials(string appId = null, string password = null, ILogger logger = null)
+        public MicrosoftAppCredentials(string appId, string password, ILogger logger = null)
         {
             MicrosoftAppId = appId;
             MicrosoftAppPassword = password;
+
+            // CXuesong: Should load password here.
+            Debug.WriteLineIf(password == null, "Warning: client_secret (MicrosoftAppPassword) is null.");
 
             TokenCacheKey = $"{MicrosoftAppId}-cache";
             this.logger = logger;
@@ -77,7 +81,6 @@ namespace Microsoft.Bot.Connector
         {
         }
 #endif
-
 
 
         public string MicrosoftAppId { get; set; }
@@ -221,7 +224,7 @@ namespace Microsoft.Bot.Connector
                     { "client_secret", MicrosoftAppPassword },
                     { "scope", OAuthScope }
                 });
-
+                Debug.WriteLineIf(MicrosoftAppPassword == null, "Warning: client_secret (MicrosoftAppPassword) is null.");
                 using (var response = await httpClient.PostAsync(OAuthEndpoint, content).ConfigureAwait(false))
                 {
                     string body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);

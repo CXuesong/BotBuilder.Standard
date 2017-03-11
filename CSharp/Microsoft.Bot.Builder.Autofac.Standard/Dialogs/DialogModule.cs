@@ -110,10 +110,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
                 .InstancePerMatchingLifetimeScope(LifetimeScopeTag);
 
             // components not marked as [Serializable]
-            builder
-                .RegisterType<MicrosoftAppCredentials>()
-                .AsSelf()
-                .SingleInstance();
+            // CXuesong: This is likely to cause null credential, because it simply doesn't load them in PCL.
+            //builder
+            //    .RegisterType<MicrosoftAppCredentials>()
+            //    .AsSelf()
+            //    .SingleInstance();
 
             builder
                 // not resolving IEqualityComparer<IAddress> from container because it's a very local policy

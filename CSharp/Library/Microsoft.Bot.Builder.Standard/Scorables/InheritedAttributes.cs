@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
 
             var methods =
                 from i in interfaces
-                let map = declaring.GetInterfaceMap(i)
+                let map = declaring.GetTypeInfo().GetRuntimeInterfaceMap(i)
                 let index = Array.IndexOf(map.TargetMethods, method)
                 where index >= 0
                 let source = map.InterfaceMethods[index]
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
             Func<MethodInfo, IEnumerable<Attribute>> ExpandAttributes = m =>
             {
                 var ma = m.GetCustomAttributes<Attribute>(inherit: true);
-                var ta = m.DeclaringType.GetCustomAttributes<Attribute>(inherit: true);
+                var ta = m.DeclaringType.GetTypeInfo().GetCustomAttributes<Attribute>(inherit: true);
 
                 return ma.Concat(ta);
             };

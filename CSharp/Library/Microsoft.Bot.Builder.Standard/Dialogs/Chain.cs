@@ -39,6 +39,7 @@ using Microsoft.Bot.Connector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -262,10 +263,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             var frame = stack.Frames[0];
             var restType = frame.GetType();
-            bool valid = restType.IsGenericType && restType.GetGenericTypeDefinition() == typeof(ResumeAfter<>);
+            bool valid = restType.GetTypeInfo().IsGenericType && restType.GetGenericTypeDefinition() == typeof(ResumeAfter<>);
             if (valid)
             {
-                var waitType = restType.GetGenericArguments()[0];
+                var waitType = restType.GenericTypeArguments[0];
                 var voidType = typeof(VoidDialog<,>).MakeGenericType(typeof(T), waitType);
                 var instance = Activator.CreateInstance(voidType, antecedent);
                 var dialog = (IDialog<object>)instance;

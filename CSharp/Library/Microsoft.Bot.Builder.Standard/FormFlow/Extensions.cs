@@ -34,6 +34,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Microsoft.Bot.Builder.FormFlow.Advanced
 {
@@ -138,7 +139,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         /// <returns>True if implements generic ICollection.</returns>
         public static bool IsGenericCollectionType(this Type type)
         {
-            return type.IsGenericType && (typeof(ICollection<>) == type.GetGenericTypeDefinition());
+            return type.GetTypeInfo().IsGenericType && (typeof(ICollection<>) == type.GetGenericTypeDefinition());
         }
 
         /// <summary>
@@ -148,7 +149,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         /// <returns>True if implements generic IEnumerable.</returns>
         public static bool IsGenericEnumerableType(this Type type)
         {
-            return type.IsGenericType && (typeof(IEnumerable<>) == type.GetGenericTypeDefinition());
+            return type.GetTypeInfo().IsGenericType && (typeof(IEnumerable<>) == type.GetGenericTypeDefinition());
         }
 
         /// <summary>
@@ -185,7 +186,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         /// <returns>True if implements generic IList.</returns>
         public static bool IsListCollectionType(this Type type)
         {
-            return type.IsGenericType && (typeof(IList<>) == type.GetGenericTypeDefinition());
+            return type.GetTypeInfo().IsGenericType && (typeof(IList<>) == type.GetGenericTypeDefinition());
         }
 
         /// <summary>
@@ -195,7 +196,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         /// <returns>True if nullable.</returns>
         public static bool IsNullable(this Type type)
         {
-            return (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
+            return (type.GetTypeInfo().IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
         }
 
         /// <summary>
@@ -206,7 +207,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         public static Type GetGenericElementType(this Type type)
         {
             return (from i in type.GetInterfaces()
-                    where i.IsGenericType && typeof(IEnumerable<>) == i.GetGenericTypeDefinition()
+                    where i.GetTypeInfo().IsGenericType && typeof(IEnumerable<>) == i.GetGenericTypeDefinition()
                     select i.GetGenericArguments()[0]).FirstOrDefault();
         }
     }

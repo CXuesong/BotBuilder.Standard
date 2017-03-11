@@ -36,6 +36,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Resources;
 using Microsoft.Bot.Builder.Compatibility;
 using static Microsoft.Bot.Builder.Resource.Extensions;
@@ -71,7 +72,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
             {
                 if (entry.Value.IsLocalizable)
                 {
-                    if (entry.Key.GetType().IsEnum)
+                    if (entry.Key.GetType().GetTypeInfo().IsEnum)
                     {
                         var key = entry.Key.GetType().Name + "." + entry.Key;
                         if (!_translations.ContainsKey(key))
@@ -97,7 +98,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
             {
                 if (entry.Value.IsLocalizable)
                 {
-                    if (entry.Key.GetType().IsEnum)
+                    if (entry.Key.GetType().GetTypeInfo().IsEnum)
                     {
                         var key = entry.Key.GetType().Name + "." + entry.Key;
                         if (!_arrayTranslations.ContainsKey(key))
@@ -146,7 +147,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
                 var key = entry.Key;
                 var desc = entry.Value;
                 string skey;
-                if (key.GetType().IsEnum)
+                if (key.GetType().GetTypeInfo().IsEnum)
                 {
                     skey = key.GetType().Name + "." + key;
                 }
@@ -183,7 +184,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
             foreach (var key in dictionary.Keys.ToArray())
             {
                 string skey;
-                if (key.GetType().IsEnum)
+                if (key.GetType().GetTypeInfo().IsEnum)
                 {
                     skey = key.GetType().Name + "." + key;
                 }

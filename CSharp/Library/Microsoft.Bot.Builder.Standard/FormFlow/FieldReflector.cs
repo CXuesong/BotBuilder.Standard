@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
                 }
             }
             // Convert value types to null if appropriate
-            return (ftype.IsEnum
+            return (ftype.GetTypeInfo().IsEnum
                 ? ((int)current == 0 ? null : current)
                 : (ftype == typeof(DateTime) && ((DateTime)current) == DateTime.MinValue)
                     ? null
@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
                     {
                         if (value == null)
                         {
-                            if (!ftype.IsNullable() && (ftype.IsEnum || ftype.IsIntegral() || ftype.IsDouble()))
+                            if (!ftype.IsNullable() && (ftype.GetTypeInfo().IsEnum || ftype.IsIntegral() || ftype.IsDouble()))
                             {
                                 // Null value for non-nullable numbers and enums is 0
                                 newValue = 0;
@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
             {
                 var step = _path.Last();
                 var ftype = StepType(step);
-                if (ftype.IsValueType && ftype.IsEnum)
+                if (ftype.GetTypeInfo().IsValueType && ftype.GetTypeInfo().IsEnum)
                 {
                     unknown = ((int)value == 0);
                 }
@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
             var field = step as FieldInfo;
             var prop = step as PropertyInfo;
             var ftype = StepType(step);
-            if (ftype.IsEnum)
+            if (ftype.GetTypeInfo().IsEnum)
             {
                 SetValue(state, 0);
             }
@@ -261,11 +261,11 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
                     _keepZero = true;
                     ftype = Nullable.GetUnderlyingType(ftype);
                 }
-                else if (ftype.IsEnum || ftype.IsClass)
+                else if (ftype.GetTypeInfo().IsEnum || ftype.GetTypeInfo().IsClass)
                 {
                     _isNullable = true;
                 }
-                if (ftype.IsClass)
+                if (ftype.GetTypeInfo().IsClass)
                 {
                     if (ftype == typeof(string))
                     {
@@ -278,7 +278,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
                         _type = elt;
                         _allowsMultiple = true;
                         ProcessFieldAttributes(field);
-                        if (elt.IsEnum)
+                        if (elt.GetTypeInfo().IsEnum)
                         {
                             ProcessEnumAttributes(elt);
                         }
@@ -290,7 +290,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
                 }
                 else
                 {
-                    if (ftype.IsEnum)
+                    if (ftype.GetTypeInfo().IsEnum)
                     {
                         ProcessFieldAttributes(field);
                         ProcessEnumAttributes(ftype);
@@ -336,9 +336,9 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         {
             if (!_ignoreAnnotations)
             {
-                foreach (var attribute in type.GetCustomAttributes(typeof(TemplateAttribute)))
+                foreach (var attribute in type.GetTypeInfo().GetCustomAttributes<TemplateAttribute>())
                 {
-                    AddTemplate((TemplateAttribute)attribute);
+                    AddTemplate(attribute);
                 }
             }
         }

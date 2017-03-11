@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.4</TargetFramework>
+    <AssemblyName>Microsoft.Bot.Builder.Autofac</AssemblyName>
+    <RootNamespace>Microsoft.Bot.Builder.Autofac</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -33,6 +33,7 @@
 
 using System;
 using System.IO;
+using System.Reflection;
 using System.Resources;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -45,6 +46,8 @@ using Microsoft.Bot.Builder.Internals.Fibers;
 using Microsoft.Bot.Builder.Scorables;
 using Microsoft.Bot.Builder.Scorables.Internals;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.Resource;
+using Module = Autofac.Module;
 
 namespace Microsoft.Bot.Builder.Dialogs.Internals
 {
@@ -75,7 +78,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
             // singleton components
 
             builder
-                .Register(c => new ResourceManager("Microsoft.Bot.Builder.Resource.Resources", typeof(Resource.Resources).Assembly))
+                .Register(c => new ResourceManager("Microsoft.Bot.Builder.Resource.Resources", typeof(Resources).GetTypeInfo().Assembly))
                 .As<ResourceManager>()
                 .SingleInstance();
 

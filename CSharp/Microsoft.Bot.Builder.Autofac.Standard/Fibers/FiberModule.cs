@@ -37,12 +37,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 
 using Autofac;
 using Autofac.Core;
 
 using Microsoft.Bot.Builder.Scorables.Internals;
+using Microsoft.Bot.Builder.Internals.Fibers;
 
 namespace Microsoft.Bot.Builder.Internals.Fibers
 {
@@ -88,10 +88,10 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
 
             // singleton components
 
-            builder
-                .RegisterType<DefaultTraceListener>()
-                .As<TraceListener>()
-                .SingleInstance();
+            //builder
+            //    .RegisterType<DefaultTraceListener>()
+            //    .As<TraceListener>()
+            //    .SingleInstance();
 
             builder
                 .Register(c => Comparer<double>.Default)
@@ -102,28 +102,30 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
                 .As<ITraits<double>>()
                 .SingleInstance();
 
-            builder
-                .Register(c => new Serialization.StoreInstanceByTypeSurrogate(priority: int.MaxValue))
-                .Keyed<Serialization.ISurrogateProvider>(Key_SurrogateProvider)
-                .SingleInstance();
+            // TODO Check/Fix the serialization stuff
 
-            builder
-                .Register(c => new Serialization.ClosureCaptureErrorSurrogate(priority: 1))
-                .Keyed<Serialization.ISurrogateProvider>(Key_SurrogateProvider)
-                .SingleInstance();
+            //builder
+            //    .Register(c => new Serialization.StoreInstanceByTypeSurrogate(priority: int.MaxValue))
+            //    .Keyed<Serialization.ISurrogateProvider>(Key_SurrogateProvider)
+            //    .SingleInstance();
 
-            builder
-                .Register(c => new Serialization.JObjectSurrogate(priority: 3))
-                .Keyed<Serialization.ISurrogateProvider>(Key_SurrogateProvider)
-                .SingleInstance();
+            //builder
+            //    .Register(c => new Serialization.ClosureCaptureErrorSurrogate(priority: 1))
+            //    .Keyed<Serialization.ISurrogateProvider>(Key_SurrogateProvider)
+            //    .SingleInstance();
 
-            builder
-                .RegisterDecorator<Serialization.ISurrogateProvider>((c, inner) => new Serialization.SurrogateLogDecorator(inner, c.Resolve<TraceListener>()), fromKey: Key_SurrogateProvider);
+            //builder
+            //    .Register(c => new Serialization.JObjectSurrogate(priority: 3))
+            //    .Keyed<Serialization.ISurrogateProvider>(Key_SurrogateProvider)
+            //    .SingleInstance();
 
-            builder
-                .RegisterType<Serialization.SurrogateSelector>()
-                .As<ISurrogateSelector>()
-                .SingleInstance();
+            //builder
+            //    .RegisterDecorator<Serialization.ISurrogateProvider>((c, inner) => new Serialization.SurrogateLogDecorator(inner, c.Resolve<TraceListener>()), fromKey: Key_SurrogateProvider);
+
+            //builder
+            //    .RegisterType<Serialization.SurrogateSelector>()
+            //    .As<ISurrogateSelector>()
+            //    .SingleInstance();
 
             // per request, depends on resolution parameters through "p"
 
@@ -132,10 +134,11 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
                 .As<IResolver>()
                 .InstancePerLifetimeScope();
 
-            builder
-                .Register((c, p) => new BinaryFormatter(c.Resolve<ISurrogateSelector>(), new StreamingContext(StreamingContextStates.All, c.Resolve<IResolver>(p))))
-                .As<IFormatter>()
-                .InstancePerLifetimeScope();
+            // CXuesong: Remove BinaryFormatter
+            //builder
+            //    .Register((c, p) => new BinaryFormatter(c.Resolve<ISurrogateSelector>(), new StreamingContext(StreamingContextStates.All, c.Resolve<IResolver>(p))))
+            //    .As<IFormatter>()
+            //    .InstancePerLifetimeScope();
         }
     }
 
@@ -175,10 +178,10 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
                 .As<IFiberLoop<C>>()
                 .InstancePerDependency();
 
-            builder
-                .Register((c, p) => new FactoryStore<IFiberLoop<C>>(new ErrorResilientStore<IFiberLoop<C>>(new FormatterStore<IFiberLoop<C>>(p.TypedAs<Stream>(), c.Resolve<IFormatter>(p))), c.Resolve<Func<IFiberLoop<C>>>(p)))
-                .As<IStore<IFiberLoop<C>>>()
-                .InstancePerDependency();
+            //builder
+            //    .Register((c, p) => new FactoryStore<IFiberLoop<C>>(new ErrorResilientStore<IFiberLoop<C>>(new FormatterStore<IFiberLoop<C>>(p.TypedAs<Stream>(), c.Resolve<IFormatter>(p))), c.Resolve<Func<IFiberLoop<C>>>(p)))
+            //    .As<IStore<IFiberLoop<C>>>()
+            //    .InstancePerDependency();
 
             builder
                 .RegisterType<StoreFromStack<C>>()
@@ -192,11 +195,11 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
         protected override void Load(ContainerBuilder builder)
         {
             base.Load(builder);
-
-            builder
-                .Register(c => new Serialization.StoreInstanceByFieldsSurrogate(priority: 2))
-                .Keyed<Serialization.ISurrogateProvider>(FiberModule.Key_SurrogateProvider)
-                .SingleInstance();
+            
+            //builder
+            //    .Register(c => new Serialization.StoreInstanceByFieldsSurrogate(priority: 2))
+            //    .Keyed<Serialization.ISurrogateProvider>(FiberModule.Key_SurrogateProvider)
+            //    .SingleInstance();
         }
     }
 }

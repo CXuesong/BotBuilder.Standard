@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.4</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Library\Microsoft.Bot.Builder.Standard\Microsoft.Bot.Builder.Standard.csproj" />
+    <ProjectReference Include="..\Library\Microsoft.Bot.Connector.Standard\Microsoft.Bot.Connector.Standard.csproj" />
+  </ItemGroup>
+
+</Project>

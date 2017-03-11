@@ -19,10 +19,11 @@
     "Microsoft.Bot.Sample.AspNetCore.Echo": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:5000",
+      "launchUrl": "",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "http://localhost:8189"
     }
   }
 }

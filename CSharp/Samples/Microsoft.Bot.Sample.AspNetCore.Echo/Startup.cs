@@ -32,7 +32,8 @@ namespace Microsoft.Bot.Sample.AspNetCore.Echo
         {
             services.AddSingleton(_ => Configuration);
             // Authentication for Microsoft Bot Framework.
-            services.AddSingleton(_ => new MicrosoftAppCredentials(Configuration));
+            services.AddSingleton(_ => new MicrosoftAppCredentials(Configuration,
+                _.GetService<ILoggerFactory>().CreateLogger<MicrosoftAppCredentials>()));
             services.AddSingleton<Conversation>(_ => new Conversation(_.GetService<MicrosoftAppCredentials>()));
             
             // Add framework services.

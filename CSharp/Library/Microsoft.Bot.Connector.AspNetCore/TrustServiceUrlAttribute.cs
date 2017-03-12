@@ -9,13 +9,26 @@ namespace Microsoft.Bot.Connector
 {
     public class TrustServiceUrlAttribute : ActionFilterAttribute
     {
+        /// <summary>
+        /// Whether to trust localhost and pass JwtToken to it.
+        /// </summary>
+        /// <remarks>Defaults to <c>false</c>.
+        /// If you are using BotFramrworkEmulator with empty app ID &amp; password,
+        /// it's strongly recommended that you set this property to <c>false</c> to bypass
+        /// the authentication on MS server.</remarks>
+        public static bool AutoTrustLocalhost { get; set; }
+
         public async override Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             var activities = GetActivities(context);
-
             foreach (var activity in activities)
             {
-                MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl);
+                // TODO use some bulletproof predicate...
+                if (!AutoTrustLocalhost &&
+                    (activity.ServiceUrl.StartsWith("http://localhost") ||
+                     activity.ServiceUrl.StartsWith("http://127.0.0.1")))
+                    continue;
+                    MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl);
             }
             await next();
         }

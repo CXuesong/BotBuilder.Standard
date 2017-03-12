@@ -69,8 +69,8 @@ namespace Microsoft.Bot.Connector
             MicrosoftAppId = appId;
             MicrosoftAppPassword = password;
 
-            // CXuesong: Should load password here.
-            Debug.WriteLineIf(password == null, "Warning: client_secret (MicrosoftAppPassword) is null.");
+            // CXuesong: password should have been loaded here.
+            Debug.WriteLineIf(string.IsNullOrEmpty(password), "Warning: client_secret (MicrosoftAppPassword) is empty.");
 
             TokenCacheKey = $"{MicrosoftAppId}-cache";
             this.logger = logger;

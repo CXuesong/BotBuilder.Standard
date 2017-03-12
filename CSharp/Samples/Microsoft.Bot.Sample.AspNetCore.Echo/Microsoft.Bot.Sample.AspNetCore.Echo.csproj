@@ -19,10 +19,10 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Library\Microsoft.Bot.Builder.Autofac.Standard\Microsoft.Bot.Builder.Autofac.Standard.csproj" />
     <ProjectReference Include="..\..\Library\Microsoft.Bot.Builder.Standard\Microsoft.Bot.Builder.Standard.csproj" />
     <ProjectReference Include="..\..\Library\Microsoft.Bot.Connector.AspNetCore\Microsoft.Bot.Connector.AspNetCore.csproj" />
     <ProjectReference Include="..\..\Library\Microsoft.Bot.Connector.Standard\Microsoft.Bot.Connector.Standard.csproj" />
-    <ProjectReference Include="..\..\Microsoft.Bot.Builder.Autofac.Standard\Microsoft.Bot.Builder.Autofac.Standard.csproj" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services" />

@@ -117,6 +117,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
                     DelegateJsonConverter.Default,
                     MethodInfoJsonConverter.Default,
                     new ResolvableObjectJsonConverter(resolver),
+                    new RegexConverter10(),         // This line may be removed after the release of Newtonsoft.Json 10.x .
                 },
             };
         }

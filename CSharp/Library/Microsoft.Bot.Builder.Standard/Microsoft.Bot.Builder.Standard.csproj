@@ -13,7 +13,7 @@
   <ItemGroup>
     <PackageReference Include="CXuesong.Ported.Chronic" Version="1.0.0" />
     <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.5" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.1-beta1" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
     <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
     <PackageReference Include="System.Resources.Writer" Version="4.3.0" />

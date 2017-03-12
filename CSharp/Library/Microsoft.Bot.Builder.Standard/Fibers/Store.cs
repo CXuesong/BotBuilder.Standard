@@ -33,63 +33,19 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+using System.Text;
+using Microsoft.Bot.Builder.Fibers;
+using Microsoft.Bot.Builder.Scorables.Internals;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Internals.Fibers
 {
-
-    public sealed class DataContractJsonStore<T> : IStore<T>
-    {
-        private readonly Stream stream;
-        private readonly DataContractJsonSerializer serializer;
-
-        public DataContractJsonStore(Stream stream, DataContractJsonSerializer serializer)
-        {
-            SetField.NotNull(out this.stream, nameof(stream), stream);
-            SetField.NotNull(out this.serializer, nameof(serializer), serializer);
-        }
-        void IStore<T>.Reset()
-        {
-            this.stream.SetLength(0);
-        }
-
-        bool IStore<T>.TryLoad(out T item)
-        {
-            if (this.stream.Length > 0)
-            {
-                this.stream.Position = 0;
-                using (var gzip = new GZipStream(this.stream, CompressionMode.Decompress, leaveOpen: true))
-                {
-                    item = (T)serializer.ReadObject(gzip);
-                    return true;
-                }
-            }
-
-            item = default(T);
-            return false;
-        }
-
-        void IStore<T>.Save(T item)
-        {
-            this.stream.Position = 0;
-            using (var gzip = new GZipStream(this.stream, CompressionMode.Compress, leaveOpen: true))
-            {
-                serializer.WriteObject(gzip, item);
-            }
-
-            this.stream.SetLength(this.stream.Position);
-        }
-
-        void IStore<T>.Flush()
-        {
-            this.stream.Flush();
-        }
-
-    }
 
     //public sealed class FormatterStore<T> : IStore<T>
     //{
@@ -138,6 +94,91 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
     //        this.stream.Flush();
     //    }
     //}
+
+
+    public sealed class DataContractStore<T> : IStore<T>
+    {
+        private readonly IResolver resolver;
+        private readonly Stream stream;
+        private readonly JsonSerializer serializer;
+
+        public DataContractStore(Stream stream, IResolver resolver)
+        {
+            SetField.NotNull(out this.stream, nameof(stream), stream);
+            SetField.NotNull(out this.resolver, nameof(resolver), resolver);
+
+            // TODO CXuesong: Tweak the settings later.
+            serializer = new JsonSerializer
+            {
+                TypeNameHandling = TypeNameHandling.Objects,
+                ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                PreserveReferencesHandling = PreserveReferencesHandling.All,
+                Converters =
+                {
+                    DelegateJsonConverter.Default,
+                    MethodInfoJsonConverter.Default,
+                    new ResolvableObjectJsonConverter(resolver),
+                }
+            };
+        }
+
+        void IStore<T>.Reset()
+        {
+            this.stream.SetLength(0);
+        }
+
+        bool IStore<T>.TryLoad(out T item)
+        {
+            if (this.stream.Length > 0)
+            {
+                this.stream.Position = 0;
+                using (var gzip = new GZipStream(this.stream, CompressionMode.Decompress, leaveOpen: true))
+                using (var reader = new StreamReader(gzip, Encoding.UTF8, true, 1024, true))
+                {
+#if DEBUG
+                    var s = reader.ReadToEnd();
+                    using (var sr = new StringReader(s))
+                        item = (T) serializer.Deserialize(sr, typeof(T));
+#else
+
+                    item = (T)serializer.Deserialize(reader, typeof(T));
+#endif
+                    return true;
+                }
+            }
+
+            item = default(T);
+            return false;
+        }
+
+        void IStore<T>.Save(T item)
+        {
+            // CXuesong: Hint
+            //      T   Can be
+            // Microsoft.Bot.Builder.Internals.Fibers.Fiber<Microsoft.Bot.Builder.Dialogs.Internals.DialogTask>
+            this.stream.Position = 0;
+            using (var gzip = new GZipStream(this.stream, CompressionMode.Compress, leaveOpen: true))
+            using (var writer = new StreamWriter(gzip, Encoding.UTF8, 1024, true))
+            {
+#if DEBUG
+                using (var sw = new StringWriter())
+                {
+                    serializer.Serialize(sw, item);
+                    writer.Write(sw.ToString());
+                }
+#else
+                serializer.Serialize(writer, item);
+#endif
+            }
+
+            this.stream.SetLength(this.stream.Position);
+        }
+
+        void IStore<T>.Flush()
+        {
+            this.stream.Flush();
+        }
+    }
 
     public sealed class ErrorResilientStore<T> : IStore<T>
     {

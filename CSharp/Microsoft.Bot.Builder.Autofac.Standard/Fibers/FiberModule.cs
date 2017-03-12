@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
                 .As<ITraits<double>>()
                 .SingleInstance();
 
-            // TODO Check/Fix the serialization stuff
+            // CXuesong: Removed BinaryFormatter stuff
 
             //builder
             //    .Register(c => new Serialization.StoreInstanceByTypeSurrogate(priority: int.MaxValue))
@@ -134,7 +134,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
                 .As<IResolver>()
                 .InstancePerLifetimeScope();
 
-            // CXuesong: Remove BinaryFormatter
+            // CXuesong: Removed BinaryFormatter stuff
             //builder
             //    .Register((c, p) => new BinaryFormatter(c.Resolve<ISurrogateSelector>(), new StreamingContext(StreamingContextStates.All, c.Resolve<IResolver>(p))))
             //    .As<IFormatter>()
@@ -182,6 +182,12 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             //    .Register((c, p) => new FactoryStore<IFiberLoop<C>>(new ErrorResilientStore<IFiberLoop<C>>(new FormatterStore<IFiberLoop<C>>(p.TypedAs<Stream>(), c.Resolve<IFormatter>(p))), c.Resolve<Func<IFiberLoop<C>>>(p)))
             //    .As<IStore<IFiberLoop<C>>>()
             //    .InstancePerDependency();
+
+            builder
+                .Register((c, p) => new FactoryStore<IFiberLoop<C>>(new ErrorResilientStore<IFiberLoop<C>>(
+                    new DataContractStore<IFiberLoop<C>>(p.TypedAs<Stream>(), c.Resolve<IResolver>())), c.Resolve<Func<IFiberLoop<C>>>(p)))
+                .As<IStore<IFiberLoop<C>>>()
+                .InstancePerDependency();
 
             builder
                 .RegisterType<StoreFromStack<C>>()

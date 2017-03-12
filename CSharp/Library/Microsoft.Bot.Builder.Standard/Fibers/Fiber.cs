@@ -84,8 +84,8 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
     [DataContract]
     public sealed class Frame<C> : IFrame<C>
     {
-        private IWait<C> mark = NullWait<C>.Instance;
-        private IWait<C> wait = NullWait<C>.Instance;
+        [DataMember] private IWait<C> mark = NullWait<C>.Instance;
+        [DataMember] private IWait<C> wait = NullWait<C>.Instance;
 
         public override string ToString()
         {
@@ -141,9 +141,9 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
     [DataContract]
     public sealed class Fiber<C> : IFiber<C>, IFiberLoop<C>
     {
-        private readonly List<IFrame<C>> stack = new List<IFrame<C>>();
-        private readonly IFrameFactory<C> frames;
-        private readonly IWaitFactory<C> waits;
+        [DataMember] private readonly List<IFrame<C>> stack = new List<IFrame<C>>();
+        [DataMember] private readonly IFrameFactory<C> frames;
+        [DataMember] private readonly IWaitFactory<C> waits;
 
         public Fiber(IFrameFactory<C> factory, IWaitFactory<C> waits)
         {
@@ -179,10 +179,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
                     return NullWait<C>.Instance;
                 }
             }
-            set
-            {
-                this.stack.Peek().Mark = value;
-            }
+            set { this.stack.Peek().Mark = value; }
         }
 
         IWait<C> IWaiter<C>.Wait
@@ -199,10 +196,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
                     return NullWait<C>.Instance;
                 }
             }
-            set
-            {
-                this.stack.Peek().Wait = value;
-            }
+            set { this.stack.Peek().Wait = value; }
         }
 
         async Task<IWait<C>> IFiberLoop<C>.PollAsync(C context, CancellationToken token)

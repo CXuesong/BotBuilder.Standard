@@ -45,14 +45,19 @@ namespace Microsoft.Bot.Connector
             _tokenValidationParameters = tokenValidationParameters.Clone();
             _tokenValidationParameters.RequireSignedTokens = true;
 
-            if (!_openIdMetadataCache.ContainsKey(metadataUrl))
+            // CXuesong: More than one thread can access this static field so we need to lock it. (Testing EchoBot)
+            lock (_openIdMetadataCache)
+            {
+                if (!_openIdMetadataCache.ContainsKey(metadataUrl))
 #if NET45
                 _openIdMetadataCache[metadataUrl] = new ConfigurationManager<OpenIdConnectConfiguration>(metadataUrl);
 #else
-                _openIdMetadataCache[metadataUrl] = new ConfigurationManager<OpenIdConnectConfiguration>(metadataUrl, new OpenIdConnectConfigurationRetriever());
+                    _openIdMetadataCache[metadataUrl] = new ConfigurationManager<OpenIdConnectConfiguration>(
+                        metadataUrl, new OpenIdConnectConfigurationRetriever());
 #endif
 
-            _openIdMetadata = _openIdMetadataCache[metadataUrl];
+                _openIdMetadata = _openIdMetadataCache[metadataUrl];
+            }
         }
 
         public async Task<ClaimsIdentity> GetIdentityAsync(HttpRequestMessage request)

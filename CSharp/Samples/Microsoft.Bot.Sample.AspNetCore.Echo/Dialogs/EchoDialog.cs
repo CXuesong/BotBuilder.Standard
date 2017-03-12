@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
@@ -9,7 +10,7 @@ namespace Microsoft.Bot.Sample.EchoBot
     [DataContract]
     public class EchoDialog : IDialog<object>
     {
-        protected int count = 1;
+        [DataMember] protected int count = 1;
 
         public async Task StartAsync(IDialogContext context)
         {

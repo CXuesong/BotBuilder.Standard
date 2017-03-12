@@ -40,9 +40,9 @@ namespace Microsoft.Bot.Sample.AspNetCore.Echo.Controllers
             {
                 case ActivityTypes.Message:
                     //await conversation.SendAsync(activity, () => new EchoDialog());
-                    await conversation.SendAsync(activity, () => EchoCommandDialog.dialog);
+                    //await conversation.SendAsync(activity, () => EchoCommandDialog.dialog);
                     //await conversation.SendAsync(activity, () => new EchoAttachmentDialog());
-                    //await conversation.SendAsync(activity, () => EchoChainDialog.dialog);
+                    await conversation.SendAsync(activity, () => EchoChainDialog.dialog);
                     break;
 
                 case ActivityTypes.ConversationUpdate:

@@ -59,24 +59,24 @@ namespace Microsoft.Bot.Builder.Dialogs
             /// <summary>   Gets or sets the command ID used for persisting currently running command handler. </summary>
             /// <value> Command ID. </value>
             #endregion
-            public string CommandId { set; get; }
+            [DataMember] public string CommandId { set; get; }
 
             #region Documentation
             /// <summary>   Gets or sets the regular expression for matching command. </summary>
             /// <value> The regular expression. </value>
             #endregion
-            public Regex Expression { set; get; }
+            [DataMember] public Regex Expression { set; get; }
 
             #region Documentation
             /// <summary>   Gets or sets the command handler. </summary>
             /// <value> The command handler. </value>
             #endregion
-            public ResumeAfter<Connector.IMessageActivity> CommandHandler { set; get; }
+            [DataMember] public ResumeAfter<Connector.IMessageActivity> CommandHandler { set; get; }
         }
 
-        private Command defaultCommand;
-        private readonly List<Command> commands = new List<Command>();
-        private readonly Dictionary<string, Delegate> resultHandlers = new Dictionary<string, Delegate>();
+        [DataMember] private Command defaultCommand;
+        [DataMember] private readonly List<Command> commands = new List<Command>();
+        [DataMember] private readonly Dictionary<string, Delegate> resultHandlers = new Dictionary<string, Delegate>();
 
         async Task IDialog<T>.StartAsync(IDialogContext context)
         {

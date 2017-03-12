@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 serviceUrl: activity.ServiceUrl
             );
         }
-
+        // CXuesong: This attribute is already here before my revision…
         [JsonConstructor]
         public Address(string botId, string channelId, string userId, string conversationId, string serviceUrl)
         {

@@ -286,7 +286,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="antecedent">The antecedent dialog <see cref="IDialog{T}"/>.</param>
         /// <param name="block">The lambda expression representing the catch block handler.</param>
         /// <returns>The result of the catch block handler if there is an exception of type <typeparamref name="E"/>.</returns>
-        public static IDialog<T> Catch<T, E>(this IDialog<T> antecedent, Func<IDialog<T>, E, IDialog<T>> block) where E: Exception
+        public static IDialog<T> Catch<T, E>(this IDialog<T> antecedent, Func<IDialog<T>, E, IDialog<T>> block) where E : Exception
         {
             return new CatchDialog<T, E>(antecedent, block);
         }
@@ -434,7 +434,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class FromDialog<T> : IDialog<T>
         {
-            public readonly Func<IDialog<T>> MakeDialog;
+            [DataMember] public readonly Func<IDialog<T>> MakeDialog;
             public FromDialog(Func<IDialog<T>> MakeDialog)
             {
                 SetField.NotNull(out this.MakeDialog, nameof(MakeDialog), MakeDialog);
@@ -453,8 +453,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class DoDialog<T> : IDialog<T>
         {
-            public readonly IDialog<T> Antecedent;
-            public readonly Func<IBotContext, IAwaitable<T>, Task> Action;
+            [DataMember] public readonly IDialog<T> Antecedent;
+            [DataMember] public readonly Func<IBotContext, IAwaitable<T>, Task> Action;
             public DoDialog(IDialog<T> antecedent, Func<IBotContext, IAwaitable<T>, Task> Action)
             {
                 SetField.NotNull(out this.Antecedent, nameof(antecedent), antecedent);
@@ -474,8 +474,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class ThenDialog<T, R> : IDialog<R>
         {
-            public readonly IDialog<T> Antecedent;
-            public readonly Func<IBotContext, IAwaitable<T>, Task<R>> Action;
+            [DataMember] public readonly IDialog<T> Antecedent;
+            [DataMember] public readonly Func<IBotContext, IAwaitable<T>, Task<R>> Action;
             public ThenDialog(IDialog<T> antecedent, Func<IBotContext, IAwaitable<T>, Task<R>> Action)
             {
                 SetField.NotNull(out this.Antecedent, nameof(antecedent), antecedent);
@@ -495,7 +495,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class PostToUserDialog<T> : IDialog<T>
         {
-            public readonly IDialog<T> Antecedent;
+            [DataMember] public readonly IDialog<T> Antecedent;
             public PostToUserDialog(IDialog<T> antecedent)
             {
                 SetField.NotNull(out this.Antecedent, nameof(antecedent), antecedent);
@@ -515,7 +515,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class WaitToBotDialog<T> : IDialog<IMessageActivity>
         {
-            public readonly IDialog<T> Antecedent;
+            [DataMember] public readonly IDialog<T> Antecedent;
             public WaitToBotDialog(IDialog<T> antecedent)
             {
                 SetField.NotNull(out this.Antecedent, nameof(antecedent), antecedent);
@@ -538,8 +538,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class PostEventDialog<T, E> : IDialog<T>
         {
-            public readonly IDialog<T> Antecedent;
-            public readonly E Event;
+            [DataMember] public readonly IDialog<T> Antecedent;
+            [DataMember] public readonly E Event;
 
             public PostEventDialog(IDialog<T> antecedent, E @event)
             {
@@ -557,7 +557,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 context.Call<T>(this.Antecedent, AfterAntecedent);
             }
 
-            private T item;
+            [DataMember] private T item;
             private async Task AfterAntecedent(IDialogContext context, IAwaitable<T> result)
             {
                 this.item = await result;
@@ -567,7 +567,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             private async Task AfterEvent(IDialogContext context, IAwaitable<E> result)
             {
                 var @event = await result;
-                if (! object.ReferenceEquals(@event, this.Event))
+                if (!object.ReferenceEquals(@event, this.Event))
                 {
                     throw new InvalidOperationException();
                 }
@@ -579,8 +579,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class ContinueWithDialog<T, R> : IDialog<R>
         {
-            public readonly IDialog<T> Antecedent;
-            public readonly Continuation<T, R> Continuation;
+            [DataMember] public readonly IDialog<T> Antecedent;
+            [DataMember] public readonly Continuation<T, R> Continuation;
 
             public ContinueWithDialog(IDialog<T> antecedent, Continuation<T, R> continuation)
             {
@@ -608,8 +608,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class SelectDialog<T, R> : IDialog<R>
         {
-            public readonly IDialog<T> Antecedent;
-            public readonly Func<T, R> Selector;
+            [DataMember] public readonly IDialog<T> Antecedent;
+            [DataMember] public readonly Func<T, R> Selector;
             public SelectDialog(IDialog<T> antecedent, Func<T, R> selector)
             {
                 SetField.NotNull(out this.Antecedent, nameof(antecedent), antecedent);
@@ -630,7 +630,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// The exception that is thrown when the where is canceled.
         /// </summary>
-        //[DataContract]
+        //[Serializable]
         public sealed class WhereCanceledException : OperationCanceledException
         {
             /// <summary>
@@ -654,8 +654,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class WhereDialog<T> : IDialog<T>
         {
-            public readonly IDialog<T> Antecedent;
-            public readonly Func<T, bool> Predicate;
+            [DataMember] public readonly IDialog<T> Antecedent;
+            [DataMember] public readonly Func<T, bool> Predicate;
             public WhereDialog(IDialog<T> antecedent, Func<T, bool> predicate)
             {
                 SetField.NotNull(out this.Antecedent, nameof(antecedent), antecedent);
@@ -683,7 +683,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class UnwrapDialog<T> : IDialog<T>
         {
-            public readonly IDialog<IDialog<T>> Antecedent;
+            [DataMember] public readonly IDialog<IDialog<T>> Antecedent;
             public UnwrapDialog(IDialog<IDialog<T>> antecedent)
             {
                 SetField.NotNull(out this.Antecedent, nameof(antecedent), antecedent);
@@ -708,9 +708,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class SelectManyDialog<T, C, R> : IDialog<R>
         {
-            public readonly IDialog<T> Antecedent;
-            public readonly Func<T, IDialog<C>> Function;
-            public readonly Func<T, C, R> Projection;
+            [DataMember] public readonly IDialog<T> Antecedent;
+            [DataMember] public readonly Func<T, IDialog<C>> Function;
+            [DataMember] public readonly Func<T, C, R> Projection;
             public SelectManyDialog(IDialog<T> antecedent, Func<T, IDialog<C>> function, Func<T, C, R> projection)
             {
                 SetField.NotNull(out this.Antecedent, nameof(antecedent), antecedent);
@@ -721,7 +721,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 context.Call<T>(this.Antecedent, AfterAntecedent);
             }
-            private T itemT;
+            [DataMember] private T itemT;
             private async Task AfterAntecedent(IDialogContext context, IAwaitable<T> result)
             {
                 this.itemT = await result;
@@ -739,7 +739,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class LoopDialog<T> : IDialog<T>
         {
-            public readonly IDialog<T> Antecedent;
+            [DataMember] public readonly IDialog<T> Antecedent;
             public LoopDialog(IDialog<T> antecedent)
             {
                 SetField.NotNull(out this.Antecedent, nameof(antecedent), antecedent);
@@ -758,7 +758,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class VoidDialog<T, R> : IDialog<R>
         {
-            public readonly IDialog<T> Antecedent;
+            [DataMember] public readonly IDialog<T> Antecedent;
             public VoidDialog(IDialog<T> antecedent)
             {
                 SetField.NotNull(out this.Antecedent, nameof(antecedent), antecedent);
@@ -782,8 +782,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class CatchDialog<T, E> : IDialog<T> where E : Exception
         {
-            public readonly IDialog<T> Antecedent;
-            public readonly Func<IDialog<T>, E, IDialog<T>> Block;
+            [DataMember] public readonly IDialog<T> Antecedent;
+            [DataMember] public readonly Func<IDialog<T>, E, IDialog<T>> Block;
             public CatchDialog(IDialog<T> antecedent, Func<IDialog<T>, E, IDialog<T>> block)
             {
                 SetField.NotNull(out this.Antecedent, nameof(antecedent), antecedent);
@@ -809,7 +809,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class DefaultIfExceptionDialog<T, E> : IDialog<T> where E : Exception
         {
-            public readonly IDialog<T> Antecedent;
+            [DataMember] public readonly IDialog<T> Antecedent;
             public DefaultIfExceptionDialog(IDialog<T> antecedent)
             {
                 SetField.NotNull(out this.Antecedent, nameof(antecedent), antecedent);
@@ -834,8 +834,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class SwitchDialog<T, R> : IDialog<R>
         {
-            public readonly IDialog<T> Antecedent;
-            public readonly IReadOnlyList<ICase<T, R>> Cases;
+            [DataMember] public readonly IDialog<T> Antecedent;
+            [DataMember] public readonly IReadOnlyList<ICase<T, R>> Cases;
             public SwitchDialog(IDialog<T> antecedent, IReadOnlyList<ICase<T, R>> cases)
             {
                 SetField.NotNull(out this.Antecedent, nameof(antecedent), antecedent);
@@ -873,7 +873,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class ReturnDialog<T> : IDialog<T>
         {
-            public readonly T Value;
+            [DataMember] public readonly T Value;
 
             public ReturnDialog(T value)
             {
@@ -889,9 +889,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class WhileDialog<T> : IDialog<T>
         {
-            public readonly IDialog<T> Zero;
-            public readonly Func<T, IDialog<bool>> Test;
-            public readonly Func<T, IDialog<T>> Body;
+            [DataMember] public readonly IDialog<T> Zero;
+            [DataMember] public readonly Func<T, IDialog<bool>> Test;
+            [DataMember] public readonly Func<T, IDialog<T>> Body;
             public WhileDialog(IDialog<T> zero, Func<T, IDialog<bool>> test, Func<T, IDialog<T>> body)
             {
                 SetField.NotNull(out this.Zero, nameof(Zero), zero);
@@ -904,7 +904,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 context.Call(this.Zero, this.AfterZeroOrBody);
             }
 
-            private T item = default(T);
+            [DataMember] private T item = default(T);
             private async Task AfterZeroOrBody(IDialogContext context, IAwaitable<T> result)
             {
                 this.item = await result;
@@ -929,8 +929,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class FoldDialog<T> : IDialog<T>
         {
-            public readonly IDialog<IEnumerable<IDialog<T>>> Antecedent;
-            public readonly Func<T, T, T> Folder;
+            [DataMember] public readonly IDialog<IEnumerable<IDialog<T>>> Antecedent;
+            [DataMember] public readonly Func<T, T, T> Folder;
             public FoldDialog(IDialog<IEnumerable<IDialog<T>>> antecedent, Func<T, T, T> folder)
             {
                 SetField.NotNull(out this.Antecedent, nameof(antecedent), antecedent);
@@ -946,8 +946,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 this.items = (await result).ToArray();
                 await Iterate(context);
             }
-            private int index = 0;
-            private T folded = default(T);
+            [DataMember] private int index = 0;
+            [DataMember] private T folded = default(T);
             private async Task Iterate(IDialogContext context)
             {
                 if (this.index < this.items.Count)
@@ -981,7 +981,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         [DataContract]
         private sealed class WithScorableDialog<T, Item, Score> : DelegatingScorable<Item, Score>, IDialog<T>
         {
-            public readonly IDialog<T> Antecedent;
+            [DataMember] public readonly IDialog<T> Antecedent;
             public WithScorableDialog(IDialog<T> antecedent, IScorable<Item, Score> scorable)
                 : base(scorable)
             {
@@ -1031,8 +1031,8 @@ namespace Microsoft.Bot.Builder.Dialogs
     [DataContract]
     public class Case<T, R> : ICase<T, R>
     {
-        public Func<T, bool> Condition { get; protected set; }
-        public ContextualSelector<T, R> Selector { get; protected set; }
+        [DataMember] public Func<T, bool> Condition { get; protected set; }
+        [DataMember] public ContextualSelector<T, R> Selector { get; protected set; }
 
         protected Case()
         {
@@ -1061,7 +1061,11 @@ namespace Microsoft.Bot.Builder.Dialogs
     [DataContract]
     public sealed class RegexCase<R> : Case<string, R>
     {
-        private readonly Regex Regex;
+        // CXuesong: Yes, we can handle Regex, but we cannot handle the situation
+        // where there is a property with declared type as "object" and a value of Regex.
+        // It would be deserialized as JToken. Generally, any class with custom serialization
+        // implementation (E.g. implemented ISerializable) may not behave well in this case.
+        [DataMember] private readonly Regex Regex;
 
         /// <summary>
         /// Constructs a case based on a regular expression.

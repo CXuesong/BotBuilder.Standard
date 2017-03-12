@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// The LUIS intent name.
         /// </summary>
-        public readonly string IntentName;
+        [DataMember] public readonly string IntentName;
 
         /// <summary>
         /// Construct the association between the LUIS intent and a dialog method.
@@ -142,11 +142,11 @@ namespace Microsoft.Bot.Builder.Dialogs
     [DataContract]
     public class LuisDialog<TResult> : IDialog<TResult>
     {
-        protected readonly IReadOnlyList<ILuisService> services;
+        [DataMember] protected readonly IReadOnlyList<ILuisService> services;
 
         /// <summary>   Mapping from intent string to the appropriate handler. </summary>
         //[NonSerialized]
-        protected Dictionary<string, IntentActivityHandler> handlerByIntent;
+        [DataMember] protected Dictionary<string, IntentActivityHandler> handlerByIntent;
 
         public ILuisService[] MakeServicesFromAttributes()
         {
@@ -285,9 +285,9 @@ namespace Microsoft.Bot.Builder.Dialogs
     [DataContract]
     public class LuisActionDialog : IDialog<LuisResult>
     {
-        private readonly ILuisService luisService;
-        private string contextId;
-        private string prompt;
+        [DataMember] private readonly ILuisService luisService;
+        [DataMember] private string contextId;
+        [DataMember] private string prompt;
 
         /// <summary>
         /// Creates an instance of LuisActionDialog.

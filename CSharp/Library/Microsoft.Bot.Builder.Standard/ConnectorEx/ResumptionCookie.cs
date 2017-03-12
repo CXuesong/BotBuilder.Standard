@@ -50,12 +50,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// The key that minimally and completely identifies a bot's conversation with a user on a channel.
         /// </summary>
-        public IAddress Address { get; set; }
+        [DataMember] public IAddress Address { get; set; }
 
         /// <summary>
         /// The user name.
         /// </summary>
-        public string UserName { set; get; }
+        [DataMember] public string UserName { set; get; }
 
         /// <summary>
         /// True if the <see cref="IAddress.ServiceUrl"/> is trusted; False otherwise.
@@ -63,17 +63,17 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <remarks> Conversation.ResumeAsync adds 
         /// the host of the <see cref="IAddress.ServiceUrl"/> to <see cref="MicrosoftAppCredentials.TrustedHostNames"/> if this flag is True.
         /// </remarks>
-        public bool IsTrustedServiceUrl { private set; get; }
+        [DataMember] public bool IsTrustedServiceUrl { private set; get; }
 
         /// <summary>
         /// The IsGroup flag for conversation.
         /// </summary>
-        public bool IsGroup { set; get; }
+        [DataMember] public bool IsGroup { set; get; }
 
         /// <summary>
         /// The locale of message.
         /// </summary>
-        public string Locale { set; get; }
+        [DataMember] public string Locale { set; get; }
 
         /// <summary>
         /// Creates an instance of the resumption cookie. 

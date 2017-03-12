@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
         [DataContract]
         private sealed class ThunkStart : IThunk
         {
-            private readonly StartAsync start;
+            [DataMember] private readonly StartAsync start;
             public ThunkStart(StartAsync start)
             {
                 SetField.NotNull(out this.start, nameof(start), start);
@@ -148,7 +148,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
         [DataContract]
         private sealed class ThunkResume<T> : IThunk
         {
-            private readonly ResumeAfter<T> resume;
+            [DataMember] private readonly ResumeAfter<T> resume;
             public ThunkResume(ResumeAfter<T> resume)
             {
                 SetField.NotNull(out this.resume, nameof(resume), resume);

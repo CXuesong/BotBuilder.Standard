@@ -96,17 +96,17 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// The prompt.
         /// </summary>
-        public readonly string Prompt;
+        [DataMember] public readonly string Prompt;
 
         /// <summary>
         /// What to display on retry.
         /// </summary>
-        public readonly string Retry;
+        [DataMember] public readonly string Retry;
 
         /// <summary>
         /// The choices to be returned when selected.
         /// </summary>
-        public readonly IReadOnlyList<T> Options;
+        [DataMember] public readonly IReadOnlyList<T> Options;
 
         /// <summary>
         /// The description of each possible option.
@@ -115,27 +115,27 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// If this is null, then the descriptions will be the options converted to strings.
         /// Otherwise this should have the same number of values as Options and it contains the string to describe the value being selected.
         /// </remarks>
-        public readonly IReadOnlyList<string> Descriptions;
+        [DataMember] public readonly IReadOnlyList<string> Descriptions;
 
         /// <summary>
         /// What to display when user didn't say a valid response after <see cref="Attempts"/>.
         /// </summary>
-        public readonly string TooManyAttempts;
+        [DataMember] public readonly string TooManyAttempts;
 
         /// <summary>
         /// Maximum number of attempts.
         /// </summary>
-        public int Attempts { set; get; }
+        [DataMember] public int Attempts { set; get; }
 
         /// <summary>
         /// Styler of the prompt <see cref="Dialogs.PromptStyler"/>.
         /// </summary>
-        public readonly PromptStyler PromptStyler;
+        [DataMember] public readonly PromptStyler PromptStyler;
 
         /// <summary>
         /// Default retry prompt that is used if <see cref="Retry"/> is null.
         /// </summary>
-        public string DefaultRetry { get; set; }
+        [DataMember] public string DefaultRetry { get; set; }
 
         /// <summary>
         /// Default <see cref="TooManyAttempts"/> string that is used if <see cref="TooManyAttempts"/> is null.
@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Style of the prompt <see cref="Dialogs.PromptStyle"/>.
         /// </summary>
-        public readonly PromptStyle PromptStyle;
+        [DataMember] public readonly PromptStyle PromptStyle;
 
         public PromptStyler(PromptStyle promptStyle = PromptStyle.Auto)
         {
@@ -728,7 +728,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
     [DataContract]
     public abstract class Prompt<T, U> : IDialog<T>
     {
-        protected readonly PromptOptions<U> promptOptions;
+        [DataMember] protected readonly PromptOptions<U> promptOptions;
 
         public Prompt(PromptOptions<U> promptOptions)
         {

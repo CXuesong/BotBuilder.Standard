@@ -19,10 +19,13 @@ namespace Microsoft.Bot.Sample.AspNetCore.Echo.Controllers
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
+        private readonly Conversation conversation;
         private readonly ILogger<MessagesController> logger;
 
-        public MessagesController(ILoggerFactory loggerFactory)
+        public MessagesController(Conversation conversation, ILoggerFactory loggerFactory)
         {
+            if (conversation == null) throw new ArgumentNullException(nameof(conversation));
+            this.conversation = conversation;
             logger = loggerFactory.CreateLogger<MessagesController>();
         }
 
@@ -39,12 +42,12 @@ namespace Microsoft.Bot.Sample.AspNetCore.Echo.Controllers
                     //await Conversation.SendAsync(activity, () => new EchoDialog());
                     //await Conversation.SendAsync(activity, () => EchoCommandDialog.dialog);
                     //await Conversation.SendAsync(activity, () => new EchoAttachmentDialog());
-                    await Conversation.SendAsync(activity, () => EchoChainDialog.dialog);
+                    await conversation.SendAsync(activity, () => EchoChainDialog.dialog);
                     break;
 
                 case ActivityTypes.ConversationUpdate:
                     IConversationUpdateActivity update = activity;
-                    using (var scope = DialogModule.BeginLifetimeScope(Conversation.Container, activity))
+                    using (var scope = DialogModule.BeginLifetimeScope(conversation.Container, activity))
                     {
                         var client = scope.Resolve<IConnectorClient>();
                         if (update.MembersAdded.Any())

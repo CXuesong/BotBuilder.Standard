@@ -62,6 +62,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
         public static readonly object Key_DeleteProfile_Regex = new object();
         public static readonly object Key_Dialog_Router = new object();
 
+        private readonly MicrosoftAppCredentials credentials;
+
+        public DialogModule(MicrosoftAppCredentials credentials)
+        {
+            if (credentials == null) throw new ArgumentNullException(nameof(credentials));
+            this.credentials = credentials;
+        }
+
         public static ILifetimeScope BeginLifetimeScope(ILifetimeScope scope, IMessageActivity message)
         {
             var inner = scope.BeginLifetimeScope(LifetimeScopeTag);
@@ -115,6 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
             //    .RegisterType<MicrosoftAppCredentials>()
             //    .AsSelf()
             //    .SingleInstance();
+            builder.RegisterInstance(credentials).SingleInstance();
 
             builder
                 // not resolving IEqualityComparer<IAddress> from container because it's a very local policy
@@ -404,11 +413,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
 
     public sealed class DialogModule_MakeRoot : Module
     {
+        private readonly MicrosoftAppCredentials credentials;
+
+        public DialogModule_MakeRoot(MicrosoftAppCredentials credentials)
+        {
+            if (credentials == null) throw new ArgumentNullException(nameof(credentials));
+            this.credentials = credentials;
+        }
+
         protected override void Load(ContainerBuilder builder)
         {
             base.Load(builder);
 
-            builder.RegisterModule(new DialogModule());
+            builder.RegisterModule(new DialogModule(credentials));
 
             // TODO: let dialog resolve its dependencies from container
             builder

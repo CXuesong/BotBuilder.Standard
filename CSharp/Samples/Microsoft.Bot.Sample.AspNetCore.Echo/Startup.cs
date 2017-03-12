@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Sample.AspNetCore.Echo
 {
@@ -31,7 +32,8 @@ namespace Microsoft.Bot.Sample.AspNetCore.Echo
         {
             services.AddSingleton(_ => Configuration);
             // Authentication for Microsoft Bot Framework.
-            services.AddSingleton<ICredentialProvider>(_ => new ConfigurationCredentialProvider(Configuration));
+            services.AddSingleton(_ => new MicrosoftAppCredentials(Configuration));
+            services.AddSingleton<Conversation>(_ => new Conversation(_.GetService<MicrosoftAppCredentials>()));
             
             // Add framework services.
             services.AddMvc(options =>

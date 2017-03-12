@@ -1,7 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models;
+using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Luis.Models;
+using Microsoft.Bot.Builder.Luis;
+using Microsoft.Bot.Builder.Internals.Fibers;
+using System.Linq;
 
 namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Dialogs
 {
@@ -23,12 +30,12 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Dialogs
     /// <summary>
     /// The top-level natural language dialog for the alarm sample.
     /// </summary>
-    [Serializable]
+    [DataContract]
     public sealed class AlarmLuisDialog : LuisDialog<object>
     {
-        private readonly IAlarmService service;
-        private readonly IEntityToType entityToType;
-        private readonly IClock clock;
+        [DataMember] private readonly IAlarmService service;
+        [DataMember] private readonly IEntityToType entityToType;
+        [DataMember] private readonly IClock clock;
         public AlarmLuisDialog(IAlarmService service, IEntityToType entityToType, ILuisService luis, IClock clock)
             : base(luis)
         {
@@ -104,7 +111,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Dialogs
             EntityRecommendation entity;
             if (result.TryFindEntity(BuiltIn.Alarm.Alarm_State, out entity))
             {
-                state = entity.Entity.Equals("on", StringComparison.InvariantCultureIgnoreCase);
+                state = entity.Entity.Equals("on", StringComparison.OrdinalIgnoreCase);
             }
 
             var now = this.clock.Now;

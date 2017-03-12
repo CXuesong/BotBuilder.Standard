@@ -1,5 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
+using System.Threading.Tasks;
 using Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models;
+using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Internals.Fibers;
 
 namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Dialogs
 {
@@ -7,12 +10,12 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Dialogs
     /// The child dialog called when an external event occurs (the passage of time, when the alarm rings)
     /// to proactively notify the user with a prompt to ask whether to snooze the alarm.
     /// </summary>
-    [Serializable]
+    [DataContract]
     public sealed class AlarmRingDialog : IDialog<object>
     {
-        private readonly string title;
-        private readonly IAlarmService service;
-        private readonly IAlarmRenderer renderer;
+        [DataMember] private readonly string title;
+        [DataMember] private readonly IAlarmService service;
+        [DataMember] private readonly IAlarmRenderer renderer;
         public AlarmRingDialog(string title, IAlarmService service, IAlarmRenderer renderer)
         {
             this.title = title;

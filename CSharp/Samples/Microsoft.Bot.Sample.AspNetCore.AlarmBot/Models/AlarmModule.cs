@@ -1,12 +1,19 @@
 ﻿using System;
+using System.Reflection;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Sample.AspNetCore.AlarmBot.Dialogs;
+using Autofac;
+using Microsoft.Bot.Builder.Luis;
+using Microsoft.Bot.Builder.Internals.Fibers;
+using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Internals;
 
 namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models
 {
     /// <summary>
     /// These are the services (and their dependency structure) for the alarm sample.
     /// </summary>
-    public sealed class AlarmModule : Module
+    public sealed class AlarmModule : Autofac.Module
     {
         protected override void Load(ContainerBuilder builder)
         {

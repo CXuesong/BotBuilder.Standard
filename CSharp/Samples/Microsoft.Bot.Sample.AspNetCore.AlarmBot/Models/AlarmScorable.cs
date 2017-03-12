@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.Scorables.Internals;
+using Microsoft.Bot.Builder.Internals.Fibers;
 
 namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models
 {
@@ -16,10 +21,10 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models
         IEnumerable<CardAction> ActionsFor(Alarm alarm);
     }
 
-    [Serializable]
+    [DataContract]
     public sealed class AlarmScorable : ScorableBase<IActivity, Tuple<string, string>, double>, IAlarmActions
     {
-        private readonly IAlarmService service;
+        [DataMember] private readonly IAlarmService service;
         public AlarmScorable(IAlarmService service)
         {
             SetField.NotNull(out this.service, nameof(service), service);

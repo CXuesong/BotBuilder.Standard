@@ -2,6 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Sample.AspNetCore.AlarmBot.Dialogs;
+using Autofac;
+using Microsoft.Bot.Builder.Dialogs.Internals;
+using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models
 {
@@ -14,7 +17,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models
         {
             // since this is an externally-triggered event, this is the composition root
             // find the dependency injection container
-            var container = Global.FindContainer();
+            var container = Startup.GlobalContainer;
 
             await HandleAlarm(container, alarm, now, token);
         }

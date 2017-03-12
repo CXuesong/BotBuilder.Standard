@@ -5,20 +5,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <Content Include="wwwroot\default.html">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
+    <PackageReference Include="Autofac" Version="4.4.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.0.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="1.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.0.2" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Library\Microsoft.Bot.Builder.Autofac\Microsoft.Bot.Builder.Autofac.csproj" />
+    <ProjectReference Include="..\..\Library\Microsoft.Bot.Builder.Autofac.Standard\Microsoft.Bot.Builder.Autofac.Standard.csproj" />
     <ProjectReference Include="..\..\Library\Microsoft.Bot.Builder.Standard\Microsoft.Bot.Builder.Standard.csproj" />
+    <ProjectReference Include="..\..\Library\Microsoft.Bot.Connector.AspNetCore\Microsoft.Bot.Connector.AspNetCore.csproj" />
     <ProjectReference Include="..\..\Library\Microsoft.Bot.Connector.Standard\Microsoft.Bot.Connector.Standard.csproj" />
   </ItemGroup>
 

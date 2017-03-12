@@ -17,7 +17,6 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
-                .UseApplicationInsights()
                 .Build();
 
             host.Run();

@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.Dialogs.Internals;
+using Microsoft.Bot.Builder.Internals.Fibers;
 
 namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models
 {
@@ -12,11 +16,11 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models
         Task RenderAsync(IBotToUser botToUser, string title, DateTime now);
     }
 
-    [Serializable]
+    [DataContract]
     public sealed class AlarmRenderer : IAlarmRenderer
     {
-        private readonly IAlarmScheduler scheduler;
-        private readonly IAlarmActions actions;
+        [DataMember] private readonly IAlarmScheduler scheduler;
+        [DataMember] private readonly IAlarmActions actions;
         public AlarmRenderer(IAlarmScheduler scheduler, IAlarmActions actions)
         {
             SetField.NotNull(out this.scheduler, nameof(scheduler), scheduler);

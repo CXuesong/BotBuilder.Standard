@@ -3,6 +3,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.Bot.Builder.Internals.Fibers;
 
 namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models
 {
@@ -38,6 +40,10 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models
         private readonly IClock clock;
         private readonly ObservableCollection<IAlarmable> alarms = new ObservableCollection<IAlarmable>();
         private IAlarmable[] snapshot = Array.Empty<IAlarmable>();
+
+        // CXuesong: It is not reliable… Yet still better than nothing.
+        private static Task SchedulerTask;
+
         public NaiveAlarmScheduler(IClock clock)
         {
             SetField.NotNull(out this.clock, nameof(clock), clock);
@@ -47,7 +53,8 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models
                 Interlocked.Exchange(ref this.snapshot, this.alarms.ToArray());
             };
 
-            HostingEnvironment.QueueBackgroundWorkItem(async token =>
+            //HostingEnvironment.QueueBackgroundWorkItem(async token =>
+            SchedulerTask = ((Func<CancellationToken, Task>)(async token =>
             {
                 var nowStart = DateTime.MinValue;
                 var nowAfter = DateTime.MinValue;
@@ -76,7 +83,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models
                     // polling is one of the naive aspects of this implementation
                     await Task.Delay(TimeSpan.FromSeconds(1));
                 }
-            });
+            }))(CancellationToken.None);
         }
 
         ObservableCollection<IAlarmable> IAlarmScheduler.Alarms

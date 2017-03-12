@@ -2,14 +2,20 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Bot.Connector;
+using Autofac;
+using Microsoft.Bot.Builder.Internals.Fibers;
+using Microsoft.Bot.Builder.Dialogs.Internals;
 
 namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Controllers
 {
     // Autofac provides a mechanism to inject ActionFilterAttributes from the container
     // but seems to require the implementation of special interfaces
     // https://github.com/autofac/Autofac.WebApi/issues/6
-    [BotAuthentication]
-    public sealed class MessagesController : ApiController
+    [Route("api/[controller]")]
+    public sealed class MessagesController : Controller
     {
         // TODO: "service locator"
         private readonly ILifetimeScope scope;
@@ -17,6 +23,10 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Controllers
         {
             SetField.NotNull(out this.scope, nameof(scope), scope);
         }
+
+        [Authorize(Roles = "Bot")]
+        // POST api/values
+        [HttpPost]
         public async Task<HttpResponseMessage> Post([FromBody] Activity activity, CancellationToken token)
         {
             if (activity != null)

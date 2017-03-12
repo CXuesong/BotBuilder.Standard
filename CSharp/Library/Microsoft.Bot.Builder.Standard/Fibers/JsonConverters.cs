@@ -168,18 +168,32 @@ namespace Microsoft.Bot.Builder.Fibers
         /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
+            // Type|Method|BindingFlags||T1|T2|T3||A1|A2|A3
             var method = (MethodInfo) value;
             var sb = new StringBuilder(method.DeclaringType.AssemblyQualifiedName);
             sb.Append('|');
             sb.Append(method.Name);
             sb.Append('|');
             if (method.IsPublic) sb.Append('P');
-            if (method.IsPrivate) sb.Append('p');
             if (method.IsStatic) sb.Append('S');
+            sb.Append("||");
+            bool isFirst = true;
+            if (method.IsGenericMethod)
+            {
+                foreach (var t in method.GetGenericArguments())
+                {
+                    if (isFirst) isFirst = false;
+                    else sb.Append('|');
+                    sb.Append(t.AssemblyQualifiedName);
+                }
+            }
+            sb.Append("||");
+            isFirst = true;
             foreach (var t in method.CachedParameterTypes())
             {
-                sb.Append('|');
-                sb.Append(t);
+                if (isFirst) isFirst = false;
+                else sb.Append('|');
+                sb.Append(t.AssemblyQualifiedName);
             }
             writer.WriteValue(sb.ToString());
         }
@@ -187,24 +201,53 @@ namespace Microsoft.Bot.Builder.Fibers
         /// <inheritdoc />
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var fields = existingValue.ToString().Split('|');
+            var expr = reader.Value.ToString();
+            var fields = expr.Split('|');
             var type = Type.GetType(fields[0], true);
-            var paramTypes = fields.Skip(2).Select(Type.GetType).ToArray();
             BindingFlags flags = 0;
-            if (fields[2].Contains('P')) flags |= BindingFlags.Public;
-            if (fields[2].Contains('p')) flags |= BindingFlags.NonPublic;
-            if (fields[2].Contains('S'))
-                flags |= BindingFlags.Static;
-            else
-                flags |= BindingFlags.Instance;
+            flags |= fields[2].Contains('P') ? BindingFlags.Public : BindingFlags.NonPublic;
+            flags |= fields[2].Contains('S') ? BindingFlags.Static : BindingFlags.Instance;
+            var methodName = fields[1];
+            List<Type> genericArgs = null, args = null;
+            foreach (var field in fields.Skip(4))
+            {
+                if (field == "")
+                {
+                    args = new List<Type>();
+                    continue;
+                }
+                var t = Type.GetType(field, true);
+                if (args != null)
+                {
+                    args.Add(t);
+                }
+                else
+                {
+                    if (genericArgs == null) genericArgs = new List<Type>();
+                    genericArgs.Add(t);
+                }
+            }
+            var genericArgsArray = genericArgs?.ToArray();
             try
             {
-                return type.GetMembers(flags).OfType<MethodInfo>().Where(m => m.Name == fields[1])
-                    .First(m => paramTypes.SequenceEqual(m.CachedParameterTypes()));
+                return type.GetMembers(flags).OfType<MethodInfo>().Where(m => m.Name == methodName).Select(m =>
+                {
+                    if (m.IsGenericMethod != (genericArgs != null)) return null;
+                    if (genericArgs != null && genericArgs.Count != m.GetGenericArguments().Length) return null;
+                    try
+                    {
+                        var built = genericArgs != null ? m.MakeGenericMethod(genericArgsArray) : m;
+                        return args.SequenceEqual(built.CachedParameterTypes()) ? built : null;
+                    }
+                    catch (ArgumentException)
+                    {
+                        return null;
+                    }
+                }).First(m => m != null);
             }
             catch (InvalidOperationException)
             {
-                throw new MissingMethodException("Missing method: " + existingValue);
+                throw new MissingMethodException("Missing method: " + expr);
             }
         }
 

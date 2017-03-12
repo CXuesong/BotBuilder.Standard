@@ -41,6 +41,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -460,6 +461,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             /// Constructor for a prompt confirmation dialog.
             /// </summary>
             /// <param name="promptOptions"> THe prompt options.</param>
+            [JsonConstructor]
             public PromptConfirm(PromptOptions<string> promptOptions)
                 : base(promptOptions)
             {

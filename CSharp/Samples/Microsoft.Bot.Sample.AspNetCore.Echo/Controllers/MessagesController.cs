@@ -39,10 +39,10 @@ namespace Microsoft.Bot.Sample.AspNetCore.Echo.Controllers
             switch (activity.GetActivityType())
             {
                 case ActivityTypes.Message:
-                    //await Conversation.SendAsync(activity, () => new EchoDialog());
-                    //await Conversation.SendAsync(activity, () => EchoCommandDialog.dialog);
-                    //await Conversation.SendAsync(activity, () => new EchoAttachmentDialog());
-                    await conversation.SendAsync(activity, () => EchoChainDialog.dialog);
+                    //await conversation.SendAsync(activity, () => new EchoDialog());
+                    await conversation.SendAsync(activity, () => EchoCommandDialog.dialog);
+                    //await conversation.SendAsync(activity, () => new EchoAttachmentDialog());
+                    //await conversation.SendAsync(activity, () => EchoChainDialog.dialog);
                     break;
 
                 case ActivityTypes.ConversationUpdate:

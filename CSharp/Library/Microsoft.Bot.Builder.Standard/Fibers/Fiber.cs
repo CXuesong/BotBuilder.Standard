@@ -145,9 +145,9 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
         [DataMember] private readonly IFrameFactory<C> frames;
         [DataMember] private readonly IWaitFactory<C> waits;
 
-        public Fiber(IFrameFactory<C> factory, IWaitFactory<C> waits)
+        public Fiber(IFrameFactory<C> frames, IWaitFactory<C> waits)
         {
-            SetField.NotNull(out this.frames, nameof(factory), factory);
+            SetField.NotNull(out this.frames, nameof(frames), frames);
             SetField.NotNull(out this.waits, nameof(waits), waits);
         }
 

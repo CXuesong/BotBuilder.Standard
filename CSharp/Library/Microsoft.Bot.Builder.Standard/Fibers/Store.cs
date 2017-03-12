@@ -95,7 +95,6 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
     //    }
     //}
 
-
     public sealed class DataContractStore<T> : IStore<T>
     {
         private readonly IResolver resolver;
@@ -112,13 +111,13 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             {
                 TypeNameHandling = TypeNameHandling.Objects,
                 ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-                PreserveReferencesHandling = PreserveReferencesHandling.All,
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                 Converters =
                 {
                     DelegateJsonConverter.Default,
                     MethodInfoJsonConverter.Default,
                     new ResolvableObjectJsonConverter(resolver),
-                }
+                },
             };
         }
 

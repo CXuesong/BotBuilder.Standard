@@ -14,7 +14,6 @@ namespace Microsoft.Bot.Sample.EchoBot
             .Switch(
                 new Case<string, IDialog<string>>(text =>
                 {
-                    if (string.IsNullOrEmpty(text)) return false;
                     var regex = new Regex("^reset");
                     return regex.Match(text).Success;
                 }, (context, txt) =>

@@ -17,7 +17,6 @@ namespace Microsoft.Bot.Sample.AspNetCore.PizzaBot
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
-                .UseApplicationInsights()
                 .Build();
 
             host.Run();

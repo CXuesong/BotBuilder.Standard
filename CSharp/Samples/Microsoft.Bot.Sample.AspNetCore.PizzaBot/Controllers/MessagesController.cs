@@ -1,4 +1,12 @@
-﻿using Microsoft.Bot.Connector;
+﻿using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.FormFlow;
+using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Sample.AspNetCore.PizzaBot.Controllers
 {
@@ -6,6 +14,9 @@ namespace Microsoft.Bot.Sample.AspNetCore.PizzaBot.Controllers
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
+        private readonly Conversation conversation;
+        private ILogger logger;
+
         private static IForm<PizzaOrder> BuildForm()
         {
             var builder = new FormBuilder<PizzaOrder>();
@@ -39,12 +50,19 @@ namespace Microsoft.Bot.Sample.AspNetCore.PizzaBot.Controllers
             return Chain.From(() => new PizzaOrderDialog(BuildForm));
         }
 
+        public MessagesController(Conversation conversation, ILoggerFactory loggerFactory)
+        {
+            if (conversation == null) throw new ArgumentNullException(nameof(conversation));
+            if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
+            this.conversation = conversation;
+            this.logger = loggerFactory.CreateLogger<MessagesController>();
+        }
+
         /// <summary>
         /// POST: api/Messages
         /// receive a message from a user and send replies
         /// </summary>
         /// <param name="activity"></param>
-        [ResponseType(typeof(void))]
         public virtual async Task<HttpResponseMessage> Post([FromBody] Activity activity)
         {
             if (activity != null)
@@ -53,7 +71,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.PizzaBot.Controllers
                 switch (activity.GetActivityType())
                 {
                     case ActivityTypes.Message:
-                        await Conversation.SendAsync(activity, MakeRoot);
+                        await conversation.SendAsync(activity, MakeRoot);
                         break;
 
                     case ActivityTypes.ConversationUpdate:
@@ -61,7 +79,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.PizzaBot.Controllers
                     case ActivityTypes.Typing:
                     case ActivityTypes.DeleteUserData:
                     default:
-                        Trace.TraceError($"Unknown activity type ignored: {activity.GetActivityType()}");
+                        logger.LogWarning("Unknown activity type ignored: {0}", activity.GetActivityType());
                         break;
                 }
             }

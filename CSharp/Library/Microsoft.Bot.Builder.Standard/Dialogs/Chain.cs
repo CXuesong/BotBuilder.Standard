@@ -44,6 +44,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -1080,7 +1081,18 @@ namespace Microsoft.Bot.Builder.Dialogs
             this.Condition = this.IsMatch;
         }
 
-        private bool IsMatch(string text)
+        // This constructor is needed, because this class may in a reference loop.
+        // In which case, we should at least constrcut one class; then do we have the chance
+        // to pass this instance to the child members that refernece this class.
+        // E.g. RegexCase<R> -> Condition[] -> Delegate.Target -> RegexCase<R>
+        // In this case, injection from constrctor is not possible.
+        [JsonConstructor]
+        private RegexCase()
+        {
+            
+        }
+
+        public bool IsMatch(string text)
         {
             return this.Regex.Match(text).Success;
         }
@@ -1099,6 +1111,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         public DefaultCase(ContextualSelector<T, R> selector)
             : base(obj => true, selector)
         {
+        }
+
+        // This constructor is needed. See also: RegexCase<R>.ctor()
+        [JsonConstructor]
+        private DefaultCase()
+        {
+
         }
     }
 }

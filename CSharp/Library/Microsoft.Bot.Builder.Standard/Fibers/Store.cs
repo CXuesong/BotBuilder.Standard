@@ -183,6 +183,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
     public sealed class ErrorResilientStore<T> : IStore<T>
     {
         private readonly IStore<T> store;
+
         public ErrorResilientStore(IStore<T> store)
         {
             SetField.NotNull(out this.store, nameof(store), store);
@@ -222,6 +223,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
     {
         private readonly IStore<T> store;
         private readonly Func<T> factory;
+
         public FactoryStore(IStore<T> store, Func<T> factory)
         {
             SetField.NotNull(out this.store, nameof(store), store);

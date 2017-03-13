@@ -18,6 +18,7 @@ namespace Microsoft.Bot.Builder.Fibers
 {
     /// <summary>
     /// Return the resolved instance, if it can be resolved by type.
+    /// This class is NOT thread-safe.
     /// </summary>
     internal class ResolvableObjectJsonConverter : JsonConverter
     {
@@ -33,6 +34,11 @@ namespace Microsoft.Bot.Builder.Fibers
         /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
+            if (value == null)
+            {
+                writer.WriteNull();
+                return;
+            }
             writer.WriteStartObject();
             writer.WritePropertyName("$resolve");
             writer.WriteValue(value.GetType().AssemblyQualifiedName);
@@ -43,6 +49,7 @@ namespace Microsoft.Bot.Builder.Fibers
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
             JsonSerializer serializer)
         {
+            if (reader.TokenType == JsonToken.Null) return null;
             var token = JToken.ReadFrom(reader);
             var typeName = (string) token["$resolve"];
             if (typeName != null)
@@ -96,11 +103,13 @@ namespace Microsoft.Bot.Builder.Fibers
     {
         public static readonly DelegateJsonConverter Default = new DelegateJsonConverter();
 
-        private class DelegateInfo : IEquatable<DelegateInfo>
+        public class DelegateInfo : IEquatable<DelegateInfo>
         {
             public DelegateInfo(Type delegateType, MethodInfo method, object target)
             {
+                if (delegateType == null) throw new ArgumentNullException(nameof(delegateType));
                 if (method == null) throw new ArgumentNullException(nameof(method));
+                Debug.Assert(method.IsStatic || target != null);
                 DelegateType = delegateType;
                 Method = method;
                 Target = target;
@@ -121,6 +130,12 @@ namespace Microsoft.Bot.Builder.Fibers
             public Delegate ToDelegate()
             {
                 return Method.CreateDelegate(DelegateType, Target);
+            }
+
+            /// <inheritdoc />
+            public override string ToString()
+            {
+                return Method.DeclaringType + "|" + Method;
             }
 
             /// <inheritdoc />
@@ -161,17 +176,26 @@ namespace Microsoft.Bot.Builder.Fibers
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
             JsonSerializer serializer)
         {
+            if (reader.TokenType == JsonToken.Null) return null;
             var delegates = serializer.Deserialize<IEnumerable<DelegateInfo>>(reader);
+            //Debug.WriteLine("DES: " + delegates.First());
             return Delegate.Combine(delegates.Select(di => di.ToDelegate()).ToArray());
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             // TODO CXuesong: Implement the ability for user to add their custom JsonSerializer.
+            if (value == null)
+            {
+                writer.WriteNull();
+                return;
+            }
             var type = value.GetType();
             var generated = type.GetTypeInfo().GetCustomAttribute<CompilerGeneratedAttribute>() != null;
             if (generated && !type.GetTypeInfo().IsSerializable) throw new ClosureCaptureException(value);
-            serializer.Serialize(writer, DelegateInfo.FromDelegate((Delegate) value));
+            var delegates = DelegateInfo.FromDelegate((Delegate)value);
+            //Debug.WriteLine("SER: " + delegates.First());
+            serializer.Serialize(writer, delegates);
         }
     }
 
@@ -182,6 +206,11 @@ namespace Microsoft.Bot.Builder.Fibers
         /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
+            if (value == null)
+            {
+                writer.WriteNull();
+                return;
+            }
             // Type|Method|BindingFlags||T1|T2|T3||A1|A2|A3
             var method = (MethodInfo) value;
             var sb = new StringBuilder(method.DeclaringType.AssemblyQualifiedName);
@@ -215,10 +244,11 @@ namespace Microsoft.Bot.Builder.Fibers
         /// <inheritdoc />
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
+            if (reader.TokenType == JsonToken.Null) return null;
             var expr = reader.Value.ToString();
             var fields = expr.Split('|');
             var type = Type.GetType(fields[0], true);
-            BindingFlags flags = 0;
+            var flags = BindingFlags.DeclaredOnly;
             flags |= fields[2].Contains('P') ? BindingFlags.Public : BindingFlags.NonPublic;
             flags |= fields[2].Contains('S') ? BindingFlags.Static : BindingFlags.Instance;
             var methodName = fields[1];

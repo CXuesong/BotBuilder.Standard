@@ -19,6 +19,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Controllers
     {
         // TODO: "service locator"
         private readonly ILifetimeScope scope;
+
         public MessagesController(ILifetimeScope scope)
         {
             SetField.NotNull(out this.scope, nameof(scope), scope);
@@ -39,7 +40,6 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Controllers
                             var postToBot = scope.Resolve<IPostToBot>();
                             await postToBot.PostAsync(activity, token);
                         }
-
                         break;
                 }
             }

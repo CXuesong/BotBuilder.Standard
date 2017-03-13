@@ -33,6 +33,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            // See http://docs.autofac.org/en/latest/integration/aspnetcore.html#quick-start .
             // Add framework services.
             services.AddMvc(options =>
             {

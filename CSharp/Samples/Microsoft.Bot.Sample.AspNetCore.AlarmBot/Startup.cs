@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot
 
             app.UseMvc();
 
-            GlobalContainer = app.ApplicationServices.GetService<ILifetimeScope>();
+            GlobalContainer = this.ApplicationContainer;
         }
 
         public static ILifetimeScope GlobalContainer { get; private set; }

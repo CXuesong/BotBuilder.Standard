@@ -53,10 +53,16 @@ namespace Microsoft.Bot.Builder.Fibers
             // Falls back to default behavior
             // This can sometimes happen, when a new service has been registered in the resolver
             // After the serialization.
+            // For AutoFac, since System.Object is always registered with all of the concrete classes automatically,
+            // This situation can happen when there's a property with delaration value type of System.Object .
+            // In this case, CanConvert(typeof(System.Object)) can return true, which is not what we want for the most cases.
             disabled = true;
             try
             {
-                return serializer.Deserialize(token.CreateReader(), objectType);
+                Debug.WriteLine("Fallback to default behavior: " + objectType + "; Path: " + reader.Path);
+                var result = serializer.Deserialize(token.CreateReader(), objectType);
+                Debug.Assert(disabled == false);
+                return result;
             }
             finally
             {
@@ -71,7 +77,12 @@ namespace Microsoft.Bot.Builder.Fibers
             // FrameFactory`1[DialogTask]
             // WaitFactory`1[DialogTask]
             // NullWait`1[DialogTask]
-            if (disabled) return false;
+            if (disabled)
+            {
+                // This allows subsequent resolution of child nodes…
+                disabled = false;
+                return false;
+            }
             var result = resolver.CanResolve(objectType, null);
             Debug.WriteLineIf(result, "ResolvableObjectJsonConverter, Use IResolve: " + objectType);
             return result;

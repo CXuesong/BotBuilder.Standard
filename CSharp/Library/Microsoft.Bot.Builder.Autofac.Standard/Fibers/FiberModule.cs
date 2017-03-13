@@ -185,7 +185,8 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
 
             builder
                 .Register((c, p) => new FactoryStore<IFiberLoop<C>>(new ErrorResilientStore<IFiberLoop<C>>(
-                    new DataContractStore<IFiberLoop<C>>(p.TypedAs<Stream>(), c.Resolve<IResolver>())), c.Resolve<Func<IFiberLoop<C>>>(p)))
+                        new DataContractStore<IFiberLoop<C>>(p.TypedAs<Stream>(), c.Resolve<IResolver>(p))),
+                    c.Resolve<Func<IFiberLoop<C>>>(p)))
                 .As<IStore<IFiberLoop<C>>>()
                 .InstancePerDependency();
 

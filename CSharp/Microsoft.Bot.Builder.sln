@@ -130,6 +130,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Autof
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Sample.AspNetCore.AlarmBot", "Samples\Microsoft.Bot.Sample.AspNetCore.AlarmBot\Microsoft.Bot.Sample.AspNetCore.AlarmBot.csproj", "{B0F4E788-D353-473F-B316-03FD7FA2D9CC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Sample.AspNetCore.PizzaBot", "Samples\Microsoft.Bot.Sample.AspNetCore.PizzaBot\Microsoft.Bot.Sample.AspNetCore.PizzaBot.csproj", "{0B1097ED-FC40-42B7-A0FF-778D2AF35702}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Library\Microsoft.Bot.Connector.Shared\Microsoft.Bot.Connector.Shared.projitems*{133e6973-cf90-4691-8685-d42d79c8884b}*SharedItemsImports = 13
@@ -319,6 +321,12 @@ Global
 		{B0F4E788-D353-473F-B316-03FD7FA2D9CC}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{B0F4E788-D353-473F-B316-03FD7FA2D9CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0F4E788-D353-473F-B316-03FD7FA2D9CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B1097ED-FC40-42B7-A0FF-778D2AF35702}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B1097ED-FC40-42B7-A0FF-778D2AF35702}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B1097ED-FC40-42B7-A0FF-778D2AF35702}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B1097ED-FC40-42B7-A0FF-778D2AF35702}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{0B1097ED-FC40-42B7-A0FF-778D2AF35702}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B1097ED-FC40-42B7-A0FF-778D2AF35702}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -355,5 +363,6 @@ Global
 		{8E4FBF80-2CF0-4F46-93FF-C327B8113C7B} = {FAEFFF66-7944-48F4-972A-9A1C13A5C206}
 		{FBA98A4A-CDB9-4E16-AC76-EBF40AF34B63} = {28BCEB2C-F4BE-416D-A4FD-A311E99A9EB5}
 		{B0F4E788-D353-473F-B316-03FD7FA2D9CC} = {FAEFFF66-7944-48F4-972A-9A1C13A5C206}
+		{0B1097ED-FC40-42B7-A0FF-778D2AF35702} = {FAEFFF66-7944-48F4-972A-9A1C13A5C206}
 	EndGlobalSection
 EndGlobal

@@ -22,7 +22,7 @@ I also ported some working examples to .NET Core. including
 
 Since I haven't ported any of the unit tests, there might still exist bugs in the library. And it only supports .NET Core. Migration of Microsoft.Bot.Connector(.NetFramework) is needed before this ported library can be consumed on .Net Framework. While pull requests are welcomed, I DO NOT SUGGEST YOU TO USE IT IN PRODUCTION ENVIRONMENT.
 
-I set up the ASP.Net Core projects in VS 2017, which means that you may need VS 2017 to properly open the whole solution. The library targets at .Net Standard 1.6 (though some parts targets at 1.4), so if this project were to be made compatible with both .Net Core and .Net Framework, you would at least need .Net Framework 4.6 to consume this library.
+I set up the ASP.Net Core projects in VS 2017, which means that you may need VS 2017 to properly open the whole solution. The library targets at .Net Standard 1.6 (though some parts target at 1.4), so if this project were to be made compatible with both .Net Core and .Net Framework, you would at least need .Net Framework 4.6 to consume this library.
 
 ## Implementation Details
 
@@ -42,7 +42,7 @@ Note that you need to register a singleton of `MicrosoftAppCredentials` in `Conf
 
 If you come across issue with the version of `System.Http`, installing a newer version of `System.Http` from NuGet will usually solves it.
 
-###Microsoft.Bot.Builder & Microsoft.Bot.Builder.Autofac
+### Microsoft.Bot.Builder & Microsoft.Bot.Builder.Autofac
 
 This is where the hard work lies. I had to repetitively try out the example projects, find the bugs, and fix them. Some bugs may not be so obvious, and I can not guarantee that I've fixed them all. If you find new bugs, please leave me a note or open a PR. Thank you!
 

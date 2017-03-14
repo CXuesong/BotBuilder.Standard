@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore" Version="1.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AnnotatedSandwich.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Library\Microsoft.Bot.Builder.Autofac.Standard\Microsoft.Bot.Builder.Autofac.Standard.csproj" />
+    <ProjectReference Include="..\..\Library\Microsoft.Bot.Builder.Standard\Microsoft.Bot.Builder.Standard.csproj" />
+    <ProjectReference Include="..\..\Library\Microsoft.Bot.Connector.AspNetCore\Microsoft.Bot.Connector.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\Library\Microsoft.Bot.Connector.Standard\Microsoft.Bot.Connector.Standard.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resource\DynamicSandwich.Designer.cs">
+      <DependentUpon>DynamicSandwich.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Resource\Microsoft.Bot.Sample.JsonSandwichBot.SandwichOrder.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Microsoft.Bot.Sample.JsonSandwichBot.SandwichOrder.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resource\DynamicSandwich.resx">
+      <LastGenOutput>DynamicSandwich.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resource\Microsoft.Bot.Sample.JsonSandwichBot.SandwichOrder.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Microsoft.Bot.Sample.JsonSandwichBot.SandwichOrder.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

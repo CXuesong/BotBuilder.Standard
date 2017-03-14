@@ -132,6 +132,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Sample.AspNet
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Sample.AspNetCore.PizzaBot", "Samples\Microsoft.Bot.Sample.AspNetCore.PizzaBot\Microsoft.Bot.Sample.AspNetCore.PizzaBot.csproj", "{0B1097ED-FC40-42B7-A0FF-778D2AF35702}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot", "Samples\Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot\Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot.csproj", "{F7162D09-82DD-4AAD-970C-952158C78E5F}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Library\Microsoft.Bot.Connector.Shared\Microsoft.Bot.Connector.Shared.projitems*{133e6973-cf90-4691-8685-d42d79c8884b}*SharedItemsImports = 13
@@ -327,6 +329,12 @@ Global
 		{0B1097ED-FC40-42B7-A0FF-778D2AF35702}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{0B1097ED-FC40-42B7-A0FF-778D2AF35702}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B1097ED-FC40-42B7-A0FF-778D2AF35702}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7162D09-82DD-4AAD-970C-952158C78E5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7162D09-82DD-4AAD-970C-952158C78E5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7162D09-82DD-4AAD-970C-952158C78E5F}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7162D09-82DD-4AAD-970C-952158C78E5F}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{F7162D09-82DD-4AAD-970C-952158C78E5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7162D09-82DD-4AAD-970C-952158C78E5F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -364,5 +372,6 @@ Global
 		{FBA98A4A-CDB9-4E16-AC76-EBF40AF34B63} = {28BCEB2C-F4BE-416D-A4FD-A311E99A9EB5}
 		{B0F4E788-D353-473F-B316-03FD7FA2D9CC} = {FAEFFF66-7944-48F4-972A-9A1C13A5C206}
 		{0B1097ED-FC40-42B7-A0FF-778D2AF35702} = {FAEFFF66-7944-48F4-972A-9A1C13A5C206}
+		{F7162D09-82DD-4AAD-970C-952158C78E5F} = {FAEFFF66-7944-48F4-972A-9A1C13A5C206}
 	EndGlobalSection
 EndGlobal

@@ -66,41 +66,51 @@ namespace Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot
         [Describe(Image = @"https://placeholdit.imgix.net/~text?txtsize=16&txt=Sandwich&w=125&h=40&txttrack=0&txtclr=000&txtfont=bold")]
         // [Prompt("What kind of {&} would you like? {||}", ChoiceFormat ="{1}")]
         // [Prompt("What kind of {&} would you like?")]
+        [DataMember]
         public SandwichOptions? Sandwich;
 
         [Prompt("What size of sandwich do you want? {||}")]
+        [DataMember]
         public LengthOptions? Length;
 
         // Specify Title and SubTitle if generating cards
         [Describe(Title = "Sandwich Bot", SubTitle = "Bread Picker")]
+        [DataMember]
         public BreadOptions? Bread;
 
         // An optional annotation means that it is possible to not make a choice in the field.
         [Optional]
+        [DataMember]
         public CheeseOptions? Cheese;
 
         [Optional]
+        [DataMember]
         public List<ToppingOptions> Toppings { get; set; }
 
         [Optional]
+        [DataMember]
         public List<SauceOptions> Sauces;
 
         [Optional]
         [Template(TemplateUsage.NoPreference, "None")]
+        [DataMember]
         public string Specials;
 
-        public string DeliveryAddress;
+        [DataMember] public string DeliveryAddress;
 
         [Pattern(@"(\(\d{3}\))?\s*\d{3}(-|\s*)\d{4}")]
+        [DataMember]
         public string PhoneNumber;
 
         [Optional]
         [Template(TemplateUsage.StatusFormat, "{&}: {:t}", FieldCase = CaseNormalization.None)]
+        [DataMember]
         public DateTime? DeliveryTime;
 
         [Numeric(1, 5)]
         [Optional]
         [Describe("your experience today")]
+        [DataMember]
         public double? Rating;
 
         public static IForm<SandwichOrder> BuildForm()

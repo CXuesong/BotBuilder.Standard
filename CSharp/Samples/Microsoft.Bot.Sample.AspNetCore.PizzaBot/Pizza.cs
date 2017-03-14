@@ -116,7 +116,11 @@ namespace Microsoft.Bot.Sample.AspNetCore.PizzaBot
     class PizzaOrder
     {
         [DataMember] public SizeOptions Size;
-        [Prompt("What kind of pizza do you want? {||}")] [Template(TemplateUsage.NotUnderstood, "What does \"{0}\" mean???")] [Describe("Kind of pizza")] [DataMember] public PizzaOptions Kind;
+
+        [Prompt("What kind of pizza do you want? {||}"),
+         Template(TemplateUsage.NotUnderstood, "What does \"{0}\" mean???"),
+         Describe("Kind of pizza"),
+         DataMember] public PizzaOptions Kind;
         [DataMember] public SignatureOptions Signature;
         [DataMember] public GourmetDeliteOptions GourmetDelite;
         [DataMember] public StuffedOptions Stuffed;

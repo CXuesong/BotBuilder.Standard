@@ -71,10 +71,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         protected override string Text
         {
-            get
-            {
-                return this.IntentName;
-            }
+            get { return this.IntentName; }
         }
     }
 
@@ -93,7 +90,8 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <param name="message">The dialog message.</param>
     /// <param name="luisResult">The LUIS result.</param>
     /// <returns>A task representing the completion of the intent processing.</returns>
-    public delegate Task IntentActivityHandler(IDialogContext context, IAwaitable<IMessageActivity> message, LuisResult luisResult);
+    public delegate Task IntentActivityHandler(
+        IDialogContext context, IAwaitable<IMessageActivity> message, LuisResult luisResult);
 
     /// <summary>
     /// An exception for invalid intent handlers.
@@ -200,14 +198,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             var message = await item;
             var messageText = await GetLuisQueryTextAsync(context, message);
-            
+
             var tasks = this.services.Select(s => s.QueryAsync(messageText, context.CancellationToken)).ToArray();
             var results = await Task.WhenAll(tasks);
 
-            var winners = from result in results.Select((value, index) => new {value, index} )
-                          let resultWinner = BestIntentFrom(result.value)
-                          where resultWinner != null
-                          select new LuisServiceResult(result.value, resultWinner, this.services[result.index]);
+            var winners = from result in results.Select((value, index) => new {value, index})
+                let resultWinner = BestIntentFrom(result.value)
+                where resultWinner != null
+                select new LuisServiceResult(result.value, resultWinner, this.services[result.index]);
 
             var winner = this.BestResultFrom(winners);
 
@@ -219,8 +217,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (winner.Result.Dialog?.Status == DialogResponse.DialogStatus.Question)
             {
                 var childDialog = await MakeLuisActionDialog(winner.LuisService,
-                                                             winner.Result.Dialog.ContextId,
-                                                             winner.Result.Dialog.Prompt);
+                    winner.Result.Dialog.ContextId,
+                    winner.Result.Dialog.Prompt);
                 context.Call(childDialog, LuisActionDialogFinished);
             }
             else
@@ -229,10 +227,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        protected virtual async Task DispatchToIntentHandler(IDialogContext context, 
-                                                            IAwaitable<IMessageActivity> item,  
-                                                            IntentRecommendation bestInent, 
-                                                            LuisResult result)
+        protected virtual async Task DispatchToIntentHandler(IDialogContext context,
+            IAwaitable<IMessageActivity> item,
+            IntentRecommendation bestInent,
+            LuisResult result)
         {
             if (this.handlerByIntent == null)
             {
@@ -266,7 +264,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             return LuisDialog.EnumerateHandlers(this).ToDictionary(kv => kv.Key, kv => kv.Value);
         }
 
-        protected virtual async Task<IDialog<LuisResult>> MakeLuisActionDialog(ILuisService luisService, string contextId, string prompt)
+        protected virtual async Task<IDialog<LuisResult>> MakeLuisActionDialog(ILuisService luisService,
+            string contextId, string prompt)
         {
             return new LuisActionDialog(luisService, contextId, prompt);
         }
@@ -341,59 +340,34 @@ namespace Microsoft.Bot.Builder.Dialogs
             var methods = type.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             foreach (var method in methods)
             {
+                // CXuesong: We prefer an Exception-free approach. It's slightly faster than Exception-then-catch.
                 var intents = method.GetCustomAttributes<LuisIntentAttribute>(inherit: true).ToArray();
-                IntentActivityHandler intentHandler = null;
-
-                try
+                if (intents.Length == 0) continue;
+                IntentActivityHandler intentHandler;
+                if (method.IsGenericMethod)
+                    throw new InvalidIntentHandlerException("LUIS intent handler function shoud not be generic.", method);
+                var methodParams = method.GetParameters();
+                if (methodParams.Length == 2)
+                {
+                    // For compatibility
+                    var handler = (IntentHandler) method.CreateDelegate(typeof(IntentHandler), dialog);
+                    // thunk from new to old delegate type
+                    intentHandler = (context, message, result) => handler(context, result);
+                }
+                else if (methodParams.Length == 3)
                 {
                     intentHandler = (IntentActivityHandler) method.CreateDelegate(typeof(IntentActivityHandler), dialog);
-                    //intentHandler = (IntentActivityHandler)Delegate.CreateDelegate(typeof(IntentActivityHandler), dialog, method, throwOnBindFailure: false);
-                }
-                catch (ArgumentException)
-                {
-                    // "Cannot bind to the target method because its signature or security transparency is not compatible with that of the delegate type."
-                    // https://github.com/Microsoft/BotBuilder/issues/634
-                    // https://github.com/Microsoft/BotBuilder/issues/435
-                }
-
-                // fall back for compatibility
-                if (intentHandler == null)
-                {
-                    try
-                    {
-                        var handler = (IntentHandler) method.CreateDelegate(typeof(IntentHandler), dialog);
-                        //var handler = (IntentHandler)Delegate.CreateDelegate(typeof(IntentHandler), dialog, method, throwOnBindFailure: false);
-
-                        if (handler != null)
-                        {
-                            // thunk from new to old delegate type
-                            intentHandler = (context, message, result) => handler(context, result);
-                        }
-                    }
-                    catch (ArgumentException)
-                    {
-                        // "Cannot bind to the target method because its signature or security transparency is not compatible with that of the delegate type."
-                        // https://github.com/Microsoft/BotBuilder/issues/634
-                        // https://github.com/Microsoft/BotBuilder/issues/435
-                    }
-                }
-
-                if (intentHandler != null)
-                {
-                    var intentNames = intents.Select(i => i.IntentName).DefaultIfEmpty(method.Name);
-
-                    foreach (var intentName in intentNames)
-                    {
-                        var key = string.IsNullOrWhiteSpace(intentName) ? string.Empty : intentName;
-                        yield return new KeyValuePair<string, IntentActivityHandler>(intentName, intentHandler);
-                    }
                 }
                 else
                 {
-                    if (intents.Length > 0)
-                    {
-                        throw new InvalidIntentHandlerException(string.Join(";", intents.Select(i => i.IntentName)), method);
-                    }
+                    throw new InvalidIntentHandlerException("The method should have 2 or 3 parameters.", method);
+                }
+
+                var intentNames = intents.Select(i => i.IntentName).DefaultIfEmpty(method.Name);
+                foreach (var intentName in intentNames)
+                {
+                    var key = string.IsNullOrWhiteSpace(intentName) ? string.Empty : intentName;
+                    yield return new KeyValuePair<string, IntentActivityHandler>(intentName, intentHandler);
                 }
             }
         }

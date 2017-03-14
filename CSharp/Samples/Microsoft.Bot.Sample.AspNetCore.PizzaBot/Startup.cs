@@ -35,7 +35,10 @@ namespace Microsoft.Bot.Sample.AspNetCore.PizzaBot
             services.AddSingleton<Conversation>();
 
             // Add framework services.
-            services.AddMvc();
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new TrustServiceUrlAttribute());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

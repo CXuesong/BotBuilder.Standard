@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot
             // Add framework services.
             services.AddMvc(options =>
             {
-                options.Filters.Add(typeof(TrustServiceUrlAttribute));
+                options.Filters.Add(new TrustServiceUrlAttribute());
             });
 
             // Create the container builder.

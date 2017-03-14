@@ -56,11 +56,11 @@ I have ported Chronic to .Net Standard. The package is `CXuesong.Ported.Chronic`
 
 First of all, it's well known that this library heavily relies on `BinaryFormatter`, which is unfortunately not available before .Net Standard 2.0. There is even no `[Serializable]` here.
 
-To resolve this dependency, I attempted to use some DataContractSerializer instead; however, such serializers often requires all the `Type`s of the serialized instances known before serialization. Finally, I chose to use `Newtonsoft.Json` with some customizations.
+To resolve this dependency, I attempted to use some DataContractSerializer instead; however, such serializers often require all the `Type`s of the serialized instances known before serialization. Finally, I chose to use `Newtonsoft.Json` with some customizations.
 
 I replaced `FormatterStore` with `DataContractStore`, implemented some `JsonConverter`s in Fibers/JsonConverters.cs, and removed Fibers/Serialization.cs. Here are some key points
 
-*   Object references are pertained by default, except the arrays and lists. Cyclic references are retained.
+*   Object references are kept by default, except the arrays and lists. Cyclic references are retained.
 *   It persists the type information of every instances, so don't worry about inheritance.
 *   It can handle the serialization of `Delegate`, and `Regex`. I also wrote `ResolvableObjectJsonConverter` that, I believe, is equivalent to `StoreInstanceByTypeSurrogate`.
 *   For you classes that need to be stored, or to be "marked as serializable" as mentioned in official document, I suggest you do the following

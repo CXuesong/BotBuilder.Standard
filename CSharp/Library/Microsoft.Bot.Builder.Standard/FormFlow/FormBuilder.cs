@@ -85,7 +85,12 @@ namespace Microsoft.Bot.Builder.FormFlow
             var lang = resourceAssembly.GetCustomAttribute<NeutralResourcesLanguageAttribute>();
             if (string.IsNullOrWhiteSpace(lang?.CultureName))
             {
-                Debug.WriteLine("FormBuilderBase+IForm, Warning: No NeutralResourcesLanguageAttribute found for assembly {0}. Will not load the resource.", resourceAssembly);
+#if DEBUG
+                if (resourceAssembly.GetManifestResourceNames().Length > 0)
+                    Debug.WriteLine(
+                        "FormBuilderBase+IForm, Warning: No NeutralResourcesLanguageAttribute found for assembly {0}. Will not localize the dialog.",
+                        resourceAssembly);
+#endif
             }
             else
             {
@@ -100,14 +105,18 @@ namespace Microsoft.Bot.Builder.FormFlow
                         break;
                     }
                 }
-                if (name != null)
+                if (name == null)
                 {
+                    Debug.WriteLine(
+                        "FormBuilderBase+IForm, Warning: No Resource found for {0}. Will not localize the dialog.",
+                        resourceName);
+                } else {
                     var rm = new ResourceManager(name, resourceAssembly);
                     var resourceSetEnumerator = rm.GetResourceSetEnumerator(CultureInfo.CurrentUICulture, true, true);
                     _form.Localize(resourceSetEnumerator, out missing, out extra);
                     if (missing.Any())
                     {
-                        throw new MissingManifestResourceException($"Missing resources {missing}");
+                        throw new MissingManifestResourceException($"Missing resource items: {missing}.");
                     }
                 }
             }

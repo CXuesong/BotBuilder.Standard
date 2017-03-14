@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp1.0</TargetFramework>
-    <NeutralLanguage>en-us</NeutralLanguage>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -39,11 +39,6 @@
       <DependentUpon>DynamicSandwich.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Resource\Microsoft.Bot.Sample.JsonSandwichBot.SandwichOrder.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Microsoft.Bot.Sample.JsonSandwichBot.SandwichOrder.resx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

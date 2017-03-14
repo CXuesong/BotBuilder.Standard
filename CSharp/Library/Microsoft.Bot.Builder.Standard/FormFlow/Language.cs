@@ -304,6 +304,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         /// <returns>   A normalized string. </returns>
         public static string Normalize(string value, CaseNormalization normalization)
         {
+            if (value == null) throw new ArgumentNullException(nameof(value));
             switch (normalization)
             {
                 case CaseNormalization.InitialUpper:

@@ -71,9 +71,9 @@ namespace Microsoft.Bot.Builder.Compatibility
 
         public static IDictionaryEnumerator GetResourceSetEnumerator(this ResourceManager resourceManager, CultureInfo culture, bool createIfNotExists, bool tryParents)
         {
-            var resourceSet = ResourceManager_GetResourceSet.Invoke(resourceManager, null);
-            return (IDictionaryEnumerator) ResourceSet_GetEnumerator.Invoke(resourceSet,
+            var resourceSet = ResourceManager_GetResourceSet.Invoke(resourceManager,
                 new object[] {culture, createIfNotExists, tryParents});
+            return (IDictionaryEnumerator) ResourceSet_GetEnumerator.Invoke(resourceSet, null);
         }
     }
 }

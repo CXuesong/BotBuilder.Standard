@@ -134,6 +134,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Sample.AspNet
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot", "Samples\Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot\Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot.csproj", "{F7162D09-82DD-4AAD-970C-952158C78E5F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.FormFlow.Json.Standard", "Library\Microsoft.Bot.Builder.FormFlow.Json.Standard\Microsoft.Bot.Builder.FormFlow.Json.Standard.csproj", "{64E9C7D1-38BC-44AC-A6FF-1492207DBC66}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Library\Microsoft.Bot.Connector.Shared\Microsoft.Bot.Connector.Shared.projitems*{133e6973-cf90-4691-8685-d42d79c8884b}*SharedItemsImports = 13
@@ -335,6 +337,12 @@ Global
 		{F7162D09-82DD-4AAD-970C-952158C78E5F}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{F7162D09-82DD-4AAD-970C-952158C78E5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7162D09-82DD-4AAD-970C-952158C78E5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64E9C7D1-38BC-44AC-A6FF-1492207DBC66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64E9C7D1-38BC-44AC-A6FF-1492207DBC66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64E9C7D1-38BC-44AC-A6FF-1492207DBC66}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{64E9C7D1-38BC-44AC-A6FF-1492207DBC66}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{64E9C7D1-38BC-44AC-A6FF-1492207DBC66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64E9C7D1-38BC-44AC-A6FF-1492207DBC66}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -373,5 +381,6 @@ Global
 		{B0F4E788-D353-473F-B316-03FD7FA2D9CC} = {FAEFFF66-7944-48F4-972A-9A1C13A5C206}
 		{0B1097ED-FC40-42B7-A0FF-778D2AF35702} = {FAEFFF66-7944-48F4-972A-9A1C13A5C206}
 		{F7162D09-82DD-4AAD-970C-952158C78E5F} = {FAEFFF66-7944-48F4-972A-9A1C13A5C206}
+		{64E9C7D1-38BC-44AC-A6FF-1492207DBC66} = {28BCEB2C-F4BE-416D-A4FD-A311E99A9EB5}
 	EndGlobalSection
 EndGlobal

@@ -43,6 +43,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Internals.Fibers;
+using Microsoft.CodeAnalysis;
 
 namespace Microsoft.Bot.Builder.FormFlow.Json
 {
@@ -243,15 +245,20 @@ namespace Microsoft.Bot.Builder.FormFlow.Json
         #endregion
 
         #region Implementation
+
         private void ProcessOptions()
         {
             JToken references;
-            var assemblies = new List<string>() { "Microsoft.Bot.Builder.dll" };
+            var assemblies = new List<Assembly>
+            {
+                typeof(IStore<>).GetTypeInfo().Assembly,    /* "Microsoft.Bot.Builder.dll" */
+            };
             if (_schema.TryGetValue("References", out references))
             {
-                foreach (JToken reference in references.Children())
+                foreach (var reference in references.Children())
                 {
-                    assemblies.Add((string)reference);
+                    var path = (string) reference;
+                    assemblies.Add(Assembly.Load(new AssemblyName(path)));
                 }
             }
             JToken importsChildren;
@@ -263,9 +270,8 @@ namespace Microsoft.Bot.Builder.FormFlow.Json
                     imports.Add((string)import);
                 }
             }
-            var dir = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
-            _options = CodeAnalysis.Scripting.ScriptOptions.Default
-                .AddReferences((from assembly in assemblies select System.IO.Path.Combine(dir, assembly)).ToArray())
+            _options = ScriptOptions.Default
+                .AddReferences(assemblies) 
                 .AddImports("Microsoft.Bot.Builder", "Microsoft.Bot.Builder.Dialogs",
                             "Microsoft.Bot.Builder.FormFlow", "Microsoft.Bot.Builder.FormFlow.Advanced",
                             "System.Collections.Generic", "System.Linq")
@@ -407,7 +413,8 @@ namespace Microsoft.Bot.Builder.FormFlow.Json
 
         private void TypePaths(Type type, string path, List<string> paths)
         {
-            if (type.IsClass)
+            var typeInfo = type.GetTypeInfo();
+            if (typeInfo.IsClass)
             {
                 if (type == typeof(string))
                 {
@@ -416,7 +423,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Json
                 else if (type.IsIEnumerable())
                 {
                     var elt = type.GetGenericElementType();
-                    if (elt.IsEnum)
+                    if (elt.GetTypeInfo().IsEnum)
                     {
                         paths.Add(path);
                     }
@@ -430,7 +437,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Json
                     FieldPaths(type, path, paths);
                 }
             }
-            else if (type.IsEnum)
+            else if (typeInfo.IsEnum)
             {
                 paths.Add(path);
             }
@@ -446,7 +453,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Json
             {
                 paths.Add(path);
             }
-            else if (type.IsNullable() && type.IsValueType)
+            else if (type.IsNullable() && typeInfo.IsValueType)
             {
                 paths.Add(path);
             }

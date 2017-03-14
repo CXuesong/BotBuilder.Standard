@@ -31,6 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -160,5 +161,15 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         /// <see cref="Save(IResourceWriter)"/> to see resource format.
         /// </remarks>
         ILocalizer Load(IDictionaryEnumerator reader, out IEnumerable<string> missing, out IEnumerable<string> extra);
+    }
+
+    public static class LocalizerExtensions
+    {
+        public static void Save(this ILocalizer localizer, ResourceWriter writer)
+        {
+            if (localizer == null) throw new ArgumentNullException(nameof(localizer));
+            if (writer == null) throw new ArgumentNullException(nameof(writer));
+            localizer.Save(writer.MakeCompatible());
+        }
     }
 }

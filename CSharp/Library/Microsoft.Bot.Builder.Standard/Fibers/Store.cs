@@ -97,16 +97,16 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
 
     public sealed class DataContractStore<T> : IStore<T>
     {
-        private readonly IResolver resolver;
         private readonly Stream stream;
         private readonly JsonSerializer serializer;
 
         public DataContractStore(Stream stream, IResolver resolver)
         {
             SetField.NotNull(out this.stream, nameof(stream), stream);
-            SetField.NotNull(out this.resolver, nameof(resolver), resolver);
+            SetField.CheckNull(nameof(resolver), resolver);
 
-            // TODO CXuesong: Tweak the settings later.
+            // CXuesong: Tweak the settings later.
+            //           - Done.
             serializer = new JsonSerializer
             {
                 TypeNameHandling = TypeNameHandling.Objects,
@@ -137,6 +137,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
                 using (var reader = new StreamReader(gzip, Encoding.UTF8, true, 1024, true))
                 {
 #if DEBUG
+                    // For sake of debugging the JSON.
                     var s = reader.ReadToEnd();
                     using (var sr = new StringReader(s))
                         item = (T) serializer.Deserialize(sr, typeof(T));
@@ -162,6 +163,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             using (var writer = new StreamWriter(gzip, Encoding.UTF8, 1024, true))
             {
 #if DEBUG
+                // For sake of debugging the JSON.
                 using (var sw = new StringWriter())
                 {
                     serializer.Serialize(sw, item);

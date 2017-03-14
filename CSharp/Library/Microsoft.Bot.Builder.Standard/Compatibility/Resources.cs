@@ -9,7 +9,8 @@ using System.Text;
 
 namespace Microsoft.Bot.Builder.Compatibility
 {
-    // CXuesong: Unfortunately, we do not have an IResourceWriter in .NET Standard 1.4.
+    // CXuesong: Unfortunately, we do not have an IResourceWriter in .NET Standard 1.4,
+    //           so we have to declare one to keep the abstraction.
 
     public interface IResourceWriter : IDisposable
     {
@@ -49,6 +50,10 @@ namespace Microsoft.Bot.Builder.Compatibility
 
     public static class ResourceUtility
     {
+        /// <summary>
+        /// Adapts the specified <see cref="ResourceWriter"/> into <see cref="IResourceWriter"/>
+        /// that can be consumed by this library.
+        /// </summary>
         public static IResourceWriter MakeCompatible(this ResourceWriter resourceWriter)
         {
             if (resourceWriter == null) throw new ArgumentNullException(nameof(resourceWriter));

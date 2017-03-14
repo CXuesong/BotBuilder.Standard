@@ -37,6 +37,7 @@ using Microsoft.Bot.Connector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -80,8 +81,13 @@ namespace Microsoft.Bot.Builder.FormFlow
                     return prompt;
                 };
             }
+            // TODO CXuesong: Maybe later we can emit the warning into ILogger
             var lang = resourceAssembly.GetCustomAttribute<NeutralResourcesLanguageAttribute>();
-            if (lang != null && !string.IsNullOrWhiteSpace(lang.CultureName))
+            if (string.IsNullOrWhiteSpace(lang?.CultureName))
+            {
+                Debug.WriteLine("FormBuilderBase+IForm, Warning: No NeutralResourcesLanguageAttribute found for assembly {0}. Will not load the resource.", resourceAssembly);
+            }
+            else
             {
                 IEnumerable<string> missing, extra;
                 string name = null;

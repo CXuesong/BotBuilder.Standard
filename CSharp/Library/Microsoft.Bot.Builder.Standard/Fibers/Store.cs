@@ -31,6 +31,9 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+//#define DEBUG_STREAMS
+//#define STRICT_REF_RESOLVER
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -99,7 +102,9 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
     {
         private readonly Stream stream;
         private readonly JsonSerializer serializer;
-
+#if STRICT_REF_RESOLVER
+        private readonly StrictJsonReferenceResolver refResolver = new StrictJsonReferenceResolver();
+#endif
         public DataContractStore(Stream stream, IResolver resolver)
         {
             SetField.NotNull(out this.stream, nameof(stream), stream);
@@ -113,6 +118,9 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
                 ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
                 PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                 ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
+#if STRICT_REF_RESOLVER
+                ReferenceResolver = refResolver,
+#endif
                 Converters =
                 {
                     DelegateJsonConverter.Default,
@@ -136,7 +144,10 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
                 using (var gzip = new GZipStream(this.stream, CompressionMode.Decompress, leaveOpen: true))
                 using (var reader = new StreamReader(gzip, Encoding.UTF8, true, 1024, true))
                 {
-#if DEBUG
+#if STRICT_REF_RESOLVER
+                    refResolver.Clear();
+#endif
+#if DEBUG || DEBUG_STREAMS
                     // For sake of debugging the JSON.
                     var s = reader.ReadToEnd();
                     using (var sr = new StringReader(s))
@@ -162,7 +173,10 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             using (var gzip = new GZipStream(this.stream, CompressionMode.Compress, leaveOpen: true))
             using (var writer = new StreamWriter(gzip, Encoding.UTF8, 1024, true))
             {
-#if DEBUG
+#if STRICT_REF_RESOLVER
+                refResolver.Clear();
+#endif
+#if DEBUG || DEBUG_STREAMS
                 // For sake of debugging the JSON.
                 using (var sw = new StringWriter())
                 {

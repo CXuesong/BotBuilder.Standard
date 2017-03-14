@@ -10,7 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="wwwroot\default.htm" />
     <Content Include="wwwroot\default.html" />
   </ItemGroup>
   <ItemGroup>

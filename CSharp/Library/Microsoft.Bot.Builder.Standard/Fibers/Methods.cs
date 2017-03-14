@@ -75,9 +75,9 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
         [DataContract]
         private sealed class LoopMethod<C, T>
         {
-            private readonly Rest<C, T> rest;
-            private int count;
-            private T item;
+            [DataMember] private readonly Rest<C, T> rest;
+            [DataMember] private int count;
+            [DataMember] private T item;
 
             public LoopMethod(Rest<C, T> rest, int count)
             {
@@ -100,7 +100,8 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
                 }
             }
 
-            public async Task<IWait<C>> NextAsync(IFiber<C> fiber, C context, IItem<object> ignore, CancellationToken token)
+            public async Task<IWait<C>> NextAsync(IFiber<C> fiber, C context, IItem<object> ignore,
+                CancellationToken token)
             {
                 --this.count;
                 if (this.count >= 0)
@@ -117,7 +118,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
         [DataContract]
         private sealed class VoidMethod<C, T>
         {
-            private readonly Rest<C, T> rest;
+            [DataMember] private readonly Rest<C, T> rest;
 
             public VoidMethod(Rest<C, T> rest)
             {

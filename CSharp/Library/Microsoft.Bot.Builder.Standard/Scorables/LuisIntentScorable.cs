@@ -87,9 +87,9 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
     [DataContract]
     public sealed class LuisIntentScorable<InnerState, InnerScore> : ResolverScorable<LuisIntentScorable<InnerState, InnerScore>.Scope, IntentRecommendation, InnerState, InnerScore>
     {
-        private readonly ILuisService service;
-        private readonly ILuisModel model;
-        private readonly LuisIntentAttribute intent;
+        [DataMember] private readonly ILuisService service;
+        [DataMember] private readonly ILuisModel model;
+        [DataMember] private readonly LuisIntentAttribute intent;
 
         public sealed class Scope : ResolverScope<InnerScore>
         {

@@ -100,20 +100,20 @@ namespace Microsoft.Bot.Builder.Luis
             [DataContract]
             public sealed class DateTimeResolution : Resolution, IEquatable<DateTimeResolution>
             {
-                public Reference? Reference { get; }
+                [DataMember] public Reference? Reference { get; }
 
-                public int? Year { get; }
-                public int? Month { get; }
-                public int? Day { get; }
+                [DataMember] public int? Year { get; }
+                [DataMember] public int? Month { get; }
+                [DataMember] public int? Day { get; }
 
-                public int? Week { get; }
-                public DayOfWeek? DayOfWeek { get; }
+                [DataMember] public int? Week { get; }
+                [DataMember] public DayOfWeek? DayOfWeek { get; }
 
-                public DayPart? DayPart { get; }
+                [DataMember] public DayPart? DayPart { get; }
 
-                public int? Hour { get; }
-                public int? Minute { get; }
-                public int? Second { get; }
+                [DataMember] public int? Hour { get; }
+                [DataMember] public int? Minute { get; }
+                [DataMember] public int? Second { get; }
 
                 public DateTimeResolution(
                     Reference? reference = null,

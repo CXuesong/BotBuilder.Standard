@@ -315,12 +315,12 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         /// <summary>
         /// Direction for next step.
         /// </summary>
-        public StepDirection Direction;
+        [DataMember] public StepDirection Direction;
 
         /// <summary>
         /// If this is a named step, one or more named steps to move to.  If there are more than one, the user will choose.
         /// </summary>
-        public string[] Names;
+        [DataMember] public string[] Names;
     }
 
     /// <summary>

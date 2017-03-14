@@ -191,7 +191,7 @@ namespace Microsoft.Bot.Builder.Luis
     [DataContract]
     public sealed class LuisService : ILuisService
     {
-        private readonly ILuisModel model;
+        [DataMember] private readonly ILuisModel model;
 
         /// <summary>
         /// Construct the LUIS service using the model information.

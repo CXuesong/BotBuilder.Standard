@@ -43,28 +43,28 @@ namespace Microsoft.Bot.Builder.FormFlow
     internal class FormState
     {
         // Last sent prompt which is used when feedback is supplied
-        public FormPrompt LastPrompt;
+       [DataMember] public FormPrompt LastPrompt;
 
         // Used when navigating to reflect choices for next
-        public NextStep Next;
+        [DataMember] public NextStep Next;
 
         // Currently executing step
-        public int Step;
+        [DataMember] public int Step;
 
         // History of executed steps
-        public Stack<int> History;
+        [DataMember] public Stack<int> History;
 
         // Current phase of each step
-        public StepPhase[] Phases;
+        [DataMember] public StepPhase[] Phases;
 
         // Internal state of a step
-        public object StepState;
+        [DataMember] public object StepState;
 
         // Field number and input
-        public List<Tuple<int, string>> FieldInputs;
+        [DataMember] public List<Tuple<int, string>> FieldInputs;
 
         // True when we have started processing FieldInputs
-        public bool ProcessInputs;
+        [DataMember] public bool ProcessInputs;
 
         public FormState(int steps)
         {

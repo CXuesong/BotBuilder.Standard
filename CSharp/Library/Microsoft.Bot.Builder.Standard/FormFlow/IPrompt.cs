@@ -89,22 +89,22 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         /// The text prompt that corresponds to Message.Text.
         /// </summary>
         /// <remarks>When generating cards this will be the card title.</remarks>
-        public string Prompt { set; get; } = string.Empty;
+       [DataMember] public string Prompt { set; get; } = string.Empty;
 
         /// <summary>
         /// Description information for generating cards.
         /// </summary>
-        public DescribeAttribute Description { set; get; }
+        [DataMember] public DescribeAttribute Description { set; get; }
 
         /// <summary>
         /// The buttons that will be mapped to Message.Attachments.
         /// </summary>
-        public IList<DescribeAttribute> Buttons { set; get; } = new List<DescribeAttribute>();
+        [DataMember] public IList<DescribeAttribute> Buttons { set; get; } = new List<DescribeAttribute>();
 
         /// <summary>
         /// Desired prompt style.
         /// </summary>
-        public ChoiceStyleOptions Style;
+        [DataMember] public ChoiceStyleOptions Style;
 
         public override string ToString()
         {
@@ -135,22 +135,22 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         /// <summary>
         /// Picture which will appear on the button.
         /// </summary>
-        public string Image { get; set; }
+        [DataMember] public string Image { get; set; }
 
         /// <summary>
         /// Message that will be sent to bot when this button is clicked.
         /// </summary>
-        public string Message { get; set; }
+        [DataMember] public string Message { get; set; }
 
         /// <summary>
         /// Label of the button.
         /// </summary>
-        public string Title { get; set; }
+        [DataMember] public string Title { get; set; }
 
         /// <summary>
         /// URL which will be opened in the browser built-into Client application.
         /// </summary>
-        public string Url { get; set; }
+        [DataMember] public string Url { get; set; }
 
         /// <summary>
         /// Clone the FormButton

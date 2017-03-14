@@ -104,8 +104,8 @@ namespace Microsoft.Bot.Builder.Scorables
                 public bool HasScore { get; set; }
             }
 
-            private readonly IScorable<IResolver, Score> scorable;
-            private readonly Delegate lambda;
+            [DataMember] private readonly IScorable<IResolver, Score> scorable;
+            [DataMember] private readonly Delegate lambda;
             public WhereScorable(IScorable<IResolver, Score> scorable, Delegate lambda)
             {
                 SetField.NotNull(out this.scorable, nameof(scorable), scorable);

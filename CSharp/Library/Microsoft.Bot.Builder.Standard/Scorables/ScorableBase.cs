@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
     [DataContract]
     public abstract class DelegatingScorable<Item, Score> : IScorable<Item, Score>
     {
-        protected readonly IScorable<Item, Score> inner;
+        [DataMember] protected readonly IScorable<Item, Score> inner;
 
         protected DelegatingScorable(IScorable<Item, Score> inner)
         {

@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
     public abstract class ResolverScorable<OuterState, OuterScore, InnerState, InnerScore> : ScorableAggregator<IResolver, OuterState, OuterScore, IResolver, InnerState, InnerScore>
         where OuterState : ResolverScope<InnerScore>
     {
-        protected readonly IScorable<IResolver, InnerScore> inner;
+        [DataMember] protected readonly IScorable<IResolver, InnerScore> inner;
 
         public ResolverScorable(IScorable<IResolver, InnerScore> inner)
         {

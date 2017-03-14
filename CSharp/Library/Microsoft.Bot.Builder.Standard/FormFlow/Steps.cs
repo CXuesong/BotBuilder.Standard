@@ -498,8 +498,8 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         [DataContract]
         internal class Ambiguous
         {
-            public readonly string Response;
-            public object[] Values;
+            [DataMember] public readonly string Response;
+            [DataMember] public object[] Values;
             public Ambiguous(string response, IEnumerable<object> values)
             {
                 Response = response;
@@ -510,10 +510,10 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         [DataContract]
         internal class FieldStepState
         {
-            internal FieldStepStates State;
-            internal string Unmatched;
-            internal List<object> Settled;
-            internal List<Ambiguous> Clarifications;
+            [DataMember] internal FieldStepStates State;
+            [DataMember] internal string Unmatched;
+            [DataMember] internal List<object> Settled;
+            [DataMember] internal List<Ambiguous> Clarifications;
             public FieldStepState(FieldStepStates state)
             {
                 State = state;

@@ -252,7 +252,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
     [DataContract]
     public sealed class WhereScoreScorable<Item, Score> : DelegatingScorable<Item, Score>
     {
-        private readonly Func<Item, Score, bool> predicate;
+        [DataMember] private readonly Func<Item, Score, bool> predicate;
 
         public WhereScoreScorable(IScorable<Item, Score> scorable, Func<Item, Score, bool> predicate)
             : base(scorable)
@@ -278,8 +278,8 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
     [DataContract]
     public sealed class SelectItemScorable<OuterItem, InnerItem, Score> : ScorableAggregator<OuterItem, Token<InnerItem, Score>, Score, InnerItem, object, Score>
     {
-        private readonly IScorable<InnerItem, Score> scorable;
-        private readonly Func<OuterItem, InnerItem> selector;
+        [DataMember] private readonly IScorable<InnerItem, Score> scorable;
+        [DataMember] private readonly Func<OuterItem, InnerItem> selector;
 
         public SelectItemScorable(IScorable<InnerItem, Score> scorable, Func<OuterItem, InnerItem> selector)
         {
@@ -308,7 +308,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
     [DataContract]
     public sealed class SelectScoreScorable<Item, SourceScore, TargetScore> : DelegatingScorable<Item, SourceScore>, IScorable<Item, TargetScore>
     {
-        private readonly Func<Item, SourceScore, TargetScore> selector;
+        [DataMember] private readonly Func<Item, SourceScore, TargetScore> selector;
 
         public SelectScoreScorable(IScorable<Item, SourceScore> scorable, Func<Item, SourceScore, TargetScore> selector)
             : base(scorable)

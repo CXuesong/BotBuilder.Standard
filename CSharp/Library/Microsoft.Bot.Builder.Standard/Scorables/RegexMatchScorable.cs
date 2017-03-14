@@ -46,7 +46,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Scorables.Internals
 {
-    [DataContract]
+    // [Serializable]
     public abstract class AttributeString : Attribute, IEquatable<AttributeString>
     {
         protected abstract string Text { get; }
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Scorables
     /// when applying the regular expression scorable.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
-    [DataContract]
+   // [Serializable]
     public sealed class RegexPatternAttribute : AttributeString
     {
         /// <summary>
@@ -171,7 +171,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
     [DataContract]
     public sealed class RegexMatchScorable<InnerState, InnerScore> : ResolverScorable<RegexMatchScorable<InnerState, InnerScore>.Scope, Match, InnerState, InnerScore>
     {
-        private readonly Regex regex;
+        [DataMember] private readonly Regex regex;
 
         public sealed class Scope : ResolverScope<InnerScore>
         {

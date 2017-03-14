@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Scorables
             return new Regex(pattern);
         }
 
-        private bool continueAfterPost;
+        [DataMember] private bool continueAfterPost;
 
         protected void ContinueWithNextGroup()
         {

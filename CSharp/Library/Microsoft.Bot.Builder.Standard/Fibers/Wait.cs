@@ -193,6 +193,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
     [DataContract]
     public sealed class Wait<C, T> : IItem<T>, IWait<C, T>, IPost<T>, IAwaiter<T>, IEquatable<Wait<C, T>>
     {
+        // CXuesong: Original class implemented ISerializable
         [DataMember] private Rest<C, T> rest;
         [DataMember] private Need need;
         private T item;

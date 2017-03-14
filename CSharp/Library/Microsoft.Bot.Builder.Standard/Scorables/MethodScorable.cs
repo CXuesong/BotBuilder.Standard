@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Scorables
     /// scoring process for overload resolution.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
-    [DataContract]
+    // [Serialzable]
     public sealed class MethodBindAttribute : Attribute
     {
     }
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Scorables
     /// that can be resolved by an implementation of <see cref="IResolver"/>. 
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = true, Inherited = true)]
-    [DataContract]
+    // [Serialzable]
     public sealed class EntityAttribute : Attribute
     {
         /// <summary>
@@ -87,10 +87,10 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
             var specs =
                 from method in methods
                 from bind in InheritedAttributes.For<MethodBindAttribute>(method)
-                select new { method, bind };
+                select new {method, bind};
 
             var scorables = from spec in specs
-                            select new MethodScorable(spec.method);
+                select new MethodScorable(spec.method);
 
             var all = scorables.ToArray().Fold(BindingComparer.Instance);
             return all;
@@ -145,7 +145,8 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
     [DataContract]
     public sealed class MethodScorable : MethodScorableBase
     {
-        private readonly MethodBase method;
+        [DataMember] private readonly MethodBase method;
+
         public MethodScorable(MethodInfo method)
         {
             SetField.NotNull(out this.method, nameof(method), method);
@@ -181,7 +182,8 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
     [DataContract]
     public sealed class DelegateScorable : MethodScorableBase
     {
-        private readonly Delegate lambda;
+        [DataMember] private readonly Delegate lambda;
+
         public DelegateScorable(Delegate lambda)
         {
             SetField.NotNull(out this.lambda, nameof(lambda), lambda);

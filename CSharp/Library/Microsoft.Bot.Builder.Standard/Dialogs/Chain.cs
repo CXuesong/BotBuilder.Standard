@@ -1062,10 +1062,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     [DataContract]
     public sealed class RegexCase<R> : Case<string, R>
     {
-        // CXuesong: Yes, we can handle Regex, but we cannot handle the situation
-        // where there is a property with declared type as "object" and a value of Regex.
-        // It would be deserialized as JToken. Generally, any class with custom serialization
-        // implementation (E.g. implemented ISerializable) may not behave well in this case.
+        // CXuesong: Yes, we can handle Regex!
         [DataMember] private readonly Regex Regex;
 
         /// <summary>

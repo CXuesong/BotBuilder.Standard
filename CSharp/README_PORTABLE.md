@@ -73,9 +73,9 @@ I replaced `FormatterStore` with `DataContractStore`, implemented some `JsonConv
 Since I used `JsonSerializer` to handle the serialization process, there's some caveats
 
 -   You need to be careful when declaring a field of `object` type. In some cases, the deserialized instance may not be what you want (e.g. just a `JToken` object). For now it's known that you cannot put a delegate into such field, as they will be deserialized to some other internal structure instead of the delegate itself.
--   You should be extremely careful when cyclic references present. It's recommended that at least you provide a private constructor for your serializable classes.
+-   You should be extremely careful when cyclic references present. It's recommended that at least you provide a private parameterless constructor for your serializable classes.
     -   Because rather than create a class instance without invoking its constructor, `JsonSerializer` instantiates a class, then fills the members.
-    -   If you are familiar with `JsonSerializer`, you may know that a class can also be instantiated and populated through its constructor, but please provide a non-public parameterless constructor still, especially you know your class may be in the middle of some reference loops.
+    -   If you are familiar with `JsonSerializer`, you may know that a class can also be instantiated and populated through its constructor, but still please provide a non-public parameterless constructor, especially when you know your class may be in the middle of some reference loops.
     -   Let's consider the following case: we have a reference loop A→B→A. If there is no parameterless constructor in A, `JsonSerializer` will try to instantiate B first, then pass B into A's constructor. However, even when B has been completely constructed, serialized still have no instance A in its reference dictionary, and B→A will be broken (the property in B will leave as its default value).
     -   I have written a StrictJsonReferenceResolver for debugging purpose, which will throw an Exception if there exists a reference that cannot be restored. Note that it's only for debugging. At least, it's not thread-safe.To enable it, just enable `STRICT_REF_RESOLVER` conditional switch in `Store.cs`.
 

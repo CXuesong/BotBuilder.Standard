@@ -35,11 +35,11 @@ namespace Microsoft.Bot.Sample.AspNetCore.Echo
             services.AddSingleton(_ => new MicrosoftAppCredentials(Configuration,
                 _.GetService<ILoggerFactory>().CreateLogger<MicrosoftAppCredentials>()));
             services.AddSingleton<Conversation>();
-            
+
             // Add framework services.
             services.AddMvc(options =>
             {
-                options.Filters.Add(typeof(TrustServiceUrlAttribute));
+                options.Filters.Add(new TrustServiceUrlAttribute());
             });
         }
 

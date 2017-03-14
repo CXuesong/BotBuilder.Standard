@@ -44,6 +44,11 @@ namespace Microsoft.Bot.Sample.AspNetCore.PizzaBot
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            // Authentication of this API service for incoming requests
+            app.UseBotAuthentication(new StaticCredentialProvider(
+                Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
+                Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value));
+
             app.UseMvc();
             app.UseStaticFiles();
         }

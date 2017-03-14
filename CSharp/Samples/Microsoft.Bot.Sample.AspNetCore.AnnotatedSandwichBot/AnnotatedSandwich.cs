@@ -1,24 +1,26 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.FormFlow;
-using Microsoft.Bot.Builder.FormFlow.Advanced;
-using Microsoft.Bot.Builder.FormFlow.Json;
-using Microsoft.Bot.Sample.AnnotatedSandwichBot.Resource;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Threading;
+using Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot.Resource;
+using Newtonsoft.Json.Linq;
+using Microsoft.Bot.Builder.FormFlow;
+using Microsoft.Bot.Builder.FormFlow.Advanced;
+using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.FormFlow.Json;
+
 #pragma warning disable 649
 
 // The SandwichOrder is the simple form you want to fill out.  It must be serializable so the bot can be stateless.
 // The order of fields defines the default order in which questions will be asked.
 // Enumerations shows the legal options for each field in the SandwichOrder and the order is the order values will be presented 
 // in a conversation.
-namespace Microsoft.Bot.Sample.AnnotatedSandwichBot
+namespace Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot
 {
     public enum SandwichOptions
     {
@@ -54,7 +56,7 @@ namespace Microsoft.Bot.Sample.AnnotatedSandwichBot
         Mustard, Oil, Pepper, Ranch, SweetOnion, Vinegar
     };
 
-    [Serializable]
+    [DataContract]
     [Template(TemplateUsage.NotUnderstood, "I do not understand \"{0}\".", "Try again, I don't get \"{0}\".")]
     [Template(TemplateUsage.EnumSelectOne, "What kind of {&} would you like on your sandwich? {||}")]
     // [Template(TemplateUsage.EnumSelectOne, "What kind of {&} would you like on your sandwich? {||}", ChoiceStyle = ChoiceStyleOptions.PerLine)]
@@ -173,7 +175,7 @@ namespace Microsoft.Bot.Sample.AnnotatedSandwichBot
 
         public static IForm<JObject> BuildJsonForm()
         {
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Microsoft.Bot.Sample.AnnotatedSandwichBot.AnnotatedSandwich.json"))
+            using (var stream = typeof(SandwichOrder).GetTypeInfo().Assembly.GetManifestResourceStream("Microsoft.Bot.Sample.AnnotatedSandwichBot.AnnotatedSandwich.json"))
             {
                 var schema = JObject.Parse(new StreamReader(stream).ReadToEnd());
                 return new FormBuilderJson(schema)
@@ -184,7 +186,7 @@ namespace Microsoft.Bot.Sample.AnnotatedSandwichBot
 
         public static IForm<JObject> BuildJsonFormExplicit()
         {
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Microsoft.Bot.Sample.AnnotatedSandwichBot.AnnotatedSandwich.json"))
+            using (var stream = typeof(SandwichOrder).GetTypeInfo().Assembly.GetManifestResourceStream("Microsoft.Bot.Sample.AnnotatedSandwichBot.AnnotatedSandwich.json"))
             {
                 var schema = JObject.Parse(new StreamReader(stream).ReadToEnd());
                 OnCompletionAsyncDelegate<JObject> processOrder = async (context, state) =>
@@ -269,7 +271,7 @@ namespace Microsoft.Bot.Sample.AnnotatedSandwichBot
 
         public static IForm<SandwichOrder> BuildLocalizedForm()
         {
-            var culture = Thread.CurrentThread.CurrentUICulture;
+            var culture = CultureInfo.CurrentUICulture;
             IForm<SandwichOrder> form;
             if (!_forms.TryGetValue(culture, out form))
             {

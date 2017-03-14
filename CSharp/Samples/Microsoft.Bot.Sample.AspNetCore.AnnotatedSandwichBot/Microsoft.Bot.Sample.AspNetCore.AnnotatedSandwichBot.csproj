@@ -4,12 +4,18 @@
     <TargetFramework>netcoreapp1.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1705;1998</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <Content Include="wwwroot\default.htm" />
+    <Content Include="wwwroot\default.html" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="1.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.0.2" />
   </ItemGroup>
   <ItemGroup>
@@ -22,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Library\Microsoft.Bot.Builder.Autofac.Standard\Microsoft.Bot.Builder.Autofac.Standard.csproj" />
+    <ProjectReference Include="..\..\Library\Microsoft.Bot.Builder.FormFlow.Json.Standard\Microsoft.Bot.Builder.FormFlow.Json.Standard.csproj" />
     <ProjectReference Include="..\..\Library\Microsoft.Bot.Builder.Standard\Microsoft.Bot.Builder.Standard.csproj" />
     <ProjectReference Include="..\..\Library\Microsoft.Bot.Connector.AspNetCore\Microsoft.Bot.Connector.AspNetCore.csproj" />
     <ProjectReference Include="..\..\Library\Microsoft.Bot.Connector.Standard\Microsoft.Bot.Connector.Standard.csproj" />

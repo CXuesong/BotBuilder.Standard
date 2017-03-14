@@ -1,15 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Bot.Connector;
+using Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot;
+using Newtonsoft.Json.Linq;
+using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.FormFlow;
+using Microsoft.Extensions.Logging;
 
-
-namespace Microsoft.Bot.Sample.AnnotatedSandwichBot
+namespace Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot
 {
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
+        private readonly Conversation conversation;
+        private readonly ILogger logger;
+
+        public MessagesController(Conversation conversation, ILoggerFactory loggerFactory)
+        {
+            if (conversation == null) throw new ArgumentNullException(nameof(conversation));
+            if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
+            this.conversation = conversation;
+            this.logger = loggerFactory.CreateLogger<MessagesController>();
+        }
+
         internal static IDialog<SandwichOrder> MakeRootDialog()
         {
             return Chain.From(() => FormDialog.FromForm(SandwichOrder.BuildLocalizedForm))
@@ -78,7 +96,7 @@ namespace Microsoft.Bot.Sample.AnnotatedSandwichBot
                 switch (activity.GetActivityType())
                 {
                     case ActivityTypes.Message:
-                        await Conversation.SendAsync(activity, MakeRootDialog);
+                        await conversation.SendAsync(activity, MakeRootDialog);
                         break;
 
                     case ActivityTypes.ConversationUpdate:
@@ -86,7 +104,7 @@ namespace Microsoft.Bot.Sample.AnnotatedSandwichBot
                     case ActivityTypes.Typing:
                     case ActivityTypes.DeleteUserData:
                     default:
-                        Trace.TraceError($"Unknown activity type ignored: {activity.GetActivityType()}");
+                        logger.LogWarning("Unknown activity type ignored: {0}", activity.GetActivityType());
                         break;
                 }
             }

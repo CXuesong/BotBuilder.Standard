@@ -50,6 +50,22 @@ namespace Microsoft.Bot.Builder.Fibers
             JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null) return null;
+            if (reader.TokenType != JsonToken.StartObject)
+            {
+                // It's not an object so we can fall back to default behavior.
+                disabled = true;
+                try
+                {
+                    //Debug.WriteLine("Fallback to default behavior: " + objectType + "; Path: " + reader.Path);
+                    var result = serializer.Deserialize(reader, objectType);
+                    Debug.Assert(!disabled);
+                    return result;
+                }
+                finally
+                {
+                    disabled = false;
+                }
+            }
             var token = JToken.ReadFrom(reader);
             var typeName = (string) token["$resolve"];
             if (typeName != null)
@@ -68,7 +84,7 @@ namespace Microsoft.Bot.Builder.Fibers
             {
                 //Debug.WriteLine("Fallback to default behavior: " + objectType + "; Path: " + reader.Path);
                 var result = serializer.Deserialize(token.CreateReader(), objectType);
-                Debug.Assert(disabled == false);
+                Debug.Assert(!disabled);
                 return result;
             }
             finally
@@ -410,7 +426,8 @@ namespace Microsoft.Bot.Builder.Fibers
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+            JsonSerializer serializer)
         {
             switch (reader.TokenType)
             {
@@ -425,10 +442,14 @@ namespace Microsoft.Bot.Builder.Fibers
                     return FallbackDeserialization(reader, objectType, serializer);
                 case JsonToken.Null:
                     return null;
+                default:
+                    if (objectType != typeof(Regex))
+                        return FallbackDeserialization(reader, objectType, serializer);
+                    break;
             }
             throw new JsonSerializationException("Unexpected token when reading Regex.");
         }
-        
+
         private object FallbackDeserialization(JsonReader reader, Type objectType, JsonSerializer serializer)
         {
             Debug.Assert(disabled == false);

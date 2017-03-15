@@ -7,10 +7,21 @@
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>Microsoft.Bot.Connector</AssemblyName>
-    <PackageId>Microsoft.Bot.Connector.AspNetCore</PackageId>
+    <PackageId>CXuesong.Ported.Microsoft.Bot.Connector.AspNetCore</PackageId>
     <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
     <RootNamespace>Microsoft.Bot.Connector</RootNamespace>
+    <Authors>Microsoft (Original), CXuesong (Ported)</Authors>
+    <Company />
+    <Product>Microsoft Bot Framework</Product>
+    <Description>This is an unofficial ported version of Microsoft's Microsoft.Bot.Connector package.
+This library implements C# classes for using the Bot Framework Connector REST API.</Description>
+    <PackageProjectUrl>https://github.com/CXuesong/BotBuilder</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/CXuesong/BotBuilder</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageReleaseNotes />
+    <Version>3.5.1-int3</Version>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

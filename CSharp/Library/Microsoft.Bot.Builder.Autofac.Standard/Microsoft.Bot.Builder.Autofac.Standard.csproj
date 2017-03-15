@@ -4,6 +4,23 @@
     <TargetFramework>netstandard1.4</TargetFramework>
     <AssemblyName>Microsoft.Bot.Builder.Autofac</AssemblyName>
     <RootNamespace>Microsoft.Bot.Builder.Autofac</RootNamespace>
+    <PackageId>CXuesong.Ported.Microsoft.Bot.Builder.Autofac</PackageId>
+    <Version>3.5.1-int1</Version>
+    <Product>Microsoft Bot Builder</Product>
+    <Company />
+    <Authors>Microsoft (Original), CXuesong (Ported)</Authors>
+    <Description>This is part of an unofficial ported version of Microsoft's Microsoft.Bot.Builder package.</Description>
+    <PackageProjectUrl>https://github.com/CXuesong/BotBuilder</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/CXuesong/BotBuilder</RepositoryUrl>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard1.4\.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard1.4\.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

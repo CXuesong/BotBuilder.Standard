@@ -2,7 +2,28 @@
 
 >   For Half Moon. Though I might have wandered much too far from the Tribe or the Clans.
 
-I wanted to run my bot on Linux with C#, so I need ASP.Net Core. After taking a look at Microsoft/BotBuilder#572 and Microsoft/BotBuilder#2289, I decided to migrate the library to .Net Standard, and at least, get it working.
+I wanted to run my bot on Linux with C#, so I need ASP.Net Core. After taking a look at Microsoft/BotBuilder#572 and Microsoft/BotBuilder#2289, I decided to migrate the library to .NET Standard, and at least, get it working in certain situations.
+
+In order to use the built library, I have uploaded it to NuGet. You may install its parts by run the following command in the [Package Manager Console](https://docs.nuget.org/docs/start-here/using-the-package-manager-console)
+
+​	To install `Microsoft.Bot.Connector for ASP.NET Core`
+
+```powershell
+Install-Package CXuesong.Ported.Microsoft.Bot.Connector.AspNetCore -Pre
+```
+
+​	To install `Microsoft.Bot.Builder`
+
+```powershell
+Install-Package CXuesong.Ported.Microsoft.Bot.Builder -Pre
+Install-Package CXuesong.Ported.Microsoft.Bot.Builder.Autofac -Pre
+```
+
+​	To install `CXuesong.Ported.Microsoft.Bot.Builder.FormFlow.Json`
+
+```powershell
+Install-Package CXuesong.Ported.Microsoft.Bot.Builder.FormFlow.Json -Pre
+```
 
 This folder contains ported .Net Standard 1.6 version of Microsoft Bot Builder SDK. This ported version is not complete yet. For now, it contains
 

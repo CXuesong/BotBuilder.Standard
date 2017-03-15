@@ -6,29 +6,39 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.Bot.Builder.Dialogs.Internals;
 using Microsoft.Bot.Builder.Internals.Fibers;
 using Microsoft.Bot.Builder.Scorables.Internals;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Fibers
 {
-    /// <summary>
-    /// Return the resolved instance, if it can be resolved by type.
-    /// This class is NOT thread-safe.
-    /// </summary>
-    internal class ResolvableObjectJsonConverter : JsonConverter
-    {
-        private readonly IResolver resolver;
-        private bool disabled;      // CXuesong: Looks not so pretty… But it works anyway.
 
-        public ResolvableObjectJsonConverter(IResolver resolver)
+    internal interface IContextualJsonConverter
+    {
+        bool CanConvert(Type objectType);
+
+        bool TryConvertFromJson(JObject jobj, Type objectType, ref object value, JsonSerializer serializer);
+
+        bool TryConvertToJson(JsonWriter writer, object value, JsonSerializer serializer);
+    }
+
+    internal class ContextualJsonConvertHandler : JsonConverter
+    {
+        private bool disabled;      // CXuesong: Looks not so pretty… But it works anyway.
+        private int firstAbleConverterIndex = -1;
+
+        public IList<IContextualJsonConverter> Converters { get; set; }
+
+        public ContextualJsonConvertHandler(params IContextualJsonConverter[] converters)
         {
-            if (resolver == null) throw new ArgumentNullException(nameof(resolver));
-            this.resolver = resolver;
+            Converters = converters;
+        }
+
+        public ContextualJsonConvertHandler(IList<IContextualJsonConverter> converters)
+        {
+            Converters = converters;
         }
 
         /// <inheritdoc />
@@ -39,52 +49,65 @@ namespace Microsoft.Bot.Builder.Fibers
                 writer.WriteNull();
                 return;
             }
-            writer.WriteStartObject();
-            writer.WritePropertyName("$resolve");
-            writer.WriteValue(value.GetType().AssemblyQualifiedName);
-            writer.WriteEndObject();
+            if (value.GetType() == typeof(object))
+            {
+                // Rare case
+                FallbackSerialization(writer, value, serializer);
+                return;
+            }
+            for (int i = firstAbleConverterIndex; i < Converters.Count; i++)
+            {
+                if (Converters[i].TryConvertToJson(writer, value, serializer)) return;
+            }
+            FallbackSerialization(writer, value, serializer);
         }
 
         /// <inheritdoc />
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
-            JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.Null) return null;
-            if (reader.TokenType != JsonToken.StartObject)
+            switch (reader.TokenType)
             {
-                // It's not an object so we can fall back to default behavior.
-                disabled = true;
-                try
-                {
-                    //Debug.WriteLine("Fallback to default behavior: " + objectType + "; Path: " + reader.Path);
-                    var result = serializer.Deserialize(reader, objectType);
-                    Debug.Assert(!disabled);
-                    return result;
-                }
-                finally
-                {
-                    disabled = false;
-                }
+                case JsonToken.Null:
+                    return null;
+                case JsonToken.StartObject:
+                    var jobj = (JObject)JToken.ReadFrom(reader);
+                    for (int i = firstAbleConverterIndex; i < Converters.Count; i++)
+                    {
+                        var value = existingValue;
+                        if (Converters[i].TryConvertFromJson(jobj, objectType, ref value, serializer))
+                            return value;
+                    }
+                    return FallbackDeserialization(jobj.CreateReader(), objectType, serializer);
             }
-            var token = JToken.ReadFrom(reader);
-            var typeName = (string) token["$resolve"];
-            if (typeName != null)
-            {
-                var type = Type.GetType(typeName, true);
-                return resolver.Resolve(type, null);
-            }
-            // Falls back to default behavior
-            // This can sometimes happen, when a new service has been registered in the resolver
-            // After the serialization.
-            // For AutoFac, since System.Object is always registered with all of the concrete classes automatically,
-            // This situation can happen when there's a property with delaration value type of System.Object .
-            // In this case, CanConvert(typeof(System.Object)) can return true, which is not what we want for the most cases.
+            return FallbackDeserialization(reader, objectType, serializer);
+        }
+
+        private void FallbackSerialization(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            Debug.Assert(disabled == false);
             disabled = true;
             try
             {
                 //Debug.WriteLine("Fallback to default behavior: " + objectType + "; Path: " + reader.Path);
-                var result = serializer.Deserialize(token.CreateReader(), objectType);
-                Debug.Assert(!disabled);
+                serializer.Serialize(writer, value);
+                Debug.Assert(disabled == false);
+            }
+            finally
+            {
+                disabled = false;
+            }
+        }
+
+
+        private object FallbackDeserialization(JsonReader reader, Type objectType, JsonSerializer serializer)
+        {
+            Debug.Assert(disabled == false);
+            disabled = true;
+            try
+            {
+                //Debug.WriteLine("Fallback to default behavior: " + objectType + "; Path: " + reader.Path);
+                var result = serializer.Deserialize(reader, objectType);
+                Debug.Assert(disabled == false);
                 return result;
             }
             finally
@@ -96,19 +119,80 @@ namespace Microsoft.Bot.Builder.Fibers
         /// <inheritdoc />
         public override bool CanConvert(Type objectType)
         {
-            // Typical types that return true
-            // FrameFactory`1[DialogTask]
-            // WaitFactory`1[DialogTask]
-            // NullWait`1[DialogTask]
             if (disabled)
             {
                 // This allows subsequent resolution of child nodes…
                 disabled = false;
                 return false;
             }
+            if (objectType == typeof(object))
+            {
+                firstAbleConverterIndex = 0;
+                return true;
+            }
+            for (int i = 0; i < Converters.Count; i++)
+            {
+                if (Converters[i].CanConvert(objectType))
+                {
+                    firstAbleConverterIndex = i;
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Return the resolved instance, if it can be resolved by type.
+    /// This class is NOT thread-safe.
+    /// </summary>
+    internal class ResolvableObjectJsonConverter : IContextualJsonConverter
+    {
+        private readonly IResolver resolver;
+
+        public ResolvableObjectJsonConverter(IResolver resolver)
+        {
+            if (resolver == null) throw new ArgumentNullException(nameof(resolver));
+            this.resolver = resolver;
+        }
+
+        /// <inheritdoc />
+        public bool CanConvert(Type objectType)
+        {
+            // In AutoFac, since System.Object is always registered with all of the concrete classes automatically,
+            // This situation can happen when there's a property with delaration value type of System.Object .
+            // In this case, CanConvert(typeof(System.Object)) can return true, which is not what we want for the most cases.
+
+            // Typical types that return true
+            // FrameFactory`1[DialogTask]
+            // WaitFactory`1[DialogTask]
+            // NullWait`1[DialogTask]
             var result = resolver.CanResolve(objectType, null);
             // Debug.WriteLineIf(result, "ResolvableObjectJsonConverter, Use IResolve: " + objectType);
             return result;
+        }
+
+        /// <inheritdoc />
+        public bool TryConvertFromJson(JObject jobj, Type objectType, ref object value, JsonSerializer serializer)
+        {
+            var typeName = (string)jobj["$resolve"];
+            if (typeName != null)
+            {
+                var type = Type.GetType(typeName, true);
+                value = resolver.Resolve(type, null);
+                return true;
+            }
+            return false;
+        }
+
+        /// <inheritdoc />
+        public bool TryConvertToJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            writer.WriteStartObject();
+            writer.WritePropertyName("$resolve");
+            writer.WriteValue(value.GetType().AssemblyQualifiedName);
+            writer.WriteEndObject();
+            return true;
         }
     }
 
@@ -318,93 +402,43 @@ namespace Microsoft.Bot.Builder.Fibers
         }
     }
 
-    // The following block may be removed after the release of Newtonsoft.Json 10.x
-    /// <summary>
-    /// Converts a <see cref="Regex"/> to and from JSON and BSON. This object is NOT thread-safe.
-    /// </summary>
-    // The following block is taken from the RC version of Newtonsoft.Json 10,
-    // which allows Regex properties to be null.
-    // See JamesNK/Newtonsoft.Json@b83e1fab4c3eb5074547bece3c1bfbefa2ac0a41 for more information.
-    // https://github.com/JamesNK/Newtonsoft.Json/commit/b83e1fab4c3eb5074547bece3c1bfbefa2ac0a41
-    // Also, this converter allows us to set a Regex instance to a property with declared type of Object.
-    // The default imeplementation will deserialize such Regex into JObject…
-    internal class RegexConverterEx : JsonConverter
+    internal class ContextualRegexConverter : IContextualJsonConverter
     {
         private const string PatternName = "Pattern";
         private const string OptionsName = "Options";
         private const string RegexTypeName = "System.Text.RegularExpressions.Regex";
-        private bool disabled;
 
-        /// <summary>
-        /// Writes the JSON representation of the object.
-        /// </summary>
-        /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public static readonly ContextualRegexConverter Default = new ContextualRegexConverter();
+
+        private Regex ReadRegexObject(JObject obj, JsonSerializer serializer)
         {
-            Regex regex = (Regex)value;
-
-#pragma warning disable 618
-            BsonWriter bsonWriter = writer as BsonWriter;
-            if (bsonWriter != null)
-            {
-                WriteBson(bsonWriter, regex);
-            }
-#pragma warning restore 618
-            else
-            {
-                WriteJson(writer, regex, serializer);
-            }
+            var pattern = (string) obj.GetValue(PatternName, StringComparison.OrdinalIgnoreCase);
+            var options = obj.GetValue(OptionsName, StringComparison.OrdinalIgnoreCase);
+            var optionsValue = options == null ? RegexOptions.None : serializer.Deserialize<RegexOptions>(options.CreateReader());
+            return new Regex(pattern, optionsValue);
         }
 
-        private bool HasFlag(RegexOptions options, RegexOptions flag)
+        public bool CanConvert(Type objectType)
         {
-            return ((options & flag) == flag);
+            return objectType == typeof(Regex);
         }
 
-#pragma warning disable 618
-        private void WriteBson(BsonWriter writer, Regex regex)
+        /// <inheritdoc />
+        public bool TryConvertFromJson(JObject jobj, Type objectType, ref object value, JsonSerializer serializer)
         {
-            // Regular expression - The first cstring is the regex pattern, the second
-            // is the regex options string. Options are identified by characters, which 
-            // must be stored in alphabetical order. Valid options are 'i' for case 
-            // insensitive matching, 'm' for multiline matching, 'x' for verbose mode, 
-            // 'l' to make \w, \W, etc. locale dependent, 's' for dotall mode 
-            // ('.' matches everything), and 'u' to make \w, \W, etc. match unicode.
-
-            string options = null;
-
-            if (HasFlag(regex.Options, RegexOptions.IgnoreCase))
+            if (objectType == typeof(Regex) || (string) jobj["$type"] == RegexTypeName)
             {
-                options += "i";
+                value = ReadRegexObject(jobj, serializer);
+                return true;
             }
-
-            if (HasFlag(regex.Options, RegexOptions.Multiline))
-            {
-                options += "m";
-            }
-
-            if (HasFlag(regex.Options, RegexOptions.Singleline))
-            {
-                options += "s";
-            }
-
-            options += "u";
-
-            if (HasFlag(regex.Options, RegexOptions.ExplicitCapture))
-            {
-                options += "x";
-            }
-
-            writer.WriteRegex(regex.ToString(), options);
+            return false;
         }
-#pragma warning restore 618
 
-        private void WriteJson(JsonWriter writer, Regex regex, JsonSerializer serializer)
+        /// <inheritdoc />
+        public bool TryConvertToJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
+            var regex = (Regex) value;
             var resolver = serializer.ContractResolver as DefaultContractResolver;
-
             writer.WriteStartObject();
             if (serializer.TypeNameHandling != TypeNameHandling.None)
             {
@@ -416,111 +450,44 @@ namespace Microsoft.Bot.Builder.Fibers
             writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(OptionsName) : OptionsName);
             serializer.Serialize(writer, regex.Options);
             writer.WriteEndObject();
+            return true;
+        }
+    }
+
+    internal class ContextualEnumConverter : IContextualJsonConverter
+    {
+        public static readonly ContextualEnumConverter Default = new ContextualEnumConverter();
+
+        /// <inheritdoc />
+        public bool CanConvert(Type objectType)
+        {
+            return objectType.GetTypeInfo().IsEnum;
         }
 
-        /// <summary>
-        /// Reads the JSON representation of the object.
-        /// </summary>
-        /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
-        /// <param name="objectType">Type of the object.</param>
-        /// <param name="existingValue">The existing value of object being read.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        /// <returns>The object value.</returns>
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
-            JsonSerializer serializer)
+        /// <inheritdoc />
+        public bool TryConvertFromJson(JObject jobj, Type objectType, ref object value, JsonSerializer serializer)
         {
-            switch (reader.TokenType)
-            {
-                case JsonToken.StartObject:
-                    var obj = (JObject) JToken.ReadFrom(reader);
-                    if ((string) obj["$type"] == RegexTypeName)
-                        return ReadRegexObject(obj, serializer);
-                    return FallbackDeserialization(obj.CreateReader(), objectType, serializer);
-                case JsonToken.String:
-                    if (objectType == typeof(Regex))
-                        return ReadRegexString(reader);
-                    return FallbackDeserialization(reader, objectType, serializer);
-                case JsonToken.Null:
-                    return null;
-                default:
-                    if (objectType != typeof(Regex))
-                        return FallbackDeserialization(reader, objectType, serializer);
-                    break;
-            }
-            throw new JsonSerializationException("Unexpected token when reading Regex.");
+            var typeName = (string) jobj["$enum"];
+            if (typeName == null) return false;
+            var type = Type.GetType(typeName, true);
+            value = Enum.Parse(type, (string) jobj["$value"], true);
+            return true;
         }
 
-        private object FallbackDeserialization(JsonReader reader, Type objectType, JsonSerializer serializer)
+        /// <inheritdoc />
+        public bool TryConvertToJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            Debug.Assert(disabled == false);
-            disabled = true;
-            try
+            writer.WriteStartObject();
+            if (serializer.TypeNameHandling != TypeNameHandling.None)
             {
-                //Debug.WriteLine("Fallback to default behavior: " + objectType + "; Path: " + reader.Path);
-                var result = serializer.Deserialize(reader, objectType);
-                Debug.Assert(disabled == false);
-                return result;
+                writer.WritePropertyName("$enum");
+                writer.WriteValue(value.GetType().AssemblyQualifiedName);
             }
-            finally
-            {
-                disabled = false;
-            }
-        }
-
-        private object ReadRegexString(JsonReader reader)
-        {
-            string regexText = (string)reader.Value;
-            int patternOptionDelimiterIndex = regexText.LastIndexOf('/');
-
-            string patternText = regexText.Substring(1, patternOptionDelimiterIndex - 1);
-            string optionsText = regexText.Substring(patternOptionDelimiterIndex + 1);
-
-            RegexOptions options = RegexOptions.None;
-            foreach (char c in optionsText)
-            {
-                switch (c)
-                {
-                    case 'i':
-                        options |= RegexOptions.IgnoreCase;
-                        break;
-                    case 'm':
-                        options |= RegexOptions.Multiline;
-                        break;
-                    case 's':
-                        options |= RegexOptions.Singleline;
-                        break;
-                    case 'x':
-                        options |= RegexOptions.ExplicitCapture;
-                        break;
-                }
-            }
-
-            return new Regex(patternText, options);
-        }
-
-        private Regex ReadRegexObject(JObject obj, JsonSerializer serializer)
-        {
-            var pattern = (string) obj.GetValue(PatternName, StringComparison.OrdinalIgnoreCase);
-            var options = obj.GetValue(OptionsName, StringComparison.OrdinalIgnoreCase);
-            var optionsValue = options == null ? RegexOptions.None : serializer.Deserialize<RegexOptions>(options.CreateReader());
-            return new Regex(pattern, optionsValue);
-        }
-
-        /// <summary>
-        /// Determines whether this instance can convert the specified object type.
-        /// </summary>
-        /// <param name="objectType">Type of the object.</param>
-        /// <returns>
-        /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool CanConvert(Type objectType)
-        {
-            if (disabled)
-            {
-                disabled = false;
-                return false;
-            }
-            return objectType == typeof(Regex) || objectType == typeof(object);
+            writer.WritePropertyName("$value");
+            writer.WriteValue(Enum.Format(value.GetType(), value, "G"));
+            writer.WriteEndObject();
+            return true;
         }
     }
 }
+

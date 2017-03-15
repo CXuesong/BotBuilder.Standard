@@ -32,7 +32,7 @@
 //
 
 //#define DEBUG_STREAMS
-//#define STRICT_REF_RESOLVER
+#define STRICT_REF_RESOLVER
 
 using System;
 using System.Collections.Generic;
@@ -125,9 +125,10 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
                 {
                     DelegateJsonConverter.Default,
                     MethodInfoJsonConverter.Default,
-                    new ResolvableObjectJsonConverter(resolver),
-                    new RegexConverterEx(),
-                },
+                    new ContextualJsonConvertHandler(new ResolvableObjectJsonConverter(resolver),
+                        ContextualRegexConverter.Default,
+                        ContextualEnumConverter.Default)
+                }
             };
         }
 

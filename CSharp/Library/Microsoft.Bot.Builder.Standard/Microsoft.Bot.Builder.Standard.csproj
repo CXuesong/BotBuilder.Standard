@@ -5,7 +5,7 @@
     <AssemblyName>Microsoft.Bot.Builder</AssemblyName>
     <RootNamespace>Microsoft.Bot.Builder</RootNamespace>
     <PackageId>CXuesong.Ported.Microsoft.Bot.Builder</PackageId>
-    <Version>3.5.1-int1</Version>
+    <Version>3.5.1-int2</Version>
     <Authors>Microsoft (Original), CXuesong (Ported)</Authors>
     <Company />
     <Product>Microsoft Bot Builder</Product>
@@ -24,6 +24,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard1.4\.xml</DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Fibers\_private\**" />
+    <EmbeddedResource Remove="Fibers\_private\**" />
+    <None Remove="Fibers\_private\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CXuesong.Ported.Chronic" Version="1.0.0" />

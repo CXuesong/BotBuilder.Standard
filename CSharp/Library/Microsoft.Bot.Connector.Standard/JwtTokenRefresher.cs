@@ -25,7 +25,8 @@ namespace Microsoft.Bot.Connector
             HttpResponseMessage response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
             // possibly a transient "token expiration" failure
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            // work around for channels that might return Forbidden if the JwtToken is expired
+            if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
             {
                 response.Dispose();
                 // this call might throw if the Microsoft login service returns an oauth failure
@@ -57,6 +58,28 @@ namespace Microsoft.Bot.Connector
                 }
             }
 
+            return response;
+        }
+    }
+    
+    /// <summary>
+    /// A custom redirect handler for <see cref="HttpStatusCode.RedirectKeepVerb"/>.
+    /// </summary>
+    /// <remarks>
+    /// This makes sure that authorization headers stay intact between 307 redirects.
+    /// </remarks>
+    public sealed class CustomRedirectHandler : DelegatingHandler
+    {
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            HttpResponseMessage response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+
+            if(response.StatusCode == HttpStatusCode.RedirectKeepVerb && response.Headers.Contains("Location"))
+            {
+                request.RequestUri = new Uri(request.RequestUri, response.Headers.Location);
+                response.Dispose();
+                response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            }
             return response;
         }
     }

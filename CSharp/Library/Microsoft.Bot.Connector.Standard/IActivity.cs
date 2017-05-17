@@ -87,6 +87,11 @@ namespace Microsoft.Bot.Connector
         IContactRelationUpdateActivity AsContactRelationUpdateActivity();
 
         /// <summary>
+        /// Return IInstallationUpdateActivity if this is a installationUpdate activity, null otherwise
+        /// </summary>
+        IInstallationUpdateActivity AsInstallationUpdateActivity();
+
+        /// <summary>
         /// Return IConversationUpdateActivity if this is a conversationUpdate activity, null otherwise
         /// </summary>
         IConversationUpdateActivity AsConversationUpdateActivity();

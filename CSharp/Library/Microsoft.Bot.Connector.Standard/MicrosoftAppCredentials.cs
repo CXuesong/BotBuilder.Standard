@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -12,7 +13,6 @@ using Microsoft.Extensions.Logging;
 #endif
 using Microsoft.Rest;
 using Newtonsoft.Json;
-using System.Diagnostics;
 
 #if NET45
 using System.Configuration;
@@ -83,6 +83,7 @@ namespace Microsoft.Bot.Connector
 #endif
 
 
+
         public string MicrosoftAppId { get; set; }
         public string MicrosoftAppPassword { get; set; }
 
@@ -104,7 +105,26 @@ namespace Microsoft.Bot.Connector
                 if (expirationTime == default(DateTime))
                 {
                     // by default the service url is valid for one day
-                    TrustedHostNames.AddOrUpdate(new Uri(serviceUrl).Host, DateTime.UtcNow.AddDays(1), (key, oldValue) => DateTime.UtcNow.AddDays(1));
+                    var extensionPeriod = TimeSpan.FromDays(1);
+                    TrustedHostNames.AddOrUpdate(new Uri(serviceUrl).Host, DateTime.UtcNow.Add(extensionPeriod), (key, oldValue) =>
+                    {
+                        var newExpiration = DateTime.UtcNow.Add(extensionPeriod);
+                        // try not to override expirations that are greater than one day from now
+                        if (oldValue > newExpiration)
+                        {
+                            // make sure that extension can be added to oldValue and ArgumentOutOfRangeException
+                            // is not thrown
+                            if (oldValue >= DateTime.MaxValue.Subtract(extensionPeriod))
+                            {
+                                newExpiration = oldValue;
+                            }
+                            else
+                            {
+                                newExpiration = oldValue.Add(extensionPeriod);
+                            }
+                        }
+                        return newExpiration;
+                    });
                 }
                 else
                 {
@@ -227,19 +247,18 @@ namespace Microsoft.Bot.Connector
                 Debug.WriteLineIf(MicrosoftAppPassword == null, "Warning: client_secret (MicrosoftAppPassword) is null.");
                 using (var response = await httpClient.PostAsync(OAuthEndpoint, content).ConfigureAwait(false))
                 {
-                    string body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
+                    string body = null;
                     try
                     {
                         response.EnsureSuccessStatusCode();
-
+                        body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                         var oauthResponse = JsonConvert.DeserializeObject<OAuthResponse>(body);
                         oauthResponse.expiration_time = DateTime.UtcNow.AddSeconds(oauthResponse.expires_in).Subtract(TimeSpan.FromSeconds(60));
                         return oauthResponse;
                     }
                     catch (Exception error)
                     {
-                        throw new OAuthException(body, error);
+                        throw new OAuthException(body ?? response.ReasonPhrase, error);
                     }
                 }
             }

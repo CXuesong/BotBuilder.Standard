@@ -26,6 +26,7 @@ namespace Microsoft.Bot.Connector
         /// </summary>
         public AudioCard(string title = default(string), string subtitle = default(string), string text = default(string), ThumbnailUrl image = default(ThumbnailUrl), IList<MediaUrl> media = default(IList<MediaUrl>), IList<CardAction> buttons = default(IList<CardAction>), bool? shareable = default(bool?), bool? autoloop = default(bool?), bool? autostart = default(bool?), string aspect = default(string))
         {
+            Aspect = aspect;
             Title = title;
             Subtitle = subtitle;
             Text = text;
@@ -35,8 +36,14 @@ namespace Microsoft.Bot.Connector
             Shareable = shareable;
             Autoloop = autoloop;
             Autostart = autostart;
-            Aspect = aspect;
         }
+
+        /// <summary>
+        /// Aspect ratio of thumbnail/media placeholder, allowed values are
+        /// "16x9" and "9x16"
+        /// </summary>
+        [JsonProperty(PropertyName = "aspect")]
+        public string Aspect { get; set; }
 
         /// <summary>
         /// Title of the card
@@ -66,13 +73,13 @@ namespace Microsoft.Bot.Connector
         /// Array of media Url objects
         /// </summary>
         [JsonProperty(PropertyName = "media")]
-        public IList<MediaUrl> Media { get; set; }
+        public IList<MediaUrl> Media { get; set; } = new List<MediaUrl>();
 
         /// <summary>
         /// Set of actions applicable to the current card
         /// </summary>
         [JsonProperty(PropertyName = "buttons")]
-        public IList<CardAction> Buttons { get; set; }
+        public IList<CardAction> Buttons { get; set; } = new List<CardAction>();
 
         /// <summary>
         /// Is it OK for this content to be shareable with others
@@ -93,13 +100,6 @@ namespace Microsoft.Bot.Connector
         /// </summary>
         [JsonProperty(PropertyName = "autostart")]
         public bool? Autostart { get; set; }
-
-        /// <summary>
-        /// Aspect ratio of thumbnail/media placeholder, allowed values are
-        /// "16x9" and "9x16"
-        /// </summary>
-        [JsonProperty(PropertyName = "aspect")]
-        public string Aspect { get; set; }
 
     }
 }

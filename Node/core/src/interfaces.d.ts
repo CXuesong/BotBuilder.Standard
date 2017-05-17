@@ -31,6 +31,16 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+type TextType = string|string[];
+type MessageType = IMessage|IIsMessage;
+type TextOrMessageType = TextType|MessageType;
+type CardActionType = ICardAction|IIsCardAction;
+type CardImageType = ICardImage|IIsCardImage;
+type AttachmentType = IAttachment|IIsAttachment;
+type MatchType = RegExp|string|(RegExp|string)[];
+type ValueListType = string|string[];
+
+
 interface IEvent {
     type: string;
     address: IAddress;
@@ -41,18 +51,30 @@ interface IEvent {
 }
 
 interface IMessage extends IEvent {
-    timestamp: string;              // Timestamp of message given by chat service 
-    summary: string;                // Text to be displayed by as fall-back and as short description of the message content in e.g. list of recent conversations 
-    text: string;                   // Message text  
-    textLocale: string;             // Identified language of the message text.
-    attachments: IAttachment[];     // This is placeholder for structured objects attached to this message 
-    entities: any[];                // This property is intended to keep structured data objects intended for Client application e.g.: Contacts, Reservation, Booking, Tickets. Structure of these object objects should be known to Client application.
-    textFormat: string;             // Format of text fields [plain|markdown|xml] default:markdown
-    attachmentLayout: string;       // AttachmentLayout - hint for how to deal with multiple attachments Values: [list|carousel] default:list
+    timestamp?: string;              // UTC Time when message was sent (set by service)
+    localTimestamp?: string;         // Local time when message was sent (set by client or bot, Ex: 2016-09-23T13:07:49.4714686-07:00)
+    summary?: string;                // Text to be displayed by as fall-back and as short description of the message content in e.g. list of recent conversations 
+    text?: string;                   // Message text
+    speak?: string;                  // Spoken message as Speech Synthesis Markup Language (SSML)
+    textLocale?: string;             // Identified language of the message text.
+    attachments?: IAttachment[];     // This is placeholder for structured objects attached to this message 
+    suggestedActions: ISuggestedActions; // Quick reply actions that can be suggested as part of the message 
+    entities?: any[];                // This property is intended to keep structured data objects intended for Client application e.g.: Contacts, Reservation, Booking, Tickets. Structure of these object objects should be known to Client application.
+    textFormat?: string;             // Format of text fields [plain|markdown|xml] default:markdown
+    attachmentLayout?: string;       // AttachmentLayout - hint for how to deal with multiple attachments Values: [list|carousel] default:list
+    inputHint?: string;              // Hint for clients to indicate if the bot is waiting for input or not.
 }
 
 interface IIsMessage {
     toMessage(): IMessage;
+}
+
+interface IMessageOptions {
+    attachments?: AttachmentType[];
+    attachmentLayout?: string;
+    entities?: any[];
+    textFormat?: string;
+    inputHint?: string;
 }
 
 interface IIdentity {
@@ -104,7 +126,6 @@ interface IMediaCard extends IKeyboard{
     autoloop: boolean;              // Should the media source reproduction run in a lool
     autostart: boolean;             // Should the media start automatically
     shareable: boolean;             // Should media be shareable
-    buttons: ICardAction[];         // Set of actions applicable to the current card.
 }
 
 interface IVideoCard extends IMediaCard {
@@ -160,6 +181,16 @@ interface ICardAction {
 
 interface IIsCardAction {
     toAction(): ICardAction;
+}
+
+interface ISuggestedActions {
+    to?: string[]; // Optional recipients of the suggested actions. Not supported in all channels.
+    actions: ICardAction[]; // Quick reply actions that can be suggested as part of the message 
+}
+
+
+interface IIsSuggestedActions {
+    toSuggestedActions(): ISuggestedActions;
 }
 
 interface ICardImage {
@@ -222,10 +253,11 @@ interface IIntent {
     score: number;
 }
 
-interface IEntity {
-    entity: string;
+interface IEntity<T> {
+    entity: T;
     type: string;
     startIndex?: number;
     endIndex?: number;
     score?: number;
 }
+

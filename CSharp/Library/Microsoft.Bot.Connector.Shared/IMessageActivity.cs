@@ -23,6 +23,16 @@ namespace Microsoft.Bot.Connector
         string Text { get; set; }
 
         /// <summary>
+        /// Speak tag (SSML markup for text to speech)
+        /// </summary>
+        string Speak { get; set; }
+
+        /// <summary>
+        /// Indicates whether the bot is accepting, expecting, or ignoring input
+        /// </summary>
+        string InputHint { get; set; }
+
+        /// <summary>
         /// Text to display if the channel cannot render cards
         /// </summary>
         string Summary { get; set; }
@@ -43,25 +53,28 @@ namespace Microsoft.Bot.Connector
         IList<Attachment> Attachments { get; set; }
 
         /// <summary>
+        /// SuggestedActions are used to express actions for interacting with a card like keyboards/quickReplies
+        /// </summary>
+        SuggestedActions SuggestedActions { get; set; }
+
+        /// <summary>
         /// Collection of Entity objects, each of which contains metadata about this activity. Each Entity object is typed.
         /// </summary>
         IList<Entity> Entities { get; set; }
-
+        
         /// <summary>
         /// True if this activity has text, attachments, or channelData
         /// </summary>
         bool HasContent();
 
         /// <summary>
-        /// Get channeldata as typed structure
-        /// </summary>
-        /// <typeparam name="TypeT">type to use</typeparam>
-        /// <returns>typed object or default(TypeT)</returns>
-        TypeT GetChannelData<TypeT>();
-
-        /// <summary>
         /// Get mentions
         /// </summary>
         Mention[] GetMentions();
+
+        /// <summary>
+        /// Value provided with CardAction
+        /// </summary>
+        object Value { get; set; }
     }
 }

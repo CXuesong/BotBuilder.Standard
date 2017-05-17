@@ -27,8 +27,8 @@
       <dependency id="Microsoft.AspNet.WebAPI.Core" version="5.2.3" />
       <dependency id="Microsoft.Rest.ClientRuntime" version="2.3.2" />
       <dependency id="Newtonsoft.Json" version="8.0.3" />
-      <dependency id="System.IdentityModel.Tokens.Jwt" version="[4.0.2.206221351,5.0)" />
-      <dependency id="Microsoft.IdentityModel.Protocol.Extensions" version="1.0.2.206221351" />
+      <dependency id="System.IdentityModel.Tokens.Jwt" version="[4.0.4.403061554,5.0)" />
+      <dependency id="Microsoft.IdentityModel.Protocol.Extensions" version="1.0.4.403061554" />
     </dependencies>
   </metadata>
   <files>
@@ -46,7 +46,7 @@
     <file src="..\Microsoft.Bot.Builder.Autofac\bin\release\Microsoft.Bot.Builder.Autofac.pdb"  target="lib\net46" />
     <!-- source -->
     <file src="..\**\*.cs"
-          exclude="**\obj\**\*.cs;..\Microsoft.Bot.Builder.Azure\**;..\Microsoft.Bot.Builder.Calling\**;..\Microsoft.Bot.Builder.FormFlow.Json\**;..\Microsoft.Bot.Builder.History\**"
+          exclude="**\obj\**\*.cs;..\Microsoft.Bot.Builder.Azure\**;..\Microsoft.Bot.Builder.Calling\**;..\Microsoft.Bot.Builder.FormFlow.Json\**;..\Microsoft.Bot.Builder.History\**;..\Microsoft.Bot.Connector.AspNetCore\**;..\Microsoft.Bot.Connector.NetCore\**"
           target="src" />
     <!-- tools -->
     <file src="..\..\tools\rview\bin\release\RView.exe" target="tools"/>

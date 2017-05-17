@@ -1,10 +1,16 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var SimpleDialog_1 = require("../dialogs/SimpleDialog");
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var WaterfallDialog_1 = require("../dialogs/WaterfallDialog");
 var ActionSet_1 = require("../dialogs/ActionSet");
 var IntentRecognizerSet_1 = require("../dialogs/IntentRecognizerSet");
 var Session_1 = require("../Session");
@@ -368,20 +374,17 @@ var Library = (function (_super) {
         }
         return best;
     };
-    Library.prototype.dialog = function (id, dialog) {
+    Library.prototype.dialog = function (id, dialog, replace) {
         var d;
         if (dialog) {
             if (id.indexOf(':') >= 0) {
                 id = id.split(':')[1];
             }
-            if (this.dialogs.hasOwnProperty(id)) {
+            if (this.dialogs.hasOwnProperty(id) && !replace) {
                 throw new Error("Dialog[" + id + "] already exists in library[" + this.name + "].");
             }
-            if (Array.isArray(dialog)) {
-                d = new SimpleDialog_1.SimpleDialog(SimpleDialog_1.createWaterfall(dialog));
-            }
-            else if (typeof dialog == 'function') {
-                d = new SimpleDialog_1.SimpleDialog(SimpleDialog_1.createWaterfall([dialog]));
+            if (Array.isArray(dialog) || typeof dialog === 'function') {
+                d = new WaterfallDialog_1.WaterfallDialog(dialog);
             }
             else {
                 d = dialog;
@@ -459,6 +462,10 @@ var Library = (function (_super) {
     };
     Library.prototype.endConversationAction = function (name, msg, options) {
         this.actions.endConversationAction(name, msg, options);
+        return this;
+    };
+    Library.prototype.customAction = function (options) {
+        this.actions.customAction(options);
         return this;
     };
     Library.prototype.logPrefix = function () {

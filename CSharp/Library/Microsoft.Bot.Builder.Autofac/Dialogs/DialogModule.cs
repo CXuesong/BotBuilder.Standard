@@ -33,6 +33,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Resources;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -135,13 +136,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
                 .InstancePerLifetimeScope();
 
             builder
-               .Register(c => new DetectChannelCapability(c.Resolve<IAddress>()))
-               .As<IDetectChannelCapability>()
-               .InstancePerLifetimeScope();
-
-            builder
-                .Register(c => c.Resolve<IDetectChannelCapability>().Detect())
-                .As<IChannelCapability>()
+                .RegisterType<ChannelCapability>()
+                .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
 
             builder
@@ -167,14 +163,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
                 .InstancePerLifetimeScope();
 
             builder
-                .RegisterType<JObjectBotData>()
+                .RegisterKeyedType<JObjectBotData, IBotData>()
                 .AsSelf()
                 .InstancePerLifetimeScope();
 
             builder
-                .Register(c => new DialogTaskManagerBotDataLoader(c.Resolve<JObjectBotData>(),
-                                                 c.Resolve<IDialogTaskManager>()))
-                .As<IBotData>()
+                .RegisterKeyedType<DialogTaskManagerBotDataLoader, IBotData>()
+                .InstancePerLifetimeScope();
+
+            builder
+                .RegisterAdapterChain<IBotData>
+                (
+                    typeof(JObjectBotData),
+                    typeof(DialogTaskManagerBotDataLoader)
+                )
                 .InstancePerLifetimeScope();
 
             builder
@@ -234,6 +236,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
                 .Register(c => new DeleteProfileScorable(c.Resolve<IDialogStack>(), c.Resolve<IBotData>(), c.Resolve<IBotToUser>(), c.ResolveKeyed<Regex>(Key_DeleteProfile_Regex)))
                 .As<IScorable<IActivity, double>>()
                 .InstancePerLifetimeScope();
+
+            // scorable implementing "end conversation"
+            builder
+                .RegisterInstance(EndConversationEvent.MakeScorable())
+                .As<IScorable<IResolver, double>>()
+                .SingleInstance();
 
             builder
                 .Register(c =>
@@ -339,10 +347,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
                 .InstancePerLifetimeScope();
 
             builder
+                .RegisterKeyedType<QueueDrainingDialogTask, IPostToBot>()
+                .InstancePerLifetimeScope();
+
+            builder
                 .RegisterAdapterChain<IPostToBot>
                 (
                     typeof(EventLoopDialogTask),
                     typeof(SetAmbientThreadCulture),
+                    typeof(QueueDrainingDialogTask),
                     typeof(PersistentDialogTask),
                     typeof(ExceptionTranslationDialogTask),
                     typeof(SerializeByConversation),
@@ -363,7 +376,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
                 .AsImplementedInterfaces()
                 .SingleInstance();
 
+            builder
+                .RegisterType<SetLocalTimestampMapper>()
+                .AsImplementedInterfaces()
+                .SingleInstance();
+
             // IBotToUser services
+            builder
+                .RegisterType<InputHintQueue>()
+                .AsImplementedInterfaces()
+                .InstancePerLifetimeScope();
 
             builder
                 .RegisterKeyedType<NullBotToUser, IBotToUser>()
@@ -371,6 +393,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
 
             builder
                 .RegisterKeyedType<AlwaysSendDirect_BotToUser, IBotToUser>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
+
+            builder
+                .RegisterKeyedType<AutoInputHint_BotToUser, IBotToUser>()
                 .InstancePerLifetimeScope();
 
             builder
@@ -391,6 +418,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
                 .RegisterAdapterChain<IBotToUser>
                 (
                     typeof(AlwaysSendDirect_BotToUser),
+                    typeof(AutoInputHint_BotToUser),
                     typeof(MapToChannelData_BotToUser),
                     typeof(LogBotToUser)
                 )

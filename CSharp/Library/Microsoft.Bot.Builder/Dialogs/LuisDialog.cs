@@ -36,15 +36,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
-using System.Threading;
 using System.Threading.Tasks;
-
-using Microsoft.Bot.Connector;
 using Microsoft.Bot.Builder.Dialogs.Internals;
 using Microsoft.Bot.Builder.Internals.Fibers;
 using Microsoft.Bot.Builder.Luis;
 using Microsoft.Bot.Builder.Luis.Models;
 using Microsoft.Bot.Builder.Scorables.Internals;
+using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -196,15 +194,26 @@ namespace Microsoft.Bot.Builder.Dialogs
             return results.MaxBy(i => i.BestIntent.Score ?? 0d);
         }
 
+        /// <summary>
+        /// Modify LUIS request before it is sent.
+        /// </summary>
+        /// <param name="request">Request so far.</param>
+        /// <returns>Modified request.</returns>
+        protected virtual LuisRequest ModifyLuisRequest(LuisRequest request)
+        {
+            return request;
+        }
+
         protected virtual async Task MessageReceived(IDialogContext context, IAwaitable<IMessageActivity> item)
         {
             var message = await item;
             var messageText = await GetLuisQueryTextAsync(context, message);
-            
-            var tasks = this.services.Select(s => s.QueryAsync(messageText, context.CancellationToken)).ToArray();
+
+            // Modify request by the service to add attributes and then by the dialog to reflect the particular query
+            var tasks = this.services.Select(s => s.QueryAsync(ModifyLuisRequest(s.ModifyRequest(new LuisRequest(messageText))), context.CancellationToken)).ToArray();
             var results = await Task.WhenAll(tasks);
 
-            var winners = from result in results.Select((value, index) => new {value, index} )
+            var winners = from result in results.Select((value, index) => new { value, index })
                           let resultWinner = BestIntentFrom(result.value)
                           where resultWinner != null
                           select new LuisServiceResult(result.value, resultWinner, this.services[result.index]);
@@ -218,9 +227,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (winner.Result.Dialog?.Status == DialogResponse.DialogStatus.Question)
             {
+#pragma warning disable CS0618
                 var childDialog = await MakeLuisActionDialog(winner.LuisService,
                                                              winner.Result.Dialog.ContextId,
                                                              winner.Result.Dialog.Prompt);
+#pragma warning restore CS0618
                 context.Call(childDialog, LuisActionDialogFinished);
             }
             else
@@ -229,9 +240,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        protected virtual async Task DispatchToIntentHandler(IDialogContext context, 
-                                                            IAwaitable<IMessageActivity> item,  
-                                                            IntentRecommendation bestInent, 
+        protected virtual async Task DispatchToIntentHandler(IDialogContext context,
+                                                            IAwaitable<IMessageActivity> item,
+                                                            IntentRecommendation bestIntent,
                                                             LuisResult result)
         {
             if (this.handlerByIntent == null)
@@ -240,7 +251,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             IntentActivityHandler handler = null;
-            if (result == null || !this.handlerByIntent.TryGetValue(bestInent.Intent, out handler))
+            if (result == null || !this.handlerByIntent.TryGetValue(bestIntent.Intent, out handler))
             {
                 handler = this.handlerByIntent[string.Empty];
             }
@@ -266,15 +277,18 @@ namespace Microsoft.Bot.Builder.Dialogs
             return LuisDialog.EnumerateHandlers(this).ToDictionary(kv => kv.Key, kv => kv.Value);
         }
 
+        [Obsolete("Action binding in LUIS should be replaced with code.")]
         protected virtual async Task<IDialog<LuisResult>> MakeLuisActionDialog(ILuisService luisService, string contextId, string prompt)
         {
+#pragma warning disable CS0618
             return new LuisActionDialog(luisService, contextId, prompt);
+#pragma warning restore CS0618
         }
 
         protected virtual async Task LuisActionDialogFinished(IDialogContext context, IAwaitable<LuisResult> item)
         {
             var result = await item;
-            var messageActivity = (IMessageActivity) context.Activity;
+            var messageActivity = (IMessageActivity)context.Activity;
             await DispatchToIntentHandler(context, Awaitable.FromItem(messageActivity), BestIntentFrom(result), result);
         }
     }
@@ -283,6 +297,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// The dialog wrapping Luis dialog feature.
     /// </summary>
     [Serializable]
+    [Obsolete("Action binding in LUIS should be replaced with code.")]
     public class LuisActionDialog : IDialog<LuisResult>
     {
         private readonly ILuisService luisService;
@@ -313,7 +328,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             var message = await item;
             var luisRequest = new LuisRequest(query: message.Text, contextId: this.contextId);
-            var result = await luisService.QueryAsync(luisService.BuildUri(luisRequest), context.CancellationToken);
+            var result = await luisService.QueryAsync(luisService.BuildUri(luisService.ModifyRequest(luisRequest)), context.CancellationToken);
             if (result.Dialog.Status != DialogResponse.DialogStatus.Finished)
             {
                 this.contextId = result.Dialog.ContextId;

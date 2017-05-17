@@ -31,10 +31,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { IConnector } from './UniversalBot';
+import { IConnector } from '../Session';
 import { Message } from '../Message';
 import * as utils from '../utils';
 import * as readline from 'readline';
+import * as async from 'async';
 
 export class ConsoleConnector implements IConnector {
     private onEventHandler: (events: IEvent[], cb?: (err: Error) => void) => void;
@@ -60,7 +61,7 @@ export class ConsoleConnector implements IConnector {
     public processMessage(line: string): this {
         if (this.onEventHandler) {
             // TODO: Add some sort of logic to support attachment uploads.
-            var msg = new Message()
+            let msg = new Message()
                 .address({
                     channelId: 'console',
                     user: { id: 'user', name: 'User1' },
@@ -81,30 +82,42 @@ export class ConsoleConnector implements IConnector {
     public onInvoke(handler: (event: IEvent, cb?: (err: Error, body: any, status?: number) => void) => void): void {
         this.onInvokeHandler = handler;
     }
-    public send(messages: IMessage[], done: (err: Error) => void): void {
-        for (var i = 0; i < messages.length; i++ ){
-            if (this.replyCnt++ > 0) {
-                console.log();
-            }
-            var msg = messages[i];
-            if (msg.text) {
-                log(msg.text);
-            }
-            if (msg.attachments && msg.attachments.length > 0) {
-                for (var j = 0; j < msg.attachments.length; j++) {
-                    if (j > 0) {
+    public send(messages: IMessage[], done: (err: Error, addresses?: IAddress[]) => void): void {
+        let addresses: any[] = [];
+        async.forEachOfSeries(messages, (msg, idx, cb) => { 
+            try {
+                if (msg.type == 'delay') {
+                    setTimeout(cb, (<any>msg).value);
+                } else if (msg.type == 'message') {
+                    if (this.replyCnt++ > 0) {
                         console.log();
                     }
-                    renderAttachment(msg.attachments[j]);
+                    if (msg.text) {
+                        log(msg.text);
+                    }
+                    if (msg.attachments && msg.attachments.length > 0) {
+                        for (let j = 0; j < msg.attachments.length; j++) {
+                            if (j > 0) {
+                                console.log();
+                            }
+                            renderAttachment(msg.attachments[j]);
+                        }
+                    }
+                    let adr = utils.clone(msg.address);
+                    adr.id = idx.toString();
+                    addresses.push(adr);
+                    cb(null);
+                } else {
+                    cb(null);
                 }
+            } catch (e) {
+                cb(e);
             }
-        }
-
-        done(null);
+        }, (err) => done(err, !err ? addresses : null));
     }
 
     public startConversation(address: IAddress, cb: (err: Error, address?: IAddress) => void): void {
-        var adr = utils.clone(address);
+        let adr = utils.clone(address);
         adr.conversation = { id: 'Convo1' };
         cb(null, adr);
     }
@@ -114,7 +127,7 @@ function renderAttachment(a: IAttachment) {
     switch (a.contentType) {
         case 'application/vnd.microsoft.card.hero':
         case 'application/vnd.microsoft.card.thumbnail':
-            var tc: IThumbnailCard = a.content;
+            let tc: IThumbnailCard = a.content;
             if (tc.title) {
                 if (tc.title.length <= 40) {
                     line('=', 60, tc.title);
@@ -148,9 +161,9 @@ function renderAttachment(a: IAttachment) {
 function renderImages(images: ICardImage[]) {
     if (images && images.length) {
         line('.', 60, 'images');
-        var bullet = images.length > 1 ? '* ' : '';
-        for (var i = 0; i < images.length; i++) {
-            var img = images[i];
+        let bullet = images.length > 1 ? '* ' : '';
+        for (let i = 0; i < images.length; i++) {
+            let img = images[i];
             if (img.alt) {
                 wrap(bullet + img.alt + ': ' + img.url, 60, 3);
             } else {
@@ -163,9 +176,9 @@ function renderImages(images: ICardImage[]) {
 function renderButtons(actions: ICardAction[]) {
     if (actions && actions.length) {
         line('.', 60, 'buttons');
-        var bullet = actions.length > 1 ? '* ' : '';
-        for (var i = 0; i < actions.length; i++) {
-            var a = actions[i];
+        let bullet = actions.length > 1 ? '* ' : '';
+        for (let i = 0; i < actions.length; i++) {
+            let a = actions[i];
             if (a.title == a.value) {
                 wrap(bullet + a.title, 60, 3);
             } else {
@@ -177,7 +190,7 @@ function renderButtons(actions: ICardAction[]) {
 
 function line(char: string, length: number, title?: string) {
     if (title) {
-        var txt = repeat(char, 2);
+        let txt = repeat(char, 2);
         txt += '[' + title + ']';
         if (length > txt.length) {
             txt += repeat(char, length - txt.length);
@@ -189,12 +202,12 @@ function line(char: string, length: number, title?: string) {
 }
 
 function wrap(text: string, length: number, indent = 0) {
-    var buffer = '';
-    var pad = indent ? repeat(' ', indent) : '';
-    var tokens = text.split(' ');
+    let buffer = '';
+    let pad = indent ? repeat(' ', indent) : '';
+    let tokens = text.split(' ');
     length -= pad.length;
-    for (var i = 0; i < tokens.length; i++) {
-        var t = tokens[i];
+    for (let i = 0; i < tokens.length; i++) {
+        let t = tokens[i];
         if (buffer.length) {
             if ((buffer.length + 1 + t.length) > length) {
                 log(pad + buffer);
@@ -214,8 +227,8 @@ function wrap(text: string, length: number, indent = 0) {
 }
 
 function repeat(char: string, length: number): string {
-    var txt = '';
-    for (var i = 0; i < length; i++) {
+    let txt = '';
+    for (let i = 0; i < length; i++) {
         txt += char;
     }
     return txt;

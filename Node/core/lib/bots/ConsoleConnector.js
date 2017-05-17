@@ -1,7 +1,9 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var Message_1 = require("../Message");
 var utils = require("../utils");
 var readline = require("readline");
+var async = require("async");
 var ConsoleConnector = (function () {
     function ConsoleConnector() {
         this.replyCnt = 0;
@@ -44,24 +46,41 @@ var ConsoleConnector = (function () {
         this.onInvokeHandler = handler;
     };
     ConsoleConnector.prototype.send = function (messages, done) {
-        for (var i = 0; i < messages.length; i++) {
-            if (this.replyCnt++ > 0) {
-                console.log();
-            }
-            var msg = messages[i];
-            if (msg.text) {
-                log(msg.text);
-            }
-            if (msg.attachments && msg.attachments.length > 0) {
-                for (var j = 0; j < msg.attachments.length; j++) {
-                    if (j > 0) {
+        var _this = this;
+        var addresses = [];
+        async.forEachOfSeries(messages, function (msg, idx, cb) {
+            try {
+                if (msg.type == 'delay') {
+                    setTimeout(cb, msg.value);
+                }
+                else if (msg.type == 'message') {
+                    if (_this.replyCnt++ > 0) {
                         console.log();
                     }
-                    renderAttachment(msg.attachments[j]);
+                    if (msg.text) {
+                        log(msg.text);
+                    }
+                    if (msg.attachments && msg.attachments.length > 0) {
+                        for (var j = 0; j < msg.attachments.length; j++) {
+                            if (j > 0) {
+                                console.log();
+                            }
+                            renderAttachment(msg.attachments[j]);
+                        }
+                    }
+                    var adr = utils.clone(msg.address);
+                    adr.id = idx.toString();
+                    addresses.push(adr);
+                    cb(null);
+                }
+                else {
+                    cb(null);
                 }
             }
-        }
-        done(null);
+            catch (e) {
+                cb(e);
+            }
+        }, function (err) { return done(err, !err ? addresses : null); });
     };
     ConsoleConnector.prototype.startConversation = function (address, cb) {
         var adr = utils.clone(address);

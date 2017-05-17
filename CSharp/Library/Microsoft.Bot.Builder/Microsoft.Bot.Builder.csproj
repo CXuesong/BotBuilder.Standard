@@ -81,6 +81,7 @@
     <Compile Include="ConnectorEx\BotData.cs" />
     <Compile Include="ConnectorEx\BotToUser.cs" />
     <Compile Include="Dialogs\CommandDialog.cs" />
+    <Compile Include="Dialogs\EndConversation.cs" />
     <Compile Include="Dialogs\DialogContext.cs" />
     <Compile Include="Dialogs\Chain.cs" />
     <Compile Include="Dialogs\DialogRouter.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="ConnectorEx\IActivityLogger.cs" />
     <Compile Include="Dialogs\DispatchDialog.cs" />
     <Compile Include="ConnectorEx\ResumptionCookie.cs" />
+    <Compile Include="Dialogs\PromptRecognizer.cs" />
     <Compile Include="Dialogs\ScoringEventLoop.cs" />
     <Compile Include="Dialogs\DialogTask.cs" />
     <Compile Include="ConnectorEx\IBotDataBag.cs" />
@@ -180,7 +182,9 @@
     <Compile Include="Scorables\Scorables.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="createpackage.cmd" />
     <None Include="Luis\generateLuisModels.bat" />
     <None Include="Luis\Luis-q.json" />

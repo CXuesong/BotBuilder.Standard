@@ -1,9 +1,15 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
 var Library_1 = require("./Library");
 var Session_1 = require("../Session");
 var DefaultLocalizer_1 = require("../DefaultLocalizer");
@@ -20,7 +26,7 @@ var UniversalBot = (function (_super) {
         _this.settings = {
             processLimit: 4,
             persistUserData: true,
-            persistConversationData: false
+            persistConversationData: true
         };
         _this.connectors = {};
         _this.mwReceive = [];
@@ -202,7 +208,7 @@ var UniversalBot = (function (_super) {
                 }, cb);
             }, cb);
         }, this.errorLogger(function (err) {
-            if (!err) {
+            if (!err && list.length > 0) {
                 _this.tryCatch(function () {
                     var channelId = list[0].address.channelId;
                     var connector = _this.connector(channelId);
@@ -213,7 +219,7 @@ var UniversalBot = (function (_super) {
                 }, _this.errorLogger(done));
             }
             else if (done) {
-                done(null);
+                done(err, null);
             }
         }));
     };
@@ -295,7 +301,7 @@ var UniversalBot = (function (_super) {
             if (message.source == consts.emulatorChannel) {
                 logger = new RemoteSessionLogger_1.RemoteSessionLogger(_this.connector(consts.emulatorChannel), message.address, message.address);
             }
-            else if (data.privateConversationData.hasOwnProperty(consts.Data.DebugAddress)) {
+            else if (data.privateConversationData && data.privateConversationData.hasOwnProperty(consts.Data.DebugAddress)) {
                 var debugAddress = data.privateConversationData[consts.Data.DebugAddress];
                 logger = new RemoteSessionLogger_1.RemoteSessionLogger(_this.connector(consts.emulatorChannel), debugAddress, message.address);
             }
@@ -306,6 +312,7 @@ var UniversalBot = (function (_super) {
                 localizer: _this.localizer,
                 logger: logger,
                 autoBatchDelay: _this.settings.autoBatchDelay,
+                connector: _this.connector(message.address.channelId),
                 library: _this,
                 middleware: _this.mwSession,
                 dialogId: dialogId,
@@ -348,6 +355,7 @@ var UniversalBot = (function (_super) {
         else {
             entry += '<null>';
         }
+        entry += ' from "' + session.message.source + '"';
         session.logger.log(null, entry);
         var context = session.toRecognizeContext();
         this.recognize(context, function (err, topIntent) {
@@ -497,7 +505,7 @@ var UniversalBot = (function (_super) {
         catch (e) {
             try {
                 if (error) {
-                    error(e);
+                    error(e, null);
                 }
             }
             catch (e2) {
@@ -507,12 +515,12 @@ var UniversalBot = (function (_super) {
     };
     UniversalBot.prototype.errorLogger = function (done) {
         var _this = this;
-        return function (err) {
+        return function (err, result) {
             if (err) {
                 _this.emitError(err);
             }
             if (done) {
-                done(err);
+                done(err, result);
                 done = null;
             }
         };

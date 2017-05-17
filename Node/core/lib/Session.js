@@ -1,9 +1,15 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
 var Dialog_1 = require("./dialogs/Dialog");
 var Message_1 = require("./Message");
 var consts = require("./consts");
@@ -16,6 +22,7 @@ var Session = (function (_super) {
         var _this = _super.call(this) || this;
         _this.options = options;
         _this.msgSent = false;
+        _this._hasError = false;
         _this._isReset = false;
         _this.lastSendTime = new Date().getTime();
         _this.batch = [];
@@ -25,6 +32,7 @@ var Session = (function (_super) {
         _this._locale = null;
         _this.localizer = null;
         _this.logger = null;
+        _this.connector = options.connector;
         _this.library = options.library;
         _this.localizer = options.localizer;
         _this.logger = options.logger;
@@ -106,6 +114,7 @@ var Session = (function (_super) {
         err = err instanceof Error ? err : new Error(m);
         this.emit('error', err);
         this.logger.error(this.dialogStack(), err);
+        this._hasError = true;
         if (this.options.dialogErrorMessage) {
             this.endConversation(this.options.dialogErrorMessage);
         }
@@ -171,7 +180,7 @@ var Session = (function (_super) {
         args.unshift(this.curLibraryName(), message);
         return Session.prototype.sendLocalized.apply(this, args);
     };
-    Session.prototype.sendLocalized = function (localizationNamespace, message) {
+    Session.prototype.sendLocalized = function (libraryNamespace, message) {
         var args = [];
         for (var _i = 2; _i < arguments.length; _i++) {
             args[_i - 2] = arguments[_i];
@@ -180,7 +189,7 @@ var Session = (function (_super) {
         if (message) {
             var m;
             if (typeof message == 'string' || Array.isArray(message)) {
-                m = this.createMessage(localizationNamespace, message, args);
+                m = this.createMessage(libraryNamespace, message, args);
             }
             else if (message.toMessage) {
                 m = message.toMessage();
@@ -195,13 +204,39 @@ var Session = (function (_super) {
         this.startBatch();
         return this;
     };
+    Session.prototype.say = function (text, speak, options) {
+        if (typeof speak === 'object') {
+            options = speak;
+            speak = null;
+        }
+        return this.sayLocalized(this.curLibraryName(), text, speak, options);
+    };
+    Session.prototype.sayLocalized = function (libraryNamespace, text, speak, options) {
+        this.msgSent = true;
+        var msg = new Message_1.Message(this).text(text).speak(speak).toMessage();
+        if (options) {
+            ['attachments', 'attachmentLayout', 'entities', 'textFormat', 'inputHint'].forEach(function (field) {
+                if (options.hasOwnProperty(field)) {
+                    msg[field] = options[field];
+                }
+            });
+        }
+        return this.sendLocalized(libraryNamespace, msg);
+    };
     Session.prototype.sendTyping = function () {
         this.msgSent = true;
         var m = { type: 'typing' };
         this.prepareMessage(m);
         this.batch.push(m);
         this.logger.log(this.dialogStack(), 'Session.sendTyping()');
-        this.sendBatch();
+        return this;
+    };
+    Session.prototype.delay = function (delay) {
+        this.msgSent = true;
+        var m = { type: 'delay', value: delay };
+        this.prepareMessage(m);
+        this.batch.push(m);
+        this.logger.log(this.dialogStack(), 'Session.delay(%d)', delay);
         return this;
     };
     Session.prototype.messageSent = function () {
@@ -252,7 +287,12 @@ var Session = (function (_super) {
             this.prepareMessage(m);
             this.batch.push(m);
         }
+        this.conversationData = {};
         this.privateConversationData = {};
+        var code = this._hasError ? 'unknown' : 'completedSuccessfully';
+        var mec = { type: 'endOfConversation', code: code };
+        this.prepareMessage(mec);
+        this.batch.push(mec);
         this.logger.log(this.dialogStack(), 'Session.endConversation()');
         var ss = this.sessionState;
         ss.callstack = [];
@@ -364,10 +404,11 @@ var Session = (function (_super) {
     Session.prototype.isReset = function () {
         return this._isReset;
     };
-    Session.prototype.sendBatch = function (callback) {
+    Session.prototype.sendBatch = function (done) {
         var _this = this;
         this.logger.log(this.dialogStack(), 'Session.sendBatch() sending ' + this.batch.length + ' message(s)');
         if (this.sendingBatch) {
+            this.batchStarted = true;
             return;
         }
         if (this.batchTimer) {
@@ -385,21 +426,21 @@ var Session = (function (_super) {
         }
         this.onSave(function (err) {
             if (!err) {
-                _this.onSend(batch, function (err) {
+                _this.onSend(batch, function (err, addresses) {
                     _this.onFinishBatch(function () {
                         if (_this.batchStarted) {
                             _this.startBatch();
                         }
-                        if (callback) {
-                            callback(err);
+                        if (done) {
+                            done(err, addresses);
                         }
                     });
                 });
             }
             else {
                 _this.onFinishBatch(function () {
-                    if (callback) {
-                        callback(err);
+                    if (done) {
+                        done(err, null);
                     }
                 });
             }
@@ -502,7 +543,7 @@ var Session = (function (_super) {
             this.userData[consts.Data.DebugWatches][entry.name] = enable;
         }
         else {
-            throw new Error("Invalid watch statement. '" + variable + " isn't watchable");
+            throw new Error("Invalid watch statement. '" + variable + "' isn't watchable");
         }
         return this;
     };
@@ -557,20 +598,23 @@ var Session = (function (_super) {
     };
     Session.prototype.onSend = function (batch, cb) {
         var _this = this;
-        if (batch) {
-            this.options.onSend(batch, function (err) {
+        if (batch && batch.length > 0) {
+            this.options.onSend(batch, function (err, responses) {
                 if (err) {
                     _this.logger.error(_this.dialogStack(), err);
                 }
-                cb(err);
+                cb(err, responses);
             });
+        }
+        else {
+            cb(null, null);
         }
     };
     Session.prototype.onFinishBatch = function (cb) {
         var _this = this;
         var ctx = this.toRecognizeContext();
         async.each(this.watchList(), function (variable, cb) {
-            var entry = watchableHandlers[variable];
+            var entry = watchableHandlers[variable.toLowerCase()];
             if (entry && entry.handler) {
                 try {
                     entry.handler(ctx, function (err, value) {

@@ -1,5 +1,6 @@
 "use strict";
-var Prompts_1 = require("./dialogs/Prompts");
+Object.defineProperty(exports, "__esModule", { value: true });
+var Prompt_1 = require("./dialogs/Prompt");
 var Channel = require("./Channel");
 var consts = require("./consts");
 var sprintf = require("sprintf-js");
@@ -77,8 +78,8 @@ function getPrefix(addressable) {
         if (i == callstack.length - 1) {
             var cur = callstack[i];
             switch (cur.id) {
-                case consts.DialogId.Prompts:
-                    var promptType = Prompts_1.PromptType[cur.state.promptType];
+                case 'BotBuilder:Prompts':
+                    var promptType = Prompt_1.PromptType[cur.state.promptType];
                     prefix += 'Prompts.' + promptType + ' - ';
                     break;
                 case consts.DialogId.FirstRun:

@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Sample.AspNetCore.Echo.Controllers;
 
 namespace Microsoft.Bot.Sample.AspNetCore.Echo
 {
@@ -34,7 +35,12 @@ namespace Microsoft.Bot.Sample.AspNetCore.Echo
             // Authentication for Microsoft Bot Framework.
             services.AddSingleton(_ => new MicrosoftAppCredentials(Configuration,
                 _.GetService<ILoggerFactory>().CreateLogger<MicrosoftAppCredentials>()));
-            services.AddSingleton<Conversation>();
+            services.AddSingleton(_ =>
+            {
+                var c = new Conversation(_.GetService<MicrosoftAppCredentials>());
+                MessagesController.ConfigureConversation(c);
+                return c;
+            });
 
             // Add framework services.
             services.AddMvc(options =>

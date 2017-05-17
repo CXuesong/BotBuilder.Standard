@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Internals;
 using Autofac;
+using Microsoft.Bot.Builder.Scorables;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Sample.AspNetCore.Echo.Controllers
@@ -21,6 +23,22 @@ namespace Microsoft.Bot.Sample.AspNetCore.Echo.Controllers
     {
         private readonly Conversation conversation;
         private readonly ILogger<MessagesController> logger;
+
+        public static void ConfigureConversation(Conversation conversation)
+        {
+            conversation.UpdateContainer(builder =>
+            {
+                var scorable = Actions
+                    .Bind(async (IBotToUser botToUser, IMessageActivity message) =>
+                    {
+                        await botToUser.PostAsync("polo");
+                    })
+                    .When(new Regex("marco"))
+                    .Normalize();
+
+                builder.RegisterInstance(scorable).AsImplementedInterfaces().SingleInstance();
+            });
+        }
 
         public MessagesController(Conversation conversation, ILoggerFactory loggerFactory)
         {

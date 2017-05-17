@@ -2,11 +2,11 @@
 
 >   For Half Moon. Though I might have wandered much too far from the Tribe or the Clans.
 
-I wanted to run my bot on Linux with C#, so I need ASP.Net Core. After taking a look at Microsoft/BotBuilder#572 and Microsoft/BotBuilder#2289, I decided to migrate the library to .NET Standard, and at least, get it working in certain situations.
+I wanted to run my bot on Linux with C#, so I need ASP.Net Core. After taking a look at Microsoft/BotBuilder#572 and Microsoft/BotBuilder#2289, I decided to migrate the library to .NET Standard, and at least, get it working in certain situations. This ported library set is maintained by an individual and is not official, thus I DO NOT SUGGEST YOU TO USE IT IN PRODUCTION ENVIRONMENT. Still, well, PR is welcomed ​:joy_cat:​
 
-In order to use the built library, I have uploaded it to NuGet. You may install its parts by run the following command in the [Package Manager Console](https://docs.nuget.org/docs/start-here/using-the-package-manager-console)
+In order to use the built library, I have uploaded it to NuGet. You may install its parts by running the following commands in the [Package Manager Console](https://docs.nuget.org/docs/start-here/using-the-package-manager-console)
 
-​	To install `Microsoft.Bot.Connector for ASP.NET Core`
+​	To install `Microsoft.Bot.Connector` for ASP.NET Core
 
 ```powershell
 Install-Package CXuesong.Ported.Microsoft.Bot.Connector.AspNetCore -Pre
@@ -19,7 +19,7 @@ Install-Package CXuesong.Ported.Microsoft.Bot.Builder -Pre
 Install-Package CXuesong.Ported.Microsoft.Bot.Builder.Autofac -Pre
 ```
 
-​	To install `CXuesong.Ported.Microsoft.Bot.Builder.FormFlow.Json`
+​	To install `Microsoft.Bot.Builder.FormFlow.Json`
 
 ```powershell
 Install-Package CXuesong.Ported.Microsoft.Bot.Builder.FormFlow.Json -Pre
@@ -41,7 +41,7 @@ I also ported some working examples to .NET Core. including
 -   Microsoft.Bot.Sample.AspNetCore.PizzaBot
 -   Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot
 
-Since I haven't ported any of the unit tests, there might still exist bugs in the library. And it only supports .NET Core. Migration of Microsoft.Bot.Connector(.NetFramework) is needed before this ported library can be consumed on .Net Framework. While pull requests are welcomed, I DO NOT SUGGEST YOU TO USE IT IN PRODUCTION ENVIRONMENT.
+Since I haven't ported any of the unit tests, there might still exist bugs in the library. And it only supports .NET Core. Migration of Microsoft.Bot.Connector(.NetFramework) is needed before this ported library can be consumed on .Net Framework.
 
 I set up the ASP.Net Core projects in VS 2017, which means that you may need VS 2017 to properly open the whole solution. The library targets at .Net Standard 1.6 (though some parts target at 1.4), so if this project were to be made compatible with both .Net Core and .Net Framework, you would at least need .Net Framework 4.6 to consume this library.
 

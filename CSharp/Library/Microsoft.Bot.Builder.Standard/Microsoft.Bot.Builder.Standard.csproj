@@ -5,16 +5,17 @@
     <AssemblyName>Microsoft.Bot.Builder</AssemblyName>
     <RootNamespace>Microsoft.Bot.Builder</RootNamespace>
     <PackageId>CXuesong.Ported.Microsoft.Bot.Builder</PackageId>
-    <Version>3.5.1-int2</Version>
+    <Version>3.8.1</Version>
     <Authors>Microsoft (Original), CXuesong (Ported)</Authors>
     <Company />
     <Product>Microsoft Bot Builder</Product>
     <Description>This is part of an unofficial ported version of Microsoft's Microsoft.Bot.Builder package.</Description>
-    <PackageProjectUrl>https://github.com/CXuesong/BotBuilder</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/CXuesong/BotBuilder</RepositoryUrl>
-    <RepositoryType>Git</RepositoryType>
+    <PackageProjectUrl>https://github.com/CXuesong/BotBuilder.Standard</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/CXuesong/BotBuilder.Standard</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <NeutralLanguage>en</NeutralLanguage>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageReleaseNotes>See https://github.com/CXuesong/BotBuilder.Standard/releases .</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

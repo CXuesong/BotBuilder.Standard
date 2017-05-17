@@ -16,11 +16,11 @@
     <Product>Microsoft Bot Framework</Product>
     <Description>This is an unofficial ported version of Microsoft's Microsoft.Bot.Connector package.
 This library implements C# classes for using the Bot Framework Connector REST API.</Description>
-    <PackageProjectUrl>https://github.com/CXuesong/BotBuilder</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/CXuesong/BotBuilder</RepositoryUrl>
-    <RepositoryType>Git</RepositoryType>
-    <PackageReleaseNotes />
-    <Version>3.5.1-int3</Version>
+    <PackageProjectUrl>https://github.com/CXuesong/BotBuilder.Standard</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/CXuesong/BotBuilder.Standard</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReleaseNotes>See https://github.com/CXuesong/BotBuilder.Standard/releases .</PackageReleaseNotes>
+    <Version>3.8.1</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 

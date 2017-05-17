@@ -47,14 +47,47 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class Conversation
     {
-        public readonly IContainer Container;
+        private readonly object gate = new object();
+        private IContainer container;
 
+        public MicrosoftAppCredentials _CredentialProvider;
+        
+        // CXuesong: We need to inject credentialProvider here.
         public Conversation(MicrosoftAppCredentials credentialProvider)
         {
-            var builder = new ContainerBuilder();
-            builder.RegisterModule(new DialogModule_MakeRoot(credentialProvider));
-            Container = builder.Build();
+            if (credentialProvider == null) throw new ArgumentNullException(nameof(credentialProvider));
+            _CredentialProvider = credentialProvider;
+            UpdateContainer(builder =>
+            {
+            });
         }
+
+        public IContainer Container
+        {
+            get
+            {
+                lock (gate)
+                {
+                    return container;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update the Autofac container.
+        /// </summary>
+        /// <param name="update">The delegate that represents the update to apply.</param>
+        public void UpdateContainer(Action<ContainerBuilder> update)
+        {
+            lock (gate)
+            {
+                var builder = new ContainerBuilder();
+                builder.RegisterModule(new DialogModule_MakeRoot(_CredentialProvider));
+                update(builder);
+                container = builder.Build();
+            }
+        }
+
 
         /// <summary>
         /// Process an incoming message within the conversation.

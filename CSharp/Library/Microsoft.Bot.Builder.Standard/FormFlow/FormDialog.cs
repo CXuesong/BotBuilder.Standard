@@ -40,12 +40,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Internals;
 using Microsoft.Bot.Builder.FormFlow.Advanced;
-using Microsoft.Bot.Builder.Luis;
 using Microsoft.Bot.Builder.Internals.Fibers;
 using Microsoft.Bot.Builder.Luis.Models;
-using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.FormFlow
@@ -81,11 +78,9 @@ namespace Microsoft.Bot.Builder.FormFlow
 
 
         #region IForm<T> statics
-
 #if DEBUG
         internal static bool DebugRecognizers = false;
 #endif
-
         #endregion
     }
 

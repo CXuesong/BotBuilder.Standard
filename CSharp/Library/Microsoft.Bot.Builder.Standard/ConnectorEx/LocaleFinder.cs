@@ -29,6 +29,7 @@ namespace Microsoft.Bot.Builder.ConnectorEx
     {
         private readonly ResumptionContext resumptionContext;
         private readonly ConversationReference conversationReference;
+        private string locale;
 
         public LocaleFinder(ConversationReference conversationReference, ResumptionContext resumptionContext)
         {
@@ -38,6 +39,8 @@ namespace Microsoft.Bot.Builder.ConnectorEx
 
         public async Task<string> FindLocale(IActivity activity, CancellationToken token)
         {
+            if (string.IsNullOrEmpty(this.locale))
+            {
             var resumptionData = await this.resumptionContext.LoadDataAsync(token);
 
             if (resumptionData != null && resumptionData.IsTrustedServiceUrl)
@@ -45,23 +48,24 @@ namespace Microsoft.Bot.Builder.ConnectorEx
                 MicrosoftAppCredentials.TrustServiceUrl(this.conversationReference.ServiceUrl);
             }
 
-            var locale = (activity as IMessageActivity)?.Locale;
+                this.locale = (activity as IMessageActivity)?.Locale;
 
             // if locale is null or whitespace in the incoming request,
             // try to set it from the ResumptionContext
-            if (string.IsNullOrWhiteSpace(locale))
+                if (string.IsNullOrWhiteSpace(this.locale))
             {
-                locale = resumptionData?.Locale;
+                    this.locale = resumptionData?.Locale;
             }
 
             // persist resumptionData with updated information
             var data = new ResumptionData
             {
-                Locale = locale,
+                    Locale = this.locale,
                 IsTrustedServiceUrl = MicrosoftAppCredentials.IsTrustedServiceUrl(this.conversationReference.ServiceUrl)
             };
             await this.resumptionContext.SaveDataAsync(data, token);
-            return locale;
+            }
+            return this.locale;
         }
     }
 }

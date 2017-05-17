@@ -31,15 +31,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using Microsoft.Bot.Connector;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Compatibility;
+using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder.Scorables.Internals
 {
@@ -76,6 +71,8 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
                     IActivity activity;
                     if (this.inner.TryResolve<IActivity>(tag, out activity))
                     {
+                        if (activity.Type != null)
+                        {
                         // then make sure the IActivity.Type allows the desired type
                         Type allowedType;
                         if (TypeByName.TryGetValue(activity.Type, out allowedType))
@@ -89,6 +86,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
                                 {
                                     value = activity;
                                     return true;
+                                    }
                                 }
                             }
                         }

@@ -44,6 +44,8 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Base;
+using Microsoft.Bot.Builder.ConnectorEx;
 using Microsoft.Rest;
 
 namespace Microsoft.Bot.Builder.Dialogs.Internals
@@ -448,11 +450,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
     {
         private readonly IBotData inner;
         private readonly IDialogTaskManager dialogTaskManager;
+        private readonly ILocaleFinder localeFinder;
+        private readonly IActivity activity;
+
         
-        public DialogTaskManagerBotDataLoader(IBotData inner, IDialogTaskManager dialogTaskManager)
+        public DialogTaskManagerBotDataLoader(IBotData inner, IDialogTaskManager dialogTaskManager, IActivity activity, ILocaleFinder localeFinder)
         {
             SetField.NotNull(out this.inner, nameof(inner), inner);
             SetField.NotNull(out this.dialogTaskManager, nameof(dialogTaskManager), dialogTaskManager);
+            SetField.NotNull(out this.localeFinder, nameof(localeFinder), localeFinder);
+            SetField.NotNull(out this.activity, nameof(activity), activity);
         }
 
         public IBotDataBag UserData { get { return inner.UserData; } }
@@ -461,7 +468,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
         public async Task LoadAsync(CancellationToken token)
         {
             await this.inner.LoadAsync(token);
+            var locale = await this.localeFinder.FindLocale(this.activity, token);
+            // The localeScope should be set before dialog stack is deserialized.
+            // This enables dialogs, i.e. formflow dialog, to load the right resource for 
+            // the serialized instance.
+            using (var localeScope = new LocalizedScope(locale))
+            {
             await this.dialogTaskManager.LoadDialogTasks(token);
+        }
         }
 
         public async Task FlushAsync(CancellationToken token)

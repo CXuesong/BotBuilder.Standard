@@ -42,6 +42,7 @@ using Microsoft.Bot.Builder.Dialogs.Internals;
 using Microsoft.Bot.Builder.Internals.Fibers;
 using Microsoft.Bot.Builder.Resource;
 using Microsoft.Bot.Connector;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -259,7 +260,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Entity Recognizer to parse the message content
         /// </summary>
-        [DataMember] public IPromptRecognizer Recognizer { get { return this.promptOptionsWithChoices.Recognizer; } }
+        public IPromptRecognizer Recognizer { get { return this.promptOptionsWithChoices.Recognizer; } }
+
+        [JsonConstructor]
+        protected PromptOptions()
+        {
+
+        }
 
         /// <summary>
         /// Constructs the prompt options.
@@ -301,7 +308,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// The prompt.
         /// </summary>
-       [DataMember] public string Prompt { get; }
+        [DataMember] public string Prompt { get; }
 
         /// <summary>
         /// What to display on retry.
@@ -321,7 +328,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// The choices to be returned when selected.
         /// </summary>
-        [DataMember] public IReadOnlyList<T> Options { get; }
+        /*[DataMember]*/ public IReadOnlyList<T> Options { get; }       // CXuesong: set in the constructor.
 
         /// <summary>
         /// The choices and synonyms to be returned when selected.
@@ -381,10 +388,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="speak"> The Speak tag (SSML markup for text to speech).</param>
         /// <param name="retrySpeak"> What to display on retry Speak (SSML markup for text to speech).</param>
         /// <param name="recognizer"> Entity Recognizer to parse the message content.</param>
+        /// set alarm at 3:30 pm
+        [JsonConstructor]
         public PromptOptionsWithSynonyms(string prompt, string retry = null, string tooManyAttempts = null, IReadOnlyDictionary<T, IReadOnlyList<T>> choices = null, int attempts = 3, PromptStyler promptStyler = null, IReadOnlyList<string> descriptions = null, string speak = null, string retrySpeak = null, IPromptRecognizer recognizer = null)
         {
             if (string.IsNullOrEmpty(prompt))
-        {
+            {
                 throw new ArgumentNullException(nameof(prompt));
             }
 
@@ -731,10 +740,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             /// </summary>
             public static string[][] Patterns
             {
-                get
-                {
-                    return new string[][] { Resources.MatchYes.SplitList(), Resources.MatchNo.SplitList() };
-                }
+                get { return new string[][] { Resources.MatchYes.SplitList(), Resources.MatchNo.SplitList() }; }
             }
 
             /// <summary>   Constructor for a prompt confirmation dialog. </summary>
@@ -744,8 +750,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             /// <param name="promptStyle"> Style of the prompt <see cref="PromptStyle" /> </param>
             /// <param name="options">Names for yes and no  options.</param>
             /// <param name="patterns">Yes and no alternatives for matching input where first dimension is either <see cref="PromptConfirm.Yes"/> or <see cref="PromptConfirm.No"/> and the arrays are alternative strings to match.</param>
-            public PromptConfirm(string prompt, string retry, int attempts, PromptStyle promptStyle = PromptStyle.Auto, string[] options = null, string[][] patterns = null)
-                : this(new PromptOptions<string>(prompt, retry, attempts: attempts, options: options ?? Options, promptStyler: new PromptStyler(promptStyle)), patterns)
+            public PromptConfirm(string prompt, string retry, int attempts, PromptStyle promptStyle = PromptStyle.Auto,
+                string[] options = null, string[][] patterns = null)
+                : this(
+                    new PromptOptions<string>(prompt, retry, attempts: attempts, options: options ?? Options,
+                        promptStyler: new PromptStyler(promptStyle)), patterns)
             {
             }
 
@@ -754,6 +763,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             /// </summary>
             /// <param name="promptOptions"> THe prompt options.</param>
             /// <param name="patterns"></param>
+            [JsonConstructor]
             public PromptConfirm(IPromptOptions<string> promptOptions, string[][] patterns = null)
                 : base(promptOptions)
             {
@@ -762,8 +772,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 var choices = new Dictionary<string, IReadOnlyList<string>>
                 {
-                    { Yes.ToString(), this.patterns[Yes].Select(x => x.ToLowerInvariant()).ToList() },
-                    { No.ToString(), this.patterns[No].Select(x => x.ToLowerInvariant()).ToList() }
+                    {Yes.ToString(), this.patterns[Yes].Select(x => x.ToLowerInvariant()).ToList()},
+                    {No.ToString(), this.patterns[No].Select(x => x.ToLowerInvariant()).ToList()}
                 };
 
                 var promptChoiceOptions = new PromptOptionsWithSynonyms<string>(
@@ -778,11 +788,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                     promptOptions.RetrySpeak,
                     promptOptions.Recognizer);
 
-                this.innerPromptChoice = new PromptChoice<string>(promptChoiceOptions, recognizeNumbers: false, recognizeOrdinals: false);
-                    }
+                this.innerPromptChoice = new PromptChoice<string>(promptChoiceOptions, recognizeNumbers: false,
+                    recognizeOrdinals: false);
+            }
 
             protected internal override bool TryParse(IMessageActivity message, out bool result)
-                    {
+            {
                 string entity = string.Empty;
 
                 var innerResult = this.innerPromptChoice.TryParse(message, out entity);
@@ -793,10 +804,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             public string DefaultRetry
             {
-                get
-                {
-                    return Resources.PromptRetry + Environment.NewLine + this.promptOptions.Prompt;
-                }
+                get { return Resources.PromptRetry + Environment.NewLine + this.promptOptions.Prompt; }
             }
         }
 
@@ -841,7 +849,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var matches = this.promptOptions.Recognizer.RecognizeIntegerInRange(message, this.Min, this.Max);
                 var topMatch = matches?.MaxBy(x => x.Score);
                 if (topMatch != null && topMatch.Score > 0)
-            {
+                {
                     result = topMatch.Entity;
                     return true;
                 }
@@ -891,7 +899,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var matches = this.promptOptions.Recognizer.RecognizeDoubleInRange(message, this.Min, this.Max);
                 var topMatch = matches?.MaxBy(x => x.Score);
                 if (topMatch != null && topMatch.Score > 0)
-            {
+                {
                     result = topMatch.Entity;
                     return true;
                 }
@@ -972,14 +980,14 @@ namespace Microsoft.Bot.Builder.Dialogs
                         var entityWinner = entityMatches.MaxBy(x => x.Score) ?? new RecognizeEntity<T>();
                         topScore = entityWinner.Score;
                         topEntity = entityWinner.Entity;
-            }
+                    }
 
                     if (recognizeNumbers)
-            {
+                    {
                         var cardinalMatches = this.promptOptions.Recognizer.RecognizeIntegerInRange(message, 1, this.promptOptions.Choices.Count);
                         var cardinalWinner = cardinalMatches.MaxBy(x => x.Score) ?? new RecognizeEntity<long>();
                         if (topScore < cardinalWinner.Score)
-                {
+                        {
                             var index = (int)cardinalWinner.Entity - 1;
                             topScore = cardinalWinner.Score;
                             topEntity = this.promptOptions.Choices.Keys.ElementAt(index);
@@ -1150,7 +1158,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
 
         async Task IDialog<T>.StartAsync(IDialogContext context)
         {
-            await context.PostAsync(this.MakePrompt(context, promptOptions.Prompt, promptOptions.Choices?.Keys.ToList().AsReadOnly(), promptOptions.Descriptions, promptOptions.Speak));
+            await context.PostAsync(this.MakePrompt(context, promptOptions.Prompt,
+                promptOptions.Choices?.Keys.ToList().AsReadOnly(), promptOptions.Descriptions, promptOptions.Speak));
             context.Wait(MessageReceivedAsync);
         }
 
@@ -1166,7 +1175,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
                 --promptOptions.Attempts;
                 if (promptOptions.Attempts >= 0)
                 {
-                    await context.PostAsync(this.MakePrompt(context, promptOptions.Retry ?? promptOptions.DefaultRetry, promptOptions.Choices?.Keys.ToList().AsReadOnly(), promptOptions.Descriptions, promptOptions.RetrySpeak ?? promptOptions.DefaultRetrySpeak));
+                    await context.PostAsync(this.MakePrompt(context, promptOptions.Retry ?? promptOptions.DefaultRetry,
+                        promptOptions.Choices?.Keys.ToList().AsReadOnly(), promptOptions.Descriptions,
+                        promptOptions.RetrySpeak ?? promptOptions.DefaultRetrySpeak));
                     context.Wait(MessageReceivedAsync);
                 }
                 else
@@ -1180,7 +1191,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
 
         protected internal abstract bool TryParse(IMessageActivity message, out T result);
 
-        protected virtual IMessageActivity MakePrompt(IDialogContext context, string prompt, IReadOnlyList<U> options = null, IReadOnlyList<string> descriptions = null, string speak = null)
+        protected virtual IMessageActivity MakePrompt(IDialogContext context, string prompt,
+            IReadOnlyList<U> options = null, IReadOnlyList<string> descriptions = null, string speak = null)
         {
             var msg = context.MakeMessage();
             if (options != null && options.Count > 0)

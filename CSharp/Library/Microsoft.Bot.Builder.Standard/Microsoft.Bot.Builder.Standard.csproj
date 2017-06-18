@@ -5,7 +5,7 @@
     <AssemblyName>Microsoft.Bot.Builder</AssemblyName>
     <RootNamespace>Microsoft.Bot.Builder</RootNamespace>
     <PackageId>CXuesong.Ported.Microsoft.Bot.Builder</PackageId>
-    <Version>3.8.1</Version>
+    <Version>3.8.2</Version>
     <Authors>Microsoft (Original), CXuesong (Ported)</Authors>
     <Company />
     <Product>Microsoft Bot Builder</Product>
@@ -23,7 +23,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard1.4\.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\netstandard1.4\Microsoft.Bot.Builder.Autofac.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

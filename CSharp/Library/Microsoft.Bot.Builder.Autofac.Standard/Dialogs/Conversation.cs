@@ -50,16 +50,18 @@ namespace Microsoft.Bot.Builder.Dialogs
         private readonly object gate = new object();
         private IContainer container;
 
-        public MicrosoftAppCredentials _CredentialProvider;
+        private readonly MicrosoftAppCredentials _CredentialProvider;
         
         // CXuesong: We need to inject credentialProvider here.
-        public Conversation(MicrosoftAppCredentials credentialProvider)
+        public Conversation(MicrosoftAppCredentials credentialProvider) : this(credentialProvider, null)
+        {
+        }
+
+        public Conversation(MicrosoftAppCredentials credentialProvider, Action<ContainerBuilder> builderAction)
         {
             if (credentialProvider == null) throw new ArgumentNullException(nameof(credentialProvider));
             _CredentialProvider = credentialProvider;
-            UpdateContainer(builder =>
-            {
-            });
+            UpdateContainer(builderAction);
         }
 
         public IContainer Container
@@ -83,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 var builder = new ContainerBuilder();
                 builder.RegisterModule(new DialogModule_MakeRoot(_CredentialProvider));
-                update(builder);
+                update?.Invoke(builder);
                 container = builder.Build();
             }
         }

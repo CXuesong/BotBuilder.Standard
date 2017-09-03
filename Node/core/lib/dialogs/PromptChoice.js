@@ -93,7 +93,7 @@ var PromptChoice = (function (_super) {
             _this.findChoices(session.toRecognizeContext(), false, function (err, choices) {
                 var msg;
                 if (!err && choices) {
-                    var sendChoices = context.turns === 0;
+                    var sendChoices = context.turns === 0 || context.isReprompt;
                     var listStyle = options.listStyle;
                     if (listStyle === undefined || listStyle === null || listStyle === Prompt_1.ListStyle.auto) {
                         var maxTitleLength_1 = 0;
@@ -131,7 +131,7 @@ var PromptChoice = (function (_super) {
         });
         return _this;
     }
-    PromptChoice.prototype.findChoices = function (context, recognizePhase, callback) {
+    PromptChoice.prototype.findChoices = function (context, recognizePhrase, callback) {
         var idx = 0;
         var handlers = this._onChoices;
         function next(err, choices) {
@@ -141,7 +141,7 @@ var PromptChoice = (function (_super) {
             else {
                 try {
                     if (idx < handlers.length) {
-                        handlers[idx++](context, next, recognizePhase);
+                        handlers[idx++](context, next, recognizePhrase);
                     }
                     else {
                         choices = context.dialogData.options.choices || [];
@@ -163,6 +163,7 @@ var PromptChoice = (function (_super) {
         var options = session.dialogData.options;
         var locale = session.preferredLocale();
         var namespace = options ? options.libraryNamespace : null;
+        choices = choices ? choices : options.choices;
         var msg = new Message_1.Message(session);
         if (speak) {
             msg.speak(session.localizer.gettext(locale, Message_1.Message.randomPrompt(speak), namespace));

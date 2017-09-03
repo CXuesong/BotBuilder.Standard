@@ -174,6 +174,18 @@ export interface IMessage extends IEvent {
 
     /** Hint for clients letting them know if the bot is expecting further input or not. The built-in prompts will automatically populate this value for outgoing messages. */
     inputHint?: string;
+
+    /** Open-ended value. */
+    value?: any;
+
+    /** Name of the operation to invoke or the name of the event. */
+    name?: string;
+
+    /** Reference to another conversation or message. */
+    relatesTo?: IAddress;
+
+    /** Code indicating why the conversation has ended. */
+    code?: string;
 }
 
 /** 
@@ -398,7 +410,13 @@ export interface ICardAction {
     value: string;
 
     /** (Optional) Picture to display for button actions. Not all channels support button images. */  
-    image?: string;  
+    image?: string;
+
+    /** (Optional) Text for this action. */
+    text?: string;
+
+    /** (Optional) text to display in the chat feed if the button is clicked. */
+    diplayText?: string;
 }
 
 /** Implemented by classes that can be converted into a card action. */
@@ -1434,7 +1452,6 @@ export interface IAnimationCard extends IMediaCard {
 
 /** Interface definition of a generic MediaCard, which in its concrete form can be an Audio, Animation or Video card */
 export interface IMediaCard {
-
     /** Title of the Card */
     title: string; 
 
@@ -1461,6 +1478,9 @@ export interface IMediaCard {
     
     /** Should media be shareable */
     shareable: boolean; 
+
+    /** Supplementary parameter for this card. */
+    value: any;
 }
 
 /** Url information describing media for a card */
@@ -1471,6 +1491,12 @@ export interface ICardMediaUrl {
 
     /** Optional profile hint to the client to differentiate multiple MediaUrl objects from each other */
     profile: string ;
+}
+
+/** Supplementary parameter for media events. */
+export interface IMediaEventValue {
+    /** Callback parameter specified in the Value field of the MediaCard that originated this event. */
+    cardValue: any;
 }
 
 //=============================================================================
@@ -1731,7 +1757,7 @@ export class Session {
 
     /**
      * Sends a message to the user. 
-     * @param message Text/message to send to user.
+     * @param message Text/message to send to user. If an array is passed a response will be chosen at random.
      * @param args (Optional) arguments used to format the final output text when __message__ is a _{string|string[]}_.
      */
     send(message: TextOrMessageType, ...args: any[]): Session;
@@ -2088,6 +2114,18 @@ export class Message implements IIsMessage {
     /** For outgoing messages can be used to pass source specific event data like custom attachments. */  
     sourceEvent(map: ISourceEventMap): Message;
 
+    /** Open-ended value. */
+    value(param: any): Message;
+
+    /** Name of the operation to invoke or the name of the event. */
+    name(name: string): Message;
+
+    /** Reference to another conversation or message. */
+    relatesTo(adr: IAddress): Message;
+
+    /** Code indicating why the conversation has ended. */
+    code(value: string): Message;
+
     /** Returns the JSON for the message. */    
     toMessage(): IMessage;
 
@@ -2143,7 +2181,13 @@ export class CardAction implements IIsCardAction {
     
     /** For buttons an image to include next to the buttons label. Not supported by all channels. */
     image(url: string): CardAction;
-    
+
+    /** (Optional) Text for this action. */
+    text(text: TextType, ...args: any[]): CardAction;
+
+    /** (Optional) text to display in the chat feed if the button is clicked. */
+    displayText(text: TextType, ...args: any[]): CardAction;
+
     /** Returns the JSON for the action. */    
     toAction(): ICardAction;
 
@@ -2210,6 +2254,12 @@ export class CardAction implements IIsCardAction {
      * @param title (Optional) title to assign when binding the action to a button.  
      */
     static dialogAction(session: Session, action: string, data?: string, title?: TextType): CardAction;
+
+    /** 
+     * Sends a message to the bot for processing. A `messageBack` has the ability to act like both an [imBack](#imback) and a [postBack](#postBack). 
+     * @param session (Optional) Current session object for the conversation. If specified will be used to localize titles.
+     */
+    static messageBack(session: Session, msg: string, title?: TextType): CardAction;
 }
 
 /** Builder class to add suggested actions to a message */
@@ -2370,7 +2420,10 @@ export class MediaCard  implements IIsAttachment{
     autostart(choice: boolean): this;
 
     /** Should media be shareable */
-    shareable(choice: boolean): this;  
+    shareable(choice: boolean): this;
+
+    /** Supplementary parameter for this card. */
+    value(param: any): this;
 }
 
 /** Entities that can be converted to Media for cards */
@@ -2631,7 +2684,7 @@ export abstract class Dialog extends ActionSet {
     recognize(context: IRecognizeDialogContext, callback: (err: Error, result: IRecognizeResult) => void): void;
 
     /**
-     * Binds an action to the dialog that will make it the active dialog anytime its triggered.
+     * Binds an action to the dialog that will make it the active dialog anytime it's triggered.
      * The default behaviour is to interupt any existing dialog by clearing the stack and starting 
      * the dialog at the root of the stack.  The dialog being interrupted can intercept this 
      * interruption by adding a custom [onInterrupted](/en-us/node/builder/chat-reference/interfaces/_botbuilder_d_.itriggeractionsoptions#oninterrupted) 
@@ -2643,7 +2696,7 @@ export abstract class Dialog extends ActionSet {
     triggerAction(options: ITriggerActionOptions): Dialog;
 
     /**
-     * Binds an action to the dialog that will cancel the dialog anytime its triggered. When canceled, the 
+     * Binds an action to the dialog that will cancel the dialog anytime it's triggered. When canceled, the 
      * dialogs parent will be resumed with a [resumed](/en-us/node/builder/chat-reference/interfaces/_botbuilder_d_.idialogresult#resumed) code indicating that it was [canceled](/en-us/node/builder/chat-reference/enums/_botbuilder_d_.resumereason#canceled).
      * @param name Unique name to assign the action.
      * @param msg (Optional) message to send the user prior to canceling the dialog.
@@ -2654,7 +2707,7 @@ export abstract class Dialog extends ActionSet {
     cancelAction(name: string, msg?: TextOrMessageType, options?: ICancelActionOptions): Dialog;
 
     /**
-     * Binds an action to the dialog that will cause the dialog to be reloaded anytime its triggered. This is
+     * Binds an action to the dialog that will cause the dialog to be reloaded anytime it's triggered. This is
      * useful to implement logic that handle user utterances like "start over".
      * @param name Unique name to assign the action.
      * @param msg (Optional) message to send the user prior to reloading the dialog.
@@ -2665,7 +2718,7 @@ export abstract class Dialog extends ActionSet {
     reloadAction(name: string, msg?: TextOrMessageType, options?: IBeginDialogActionOptions): Dialog;
 
     /**
-     * Binds an action to the dialog that will start another dialog anytime its triggered. The new 
+     * Binds an action to the dialog that will start another dialog anytime it's triggered. The new 
      * dialog will be pushed onto the stack so it does not automatically end the current task. The 
      * current task will be continued once the new dialog ends. The built-in prompts will automatically
      * re-prompt the user once this happens but that behaviour can be disabled by setting the [promptAfterAction](/en-us/node/builder/chat-reference/interfaces/_botbuilder_d_.ipromptoptions#promptafteraction) 
@@ -2770,13 +2823,13 @@ export class DialogAction {
  * 
  * To invoke dialogs within your library bots will need to call [session.beginDialog()](/en-us/node/builder/chat-reference/classes/_botbuilder_d_.session.html#begindialog)
  * with a fully qualified dialog id in the form of '<libName>:<dialogId>'. You'll typically hide 
- * this from the devloper by exposing a function from their module that starts the dialog for them.
+ * this from the developer by exposing a function from their module that starts the dialog for them.
  * So calling something like `myLib.someDialog(session, { arg: '' });` would end up calling
  * `session.beginDialog('myLib:someDialog', args);` under the covers.
  * 
- * Its worth noting that dialogs are always invoked within the current dialog so once your within
+ * It's worth noting that dialogs are always invoked within the current dialog so once your within
  * a dialog from your library you don't need to prefix every beginDialog() call your with your 
- * libraries name. Its only when crossing from one library context to another that you need to 
+ * libraries name. It's only when crossing from one library context to another that you need to 
  * include the library name prefix.  
  */
 export class Library {
@@ -2977,7 +3030,7 @@ export class Library {
     libraryList(reverse?: boolean): Library[];
 
     /**
-     * Registers a global action that will start another dialog anytime its triggered. The new 
+     * Registers a global action that will start another dialog anytime it's triggered. The new 
      * dialog will be pushed onto the stack so it does not automatically end any current task. The 
      * current task will be continued once the new dialog ends. The built-in prompts will automatically
      * re-prompt the user once this happens but that behaviour can be disabled by setting the [promptAfterAction](/en-us/node/builder/chat-reference/interfaces/_botbuilder_d_.ipromptoptions#promptafteraction) 
@@ -3785,7 +3838,7 @@ export class WaterfallDialog extends Dialog {
 
 /** Default in memory storage implementation for storing user & session state data. */
 export class MemoryBotStorage implements IBotStorage {
-    /** Returns data from memmory for the given context. */
+    /** Returns data from memory for the given context. */
     getData(context: IBotStorageContext, callback: (err: Error, data: IBotStorageData) => void): void;
     
     /** Saves data to memory for the given context. */
@@ -3813,14 +3866,14 @@ export class UniversalBot extends Library  {
     clone(copyTo?: UniversalBot, newName?: string): UniversalBot;
 
     /**
-     * Registers an event listener. The bot will emit its own events as it process incoming and outgoing messages. It will also forward activity related events emitted from the connector, giving you one place to listen for all activity from your bot. The flow of events from the bot is as follows:
+     * Registers an event listener. The bot will emit its own events as it processes incoming and outgoing messages. It will also forward activity related events emitted from the connector, giving you one place to listen for all activity from your bot. The flow of events from the bot is as follows:
      * 
      * #### Message Received
      * When the bot receives a new message it will emit the following events in order: 
      * 
      * > lookupUser -> receive -> incoming -> getStorageData -> routing
      * 
-     * Any [receive middleware](/en-us/node/builder/chat-reference/interfaces/_botbuilder_d_.imiddlewaremap#receive) that's been installed will be executed between the 'receive' and 'incoming' events. After the 'routing' event is emmited any 
+     * Any [receive middleware](/en-us/node/builder/chat-reference/interfaces/_botbuilder_d_.imiddlewaremap#receive) that's been installed will be executed between the 'receive' and 'incoming' events. After the 'routing' event is emitted any 
      * [botbuilder middleware](/en-us/node/builder/chat-reference/interfaces/_botbuilder_d_.imiddlewaremap#botbuilder) will be executed prior to dispatching the message to the bots active dialog.  
      * 
      * #### Connector Activity Received

@@ -44,6 +44,11 @@
             Signin button
             </summary>
         </member>
+        <member name="F:Microsoft.Bot.Connector.ActionTypes.MessageBack">
+            <summary>
+            Post message to bot
+            </summary>
+        </member>
         <member name="T:Microsoft.Bot.Connector.Activity">
             <summary>
             An Activity is the basic communication type for the Bot Framework 3.0 protocol
@@ -185,7 +190,7 @@
             Initializes a new instance of the Activity class.
             </summary>
         </member>
-        <member name="M:Microsoft.Bot.Connector.Activity.#ctor(System.String,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.String,System.String,Microsoft.Bot.Connector.ChannelAccount,Microsoft.Bot.Connector.ConversationAccount,Microsoft.Bot.Connector.ChannelAccount,System.String,System.String,System.Collections.Generic.IList{Microsoft.Bot.Connector.ChannelAccount},System.Collections.Generic.IList{Microsoft.Bot.Connector.ChannelAccount},System.String,System.Nullable{System.Boolean},System.String,System.String,System.String,System.String,System.String,Microsoft.Bot.Connector.SuggestedActions,System.Collections.Generic.IList{Microsoft.Bot.Connector.Attachment},System.Collections.Generic.IList{Microsoft.Bot.Connector.Entity},System.Object,System.String,System.String,System.Object,System.String,Microsoft.Bot.Connector.ConversationReference,System.String)">
+        <member name="M:Microsoft.Bot.Connector.Activity.#ctor(System.String,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.String,System.String,Microsoft.Bot.Connector.ChannelAccount,Microsoft.Bot.Connector.ConversationAccount,Microsoft.Bot.Connector.ChannelAccount,System.String,System.String,System.Collections.Generic.IList{Microsoft.Bot.Connector.ChannelAccount},System.Collections.Generic.IList{Microsoft.Bot.Connector.ChannelAccount},System.Collections.Generic.IList{Microsoft.Bot.Connector.MessageReaction},System.Collections.Generic.IList{Microsoft.Bot.Connector.MessageReaction},System.String,System.Nullable{System.Boolean},System.String,System.String,System.String,System.String,System.String,Microsoft.Bot.Connector.SuggestedActions,System.Collections.Generic.IList{Microsoft.Bot.Connector.Attachment},System.Collections.Generic.IList{Microsoft.Bot.Connector.Entity},System.Object,System.String,System.String,System.Object,System.String,Microsoft.Bot.Connector.ConversationReference,System.String)">
             <summary>
             Initializes a new instance of the Activity class.
             </summary>
@@ -251,22 +256,32 @@
         </member>
         <member name="P:Microsoft.Bot.Connector.Activity.MembersAdded">
             <summary>
-            Array of address added
+            Members added to the conversation
             </summary>
         </member>
         <member name="P:Microsoft.Bot.Connector.Activity.MembersRemoved">
             <summary>
-            Array of addresses removed
+            Members removed from the conversation
+            </summary>
+        </member>
+        <member name="P:Microsoft.Bot.Connector.Activity.ReactionsAdded">
+            <summary>
+            Reactions added to the activity
+            </summary>
+        </member>
+        <member name="P:Microsoft.Bot.Connector.Activity.ReactionsRemoved">
+            <summary>
+            Reactions removed from the activity
             </summary>
         </member>
         <member name="P:Microsoft.Bot.Connector.Activity.TopicName">
             <summary>
-            Conversations new topic name
+            The conversation's updated topic name
             </summary>
         </member>
         <member name="P:Microsoft.Bot.Connector.Activity.HistoryDisclosed">
             <summary>
-            True if the previous history of the channel is disclosed
+            True if prior history of the channel is disclosed
             </summary>
         </member>
         <member name="P:Microsoft.Bot.Connector.Activity.Locale">
@@ -482,6 +497,11 @@
         <member name="F:Microsoft.Bot.Connector.ActivityTypes.InstallationUpdate">
             <summary>
             Bot added or removed from channel
+            </summary>
+        </member>
+        <member name="F:Microsoft.Bot.Connector.ActivityTypes.MessageReaction">
+            <summary>
+            Reaction added or removed from activity
             </summary>
         </member>
         <member name="T:Microsoft.Bot.Connector.Attachments">
@@ -843,7 +863,7 @@
         </member>
         <member name="T:Microsoft.Bot.Connector.ConnectorClient">
             <summary>
-            ﻿The Bot Connector REST API allows your bot to send and receive
+            The Bot Connector REST API allows your bot to send and receive
             messages to channels configured in the
             [Bot Framework Developer Portal](https://dev.botframework.com). The
             Connector service uses industry-standard REST
@@ -1859,7 +1879,7 @@
         </member>
         <member name="T:Microsoft.Bot.Connector.IConnectorClient">
             <summary>
-            ﻿The Bot Connector REST API allows your bot to send and receive
+            The Bot Connector REST API allows your bot to send and receive
             messages to channels configured in the
             [Bot Framework Developer Portal](https://dev.botframework.com). The
             Connector service uses industry-standard REST
@@ -2334,7 +2354,7 @@
             Initializes a new instance of the AnimationCard class.
             </summary>
         </member>
-        <member name="M:Microsoft.Bot.Connector.AnimationCard.#ctor(System.String,System.String,System.String,Microsoft.Bot.Connector.ThumbnailUrl,System.Collections.Generic.IList{Microsoft.Bot.Connector.MediaUrl},System.Collections.Generic.IList{Microsoft.Bot.Connector.CardAction},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean})">
+        <member name="M:Microsoft.Bot.Connector.AnimationCard.#ctor(System.String,System.String,System.String,Microsoft.Bot.Connector.ThumbnailUrl,System.Collections.Generic.IList{Microsoft.Bot.Connector.MediaUrl},System.Collections.Generic.IList{Microsoft.Bot.Connector.CardAction},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Object)">
             <summary>
             Initializes a new instance of the AnimationCard class.
             </summary>
@@ -2386,6 +2406,11 @@
             card (default:true)
             </summary>
         </member>
+        <member name="P:Microsoft.Bot.Connector.AnimationCard.Value">
+            <summary>
+            Supplementary parameter for this card
+            </summary>
+        </member>
         <member name="T:Microsoft.Bot.Connector.AudioCard">
             <summary>
             A audio card
@@ -2396,7 +2421,7 @@
             Initializes a new instance of the AudioCard class.
             </summary>
         </member>
-        <member name="M:Microsoft.Bot.Connector.AudioCard.#ctor(System.String,System.String,System.String,Microsoft.Bot.Connector.ThumbnailUrl,System.Collections.Generic.IList{Microsoft.Bot.Connector.MediaUrl},System.Collections.Generic.IList{Microsoft.Bot.Connector.CardAction},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.String)">
+        <member name="M:Microsoft.Bot.Connector.AudioCard.#ctor(System.String,System.String,System.String,Microsoft.Bot.Connector.ThumbnailUrl,System.Collections.Generic.IList{Microsoft.Bot.Connector.MediaUrl},System.Collections.Generic.IList{Microsoft.Bot.Connector.CardAction},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.String,System.Object)">
             <summary>
             Initializes a new instance of the AudioCard class.
             </summary>
@@ -2454,6 +2479,11 @@
             card (default:true)
             </summary>
         </member>
+        <member name="P:Microsoft.Bot.Connector.AudioCard.Value">
+            <summary>
+            Supplementary parameter for this card
+            </summary>
+        </member>
         <member name="T:Microsoft.Bot.Connector.VideoCard">
             <summary>
             A video card
@@ -2464,7 +2494,7 @@
             Initializes a new instance of the VideoCard class.
             </summary>
         </member>
-        <member name="M:Microsoft.Bot.Connector.VideoCard.#ctor(System.String,System.String,System.String,Microsoft.Bot.Connector.ThumbnailUrl,System.Collections.Generic.IList{Microsoft.Bot.Connector.MediaUrl},System.Collections.Generic.IList{Microsoft.Bot.Connector.CardAction},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.String)">
+        <member name="M:Microsoft.Bot.Connector.VideoCard.#ctor(System.String,System.String,System.String,Microsoft.Bot.Connector.ThumbnailUrl,System.Collections.Generic.IList{Microsoft.Bot.Connector.MediaUrl},System.Collections.Generic.IList{Microsoft.Bot.Connector.CardAction},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.String,System.Object)">
             <summary>
             Initializes a new instance of the VideoCard class.
             </summary>
@@ -2519,6 +2549,11 @@
             <summary>
             Should the client automatically start playback of video in this
             card (default:true)
+            </summary>
+        </member>
+        <member name="P:Microsoft.Bot.Connector.VideoCard.Value">
+            <summary>
+            Supplementary parameter for this card
             </summary>
         </member>
         <member name="T:Microsoft.Bot.Connector.Attachment">
@@ -2583,7 +2618,7 @@
         </member>
         <member name="P:Microsoft.Bot.Connector.AttachmentData.Type">
             <summary>
-            content type of the attachmnet
+            Content-Type of the attachment
             </summary>
         </member>
         <member name="P:Microsoft.Bot.Connector.AttachmentData.Name">
@@ -2593,12 +2628,12 @@
         </member>
         <member name="P:Microsoft.Bot.Connector.AttachmentData.OriginalBase64">
             <summary>
-            original content
+            Attachment content
             </summary>
         </member>
         <member name="P:Microsoft.Bot.Connector.AttachmentData.ThumbnailBase64">
             <summary>
-            Thumbnail
+            Attachment thumbnail
             </summary>
         </member>
         <member name="T:Microsoft.Bot.Connector.AttachmentInfo">
@@ -2658,7 +2693,7 @@
         </member>
         <member name="T:Microsoft.Bot.Connector.CardAction">
             <summary>
-            An action on a card
+            A clickable action
             </summary>
         </member>
         <member name="M:Microsoft.Bot.Connector.CardAction.#ctor">
@@ -2666,24 +2701,35 @@
             Initializes a new instance of the CardAction class.
             </summary>
         </member>
-        <member name="M:Microsoft.Bot.Connector.CardAction.#ctor(System.String,System.String,System.String,System.Object)">
+        <member name="M:Microsoft.Bot.Connector.CardAction.#ctor(System.String,System.String,System.String,System.Object,System.String,System.String)">
             <summary>
             Initializes a new instance of the CardAction class.
             </summary>
         </member>
         <member name="P:Microsoft.Bot.Connector.CardAction.Type">
             <summary>
-            Defines the type of action implemented by this button. Defaults to <see cref="F:Microsoft.Bot.Connector.ActionTypes.ImBack"/>
+            The type of action implemented by this button. Defaults to <see cref="F:Microsoft.Bot.Connector.ActionTypes.ImBack"/>
             </summary>
         </member>
         <member name="P:Microsoft.Bot.Connector.CardAction.Title">
             <summary>
-            Text description which appear on the button.
+            Text description which appears on the button
             </summary>
         </member>
         <member name="P:Microsoft.Bot.Connector.CardAction.Image">
             <summary>
-            URL Picture which will appear on the button, next to text label.
+            Image URL which will appear on the button, next to text label
+            </summary>
+        </member>
+        <member name="P:Microsoft.Bot.Connector.CardAction.Text">
+            <summary>
+            Text for this action
+            </summary>
+        </member>
+        <member name="P:Microsoft.Bot.Connector.CardAction.DisplayText">
+            <summary>
+            (Optional) text to display in the chat feed if the button is
+            clicked
             </summary>
         </member>
         <member name="P:Microsoft.Bot.Connector.CardAction.Value">
@@ -3050,6 +3096,27 @@
             The name of the thing
             </summary>
         </member>
+        <member name="T:Microsoft.Bot.Connector.MediaEventValue">
+            <summary>
+            Supplementary parameter for media events
+            </summary>
+        </member>
+        <member name="M:Microsoft.Bot.Connector.MediaEventValue.#ctor">
+            <summary>
+            Initializes a new instance of the MediaEventValue class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Bot.Connector.MediaEventValue.#ctor(System.Object)">
+            <summary>
+            Initializes a new instance of the MediaEventValue class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Bot.Connector.MediaEventValue.CardValue">
+            <summary>
+            Callback parameter specified in the Value field of the MediaCard
+            that originated this event
+            </summary>
+        </member>
         <member name="T:Microsoft.Bot.Connector.MediaUrl">
             <summary>
             MediaUrl data
@@ -3074,6 +3141,26 @@
             <summary>
             Optional profile hint to the client to differentiate multiple
             MediaUrl objects from each other
+            </summary>
+        </member>
+        <member name="T:Microsoft.Bot.Connector.MessageReaction">
+            <summary>
+            Message reaction object
+            </summary>
+        </member>
+        <member name="M:Microsoft.Bot.Connector.MessageReaction.#ctor">
+            <summary>
+            Initializes a new instance of the MessageReaction class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Bot.Connector.MessageReaction.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the MessageReaction class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Bot.Connector.MessageReaction.Type">
+            <summary>
+            Message reaction type
             </summary>
         </member>
         <member name="T:Microsoft.Bot.Connector.Place">
@@ -3776,6 +3863,24 @@
         <member name="M:Microsoft.Bot.Connector.Mention.#ctor">
             <summary>
             Initializes a new instance of the Entity class.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Bot.Connector.MessageReactionTypes">
+            <summary>
+            Message reaction types
+            </summary>
+            <remarks>
+            Message reactions are an open set. This class contains some common values.
+            </remarks>
+        </member>
+        <member name="F:Microsoft.Bot.Connector.MessageReactionTypes.Like">
+            <summary>
+            Like
+            </summary>
+        </member>
+        <member name="F:Microsoft.Bot.Connector.MessageReactionTypes.PlusOne">
+            <summary>
+            +1
             </summary>
         </member>
         <member name="F:Microsoft.Bot.Connector.MicrosoftAppCredentials.MicrosoftAppIdKey">

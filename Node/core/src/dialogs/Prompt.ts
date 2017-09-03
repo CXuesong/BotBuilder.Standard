@@ -1,15 +1,15 @@
-// 
+//
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license.
-// 
+//
 // Microsoft Bot Framework: http://botframework.com
-// 
+//
 // Bot Builder SDK Github:
 // https://github.com/Microsoft/BotBuilder
-// 
+//
 // Copyright (c) Microsoft Corporation
 // All rights reserved.
-// 
+//
 // MIT License:
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -18,10 +18,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED ""AS IS"", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -124,7 +124,7 @@ export class Prompt<T extends IPromptFeatures>  extends Dialog {
         if (!options.libraryNamespace) {
             if (options.localizationNamespace) {
                 // Legacy name used
-                options.libraryNamespace = options.localizationNamespace;   
+                options.libraryNamespace = options.localizationNamespace;
             } else {
                 const stack = session.dialogStack()
                 if (stack.length >= 2) {
@@ -170,7 +170,7 @@ export class Prompt<T extends IPromptFeatures>  extends Dialog {
 
         let idx = 0;
         const handlers = this._onRecognize;
-        let result: IIntentRecognizerResult = context.intent || { score: 0.0, intent: null };
+        let result: IIntentRecognizerResult = { score: 0.0, intent: null };
         function next() {
             try {
                 if (idx < handlers.length) {
@@ -232,12 +232,12 @@ export class Prompt<T extends IPromptFeatures>  extends Dialog {
     public sendPrompt(session: Session): void {
         const _that = this;
         function defaultSend() {
-            if (typeof options.maxRetries === 'number' && turns > options.maxRetries) {
+            if (typeof options.maxRetries === 'number' && context.turns > options.maxRetries) {
                 session.endDialogWithResult({ resumed: ResumeReason.notCompleted });
             } else {
-                let prompt = turns > 0 ? _that.getRetryPrompt(session) : options.prompt;
+                let prompt = !turnZero ? _that.getRetryPrompt(session) : options.prompt;
                 if (Array.isArray(prompt) || typeof prompt === 'string') {
-                    let speak = turns > 0 ? options.retrySpeak : options.speak;
+                    let speak = !turnZero ? options.retrySpeak : options.speak;
                     _that.formatMessage(session, prompt, speak, (err, msg) => {
                         if (!err) {
                             sendMsg(msg);
@@ -253,7 +253,7 @@ export class Prompt<T extends IPromptFeatures>  extends Dialog {
 
         function sendMsg(msg: IMessage) {
             // Apply additional fields
-            if (turns == 0) {
+            if (turnZero) {
                 if (options.attachments) {
                     if (!msg.attachments) {
                         msg.attachments = [];
@@ -282,8 +282,9 @@ export class Prompt<T extends IPromptFeatures>  extends Dialog {
 
         let idx = 0;
         const handlers = this._onPrompt;
-        const turns: number = session.dialogData.turns;
-        const options: IPromptOptions = session.dialogData.options;
+        const context = <IPromptContext>session.dialogData;
+        const options = context.options;
+        const turnZero = context.turns === 0 || context.isReprompt; 
         function next() {
             try {
                 if (idx < handlers.length) {

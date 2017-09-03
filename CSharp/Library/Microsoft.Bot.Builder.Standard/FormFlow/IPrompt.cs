@@ -38,11 +38,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Compatibility;
 
 namespace Microsoft.Bot.Builder.FormFlow.Advanced
 {
@@ -82,29 +81,29 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
     /// <summary>
     /// The prompt that is returned by form prompter. 
     /// </summary>
-    [DataContract]
-    public sealed class FormPrompt : IDeepCloneable
+    [Serializable]
+    public sealed class FormPrompt : ICloneable
     {
         /// <summary>
         /// The text prompt that corresponds to Message.Text.
         /// </summary>
         /// <remarks>When generating cards this will be the card title.</remarks>
-       [DataMember] public string Prompt { set; get; } = string.Empty;
+        public string Prompt { set; get; } = string.Empty;
 
         /// <summary>
         /// Description information for generating cards.
         /// </summary>
-        [DataMember] public DescribeAttribute Description { set; get; }
+        public DescribeAttribute Description { set; get; }
 
         /// <summary>
         /// The buttons that will be mapped to Message.Attachments.
         /// </summary>
-        [DataMember] public IList<DescribeAttribute> Buttons { set; get; } = new List<DescribeAttribute>();
+        public IList<DescribeAttribute> Buttons { set; get; } = new List<DescribeAttribute>();
 
         /// <summary>
         /// Desired prompt style.
         /// </summary>
-        [DataMember] public ChoiceStyleOptions Style;
+        public ChoiceStyleOptions Style;
 
         public override string ToString()
         {
@@ -129,28 +128,28 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
     /// <summary>
     /// A Form button that will be mapped to Connector.Action.
     /// </summary>
-    [DataContract]
-    public sealed class FormButton : IDeepCloneable
+    [Serializable]
+    public sealed class FormButton : ICloneable
     {
         /// <summary>
         /// Picture which will appear on the button.
         /// </summary>
-        [DataMember] public string Image { get; set; }
+        public string Image { get; set; }
 
         /// <summary>
         /// Message that will be sent to bot when this button is clicked.
         /// </summary>
-        [DataMember] public string Message { get; set; }
+        public string Message { get; set; }
 
         /// <summary>
         /// Label of the button.
         /// </summary>
-        [DataMember] public string Title { get; set; }
+        public string Title { get; set; }
 
         /// <summary>
         /// URL which will be opened in the browser built-into Client application.
         /// </summary>
-        [DataMember] public string Url { get; set; }
+        public string Url { get; set; }
 
         /// <summary>
         /// Clone the FormButton
@@ -318,7 +317,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
             }
         }
 
-        internal static IList<T> Clone<T>(this IList<T> listToClone) where T : IDeepCloneable
+        internal static IList<T> Clone<T>(this IList<T> listToClone) where T : ICloneable
         {
             return listToClone.Select(item => (T)item.Clone()).ToList();
         }

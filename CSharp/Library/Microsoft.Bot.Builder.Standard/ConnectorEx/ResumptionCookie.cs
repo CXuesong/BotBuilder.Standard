@@ -34,7 +34,7 @@
 using System;
 using System.IO;
 using System.IO.Compression;
-using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
 
@@ -44,18 +44,18 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// The resumption cookie that can be used to resume a conversation with a user. 
     /// </summary>
     [Obsolete("Use ConversationReference.")]
-    [DataContract]
+    [Serializable]
     public sealed class ResumptionCookie : IEquatable<ResumptionCookie>
     {
         /// <summary>
         /// The key that minimally and completely identifies a bot's conversation with a user on a channel.
         /// </summary>
-        [DataMember] public IAddress Address { get; set; }
+        public IAddress Address { get; set; }
 
         /// <summary>
         /// The user name.
         /// </summary>
-        [DataMember] public string UserName { set; get; }
+        public string UserName { set; get; }
 
         /// <summary>
         /// True if the <see cref="IAddress.ServiceUrl"/> is trusted; False otherwise.
@@ -63,17 +63,17 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <remarks> Conversation.ResumeAsync adds 
         /// the host of the <see cref="IAddress.ServiceUrl"/> to <see cref="MicrosoftAppCredentials.TrustedHostNames"/> if this flag is True.
         /// </remarks>
-        [DataMember] public bool IsTrustedServiceUrl { private set; get; }
+        public bool IsTrustedServiceUrl { private set; get; }
 
         /// <summary>
         /// The IsGroup flag for conversation.
         /// </summary>
-        [DataMember] public bool IsGroup { set; get; }
+        public bool IsGroup { set; get; }
 
         /// <summary>
         /// The locale of message.
         /// </summary>
-        [DataMember] public string Locale { set; get; }
+        public string Locale { set; get; }
 
         /// <summary>
         /// Creates an instance of the resumption cookie. 
@@ -167,9 +167,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             using (var stream = new MemoryStream(bytes))
             using (var gz = new GZipStream(stream, CompressionMode.Decompress))
-            using (var reader = new StreamReader(gz))
             {
-                return JsonConvert.DeserializeObject<ResumptionCookie>(reader.ReadToEnd());
+                return (ResumptionCookie)(new BinaryFormatter().Deserialize(gz));
             }
         }
     }
@@ -185,12 +184,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         public static string GZipSerialize(this ResumptionCookie resumptionCookie)
         {
             using (var cmpStream = new MemoryStream())
+            using (var stream = new GZipStream(cmpStream, CompressionMode.Compress))
             {
-                using (var stream = new GZipStream(cmpStream, CompressionMode.Compress))
-                using (var writer = new StreamWriter(stream))
-                {
-                    writer.Write(JsonConvert.SerializeObject(resumptionCookie));
-                }
+                new BinaryFormatter().Serialize(stream, resumptionCookie);
+                stream.Close();
                 return Convert.ToBase64String(cmpStream.ToArray());
             }
         }

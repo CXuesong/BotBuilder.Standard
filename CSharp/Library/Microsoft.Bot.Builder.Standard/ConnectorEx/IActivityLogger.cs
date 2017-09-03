@@ -49,31 +49,31 @@ namespace Microsoft.Bot.Builder.History
         Task LogAsync(IActivity activity);
     }
 
-    ///// <summary>
-    ///// Activity logger that traces to the console.
-    ///// </summary>
-    ///// <remarks>
-    ///// To use this, you need to register the class like this:
-    ///// <code>           
-    ///// var builder = new ContainerBuilder();
-    ///// builder.RegisterModule(Dialog_Manager.MakeRoot());
-    ///// builder.RegisterType&lt;TraceActivityLogger&gt;()
-    /////        .AsImplementedInterfaces()
-    /////        .InstancePerLifetimeScope();
-    ///// </code>
-    ///// </remarks>
-    //public sealed class TraceActivityLogger : IActivityLogger
-    //{
-    //    /// <summary>
-    //    /// Log activity to trace stream.
-    //    /// </summary>
-    //    /// <param name="activity">Activity to log.</param>
-    //    /// <returns></returns>
-    //    async Task IActivityLogger.LogAsync(IActivity activity)
-    //    {
-    //        Trace.TraceInformation(JsonConvert.SerializeObject(activity));
-    //    }
-    //}
+    /// <summary>
+    /// Activity logger that traces to the console.
+    /// </summary>
+    /// <remarks>
+    /// To use this, you need to register the class like this:
+    /// <code>           
+    /// var builder = new ContainerBuilder();
+    /// builder.RegisterModule(Dialog_Manager.MakeRoot());
+    /// builder.RegisterType&lt;TraceActivityLogger&gt;()
+    ///        .AsImplementedInterfaces()
+    ///        .InstancePerLifetimeScope();
+    /// </code>
+    /// </remarks>
+    public sealed class TraceActivityLogger : IActivityLogger
+    {
+        /// <summary>
+        /// Log activity to trace stream.
+        /// </summary>
+        /// <param name="activity">Activity to log.</param>
+        /// <returns></returns>
+        async Task IActivityLogger.LogAsync(IActivity activity)
+        {
+            Trace.TraceInformation(JsonConvert.SerializeObject(activity));
+        }
+    }
 
     /// <summary>
     /// Activity logger that doesn't log.

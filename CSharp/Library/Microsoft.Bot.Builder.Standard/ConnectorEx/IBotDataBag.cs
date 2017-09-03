@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Gets the number of key/value pairs contained in the <see cref="IBotDataBag"/>.
         /// </summary>
         int Count { get; }
-        
+
         /// <summary>
         /// Checks if data bag contains a value with specified key
         /// </summary>

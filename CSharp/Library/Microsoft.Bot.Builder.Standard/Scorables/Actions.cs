@@ -36,7 +36,6 @@ using Microsoft.Bot.Builder.Scorables.Internals;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
@@ -96,7 +95,7 @@ namespace Microsoft.Bot.Builder.Scorables
             return Bind((Delegate)method);
         }
 
-        [DataContract]
+        [Serializable]
         public sealed class WhereScorable<Score> : ScorableAggregator<IResolver, WhereScorable<Score>.Token, Score, IResolver, object, Score>
         {
             public sealed class Token : Token<IResolver, Score>
@@ -104,8 +103,8 @@ namespace Microsoft.Bot.Builder.Scorables
                 public bool HasScore { get; set; }
             }
 
-            [DataMember] private readonly IScorable<IResolver, Score> scorable;
-            [DataMember] private readonly Delegate lambda;
+            private readonly IScorable<IResolver, Score> scorable;
+            private readonly Delegate lambda;
             public WhereScorable(IScorable<IResolver, Score> scorable, Delegate lambda)
             {
                 SetField.NotNull(out this.scorable, nameof(scorable), scorable);

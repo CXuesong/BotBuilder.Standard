@@ -47,6 +47,7 @@ using Microsoft.Bot.Builder.Internals.Fibers;
 using Microsoft.Bot.Builder.Scorables;
 using Microsoft.Bot.Builder.Scorables.Internals;
 using Microsoft.Bot.Connector;
+using Microsoft.Extensions.Configuration;
 using Module = Autofac.Module;
 
 namespace Microsoft.Bot.Builder.Dialogs.Internals
@@ -63,11 +64,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
         public static readonly object Key_Dialog_Router = new object();
 
         private readonly MicrosoftAppCredentials credentials;
+        private readonly IConfiguration configurationRoot;
 
-        public DialogModule(MicrosoftAppCredentials credentials)
+        public DialogModule(MicrosoftAppCredentials credentials, IConfiguration configurationRoot)
         {
+            // CXuesong: Inject configurationRoot for sake of ConnectorClientFactory.ctor.
             if (credentials == null) throw new ArgumentNullException(nameof(credentials));
+            if (configurationRoot == null) throw new ArgumentNullException(nameof(configurationRoot));
             this.credentials = credentials;
+            this.configurationRoot = configurationRoot;
         }
 
         public static ILifetimeScope BeginLifetimeScope(ILifetimeScope scope, IMessageActivity message)
@@ -123,6 +128,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
             //    .RegisterType<MicrosoftAppCredentials>()
             //    .AsSelf()
             //    .SingleInstance();
+            // So it's injected from DialogModule.ctor.
             builder.RegisterInstance(credentials).SingleInstance();
 
             builder
@@ -133,7 +139,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
                 .SingleInstance();
 
             builder
-                .Register(c => new ConnectorClientFactory(c.Resolve<IAddress>(), c.Resolve<MicrosoftAppCredentials>()))
+                .Register(c => new ConnectorClientFactory(c.Resolve<IAddress>(), c.Resolve<MicrosoftAppCredentials>(),
+                    configurationRoot))
                 .As<IConnectorClientFactory>()
                 .InstancePerLifetimeScope();
 
@@ -328,7 +335,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
 
             builder
                 .RegisterKeyedType<NullPostToBot, IPostToBot>()
-                .InstancePerLifetimeScope();
+                .SingleInstance();
+
+            builder
+                .RegisterKeyedType<PassPostToBot, IPostToBot>()
+                .InstancePerDependency();
 
             builder
                 .RegisterKeyedType<EventLoopDialogTask, IPostToBot>()
@@ -401,7 +412,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
 
             builder
                 .RegisterKeyedType<NullBotToUser, IBotToUser>()
-                .InstancePerLifetimeScope();
+                .SingleInstance();
+
+            builder
+                .RegisterKeyedType<PassBotToUser, IBotToUser>()
+                .InstancePerDependency();
 
             builder
                 .RegisterKeyedType<AlwaysSendDirect_BotToUser, IBotToUser>()
@@ -441,18 +456,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
     public sealed class DialogModule_MakeRoot : Module
     {
         private readonly MicrosoftAppCredentials credentials;
+        private readonly IConfiguration configurationRoot;
 
-        public DialogModule_MakeRoot(MicrosoftAppCredentials credentials)
+        public DialogModule_MakeRoot(MicrosoftAppCredentials credentials, IConfiguration configurationRoot)
         {
             if (credentials == null) throw new ArgumentNullException(nameof(credentials));
+            if (configurationRoot == null) throw new ArgumentNullException(nameof(configurationRoot));
             this.credentials = credentials;
+            this.configurationRoot = configurationRoot;
         }
 
         protected override void Load(ContainerBuilder builder)
         {
             base.Load(builder);
 
-            builder.RegisterModule(new DialogModule(credentials));
+            builder.RegisterModule(new DialogModule(credentials, configurationRoot));
 
             // TODO: let dialog resolve its dependencies from container
             builder

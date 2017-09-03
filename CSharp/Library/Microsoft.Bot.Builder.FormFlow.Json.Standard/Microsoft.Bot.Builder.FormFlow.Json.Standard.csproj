@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.4</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Microsoft.Bot.Builder.FormFlow.Json</AssemblyName>
     <RootNamespace>Microsoft.Bot.Builder.FormFlow.Json</RootNamespace>
     <PackageId>CXuesong.Ported.Microsoft.Bot.Builder.FormFlow.Json</PackageId>
@@ -13,16 +13,9 @@
     <PackageProjectUrl>https://github.com/CXuesong/BotBuilder.Standard</PackageProjectUrl>
     <RepositoryUrl>https://github.com/CXuesong/BotBuilder.Standard</RepositoryUrl>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GenerateDocumentationFiles>True</GenerateDocumentationFiles>
     <PackageReleaseNotes>See https://github.com/CXuesong/BotBuilder.Standard/releases .</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard1.4\Microsoft.Bot.Builder.FormFlow.Json.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard1.4\Microsoft.Bot.Builder.FormFlow.Json.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

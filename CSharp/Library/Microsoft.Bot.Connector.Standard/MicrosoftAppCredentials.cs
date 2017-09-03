@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -64,13 +63,10 @@ namespace Microsoft.Bot.Connector
             TokenCacheKey = $"{MicrosoftAppId}-cache";
         }
 #else
-        public MicrosoftAppCredentials(string appId, string password, ILogger logger = null)
+        public MicrosoftAppCredentials(string appId = null, string password = null, ILogger logger = null)
         {
             MicrosoftAppId = appId;
             MicrosoftAppPassword = password;
-
-            // CXuesong: password should have been loaded here.
-            Debug.WriteLineIf(string.IsNullOrEmpty(password), "Warning: client_secret (MicrosoftAppPassword) is empty.");
 
             TokenCacheKey = $"{MicrosoftAppId}-cache";
             this.logger = logger;
@@ -162,28 +158,47 @@ namespace Microsoft.Bot.Connector
         {
             if (ShouldSetToken(request))
             {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
+                string token = await this.GetTokenAsync().ConfigureAwait(false);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
-            await base.ProcessHttpRequestAsync(request, cancellationToken);
+            await base.ProcessHttpRequestAsync(request, cancellationToken).ConfigureAwait(false);
         }
 
 
 
         public async Task<string> GetTokenAsync(bool forceRefresh = false)
         {
-            string token;
             OAuthResponse oAuthToken;
-            if (cache.TryGetValue(TokenCacheKey, out oAuthToken) && !forceRefresh && TokenNotExpired(oAuthToken))
+            bool tokenInCache = cache.TryGetValue(TokenCacheKey, out oAuthToken);
+            string token = tokenInCache ? oAuthToken.access_token : null;
+            if (!tokenInCache || !TokenNotExpired(oAuthToken) || forceRefresh) 
             {
-                token = oAuthToken.access_token;
+                token = await RefreshAndStoreToken().ConfigureAwait(false);
             }
-            else
+            else if (!TokenWithinSafeTimeLimits(oAuthToken))
             {
-                oAuthToken = await RefreshTokenAsync().ConfigureAwait(false);
-                cache.AddOrUpdate(TokenCacheKey, oAuthToken, (key, oldToken) => oAuthToken);
-                token = oAuthToken.access_token;
+                string oldToken = token;
+                token = await RefreshAndStoreToken().ConfigureAwait(false);
+                if (string.IsNullOrEmpty(token))
+                {
+                    token = oldToken;
+                }
             }
             return token;
+        }
+
+        private async Task<string> RefreshAndStoreToken()
+        {
+            try
+            {
+                OAuthResponse oAuthToken = await RefreshTokenAsync().ConfigureAwait(false);
+                cache.AddOrUpdate(TokenCacheKey, oAuthToken, (key, oldToken) => oAuthToken);
+                return oAuthToken.access_token;
+            }
+            catch (OAuthException)
+            {
+                throw;
+            }
         }
 
         private bool ShouldSetToken(HttpRequestMessage request)
@@ -244,7 +259,7 @@ namespace Microsoft.Bot.Connector
                     { "client_secret", MicrosoftAppPassword },
                     { "scope", OAuthScope }
                 });
-                Debug.WriteLineIf(MicrosoftAppPassword == null, "Warning: client_secret (MicrosoftAppPassword) is null.");
+
                 using (var response = await httpClient.PostAsync(OAuthEndpoint, content).ConfigureAwait(false))
                 {
                     string body = null;
@@ -267,6 +282,13 @@ namespace Microsoft.Bot.Connector
         private bool TokenNotExpired(OAuthResponse token)
         {
             return token.expiration_time > DateTime.UtcNow;
+        }
+
+        private bool TokenWithinSafeTimeLimits(OAuthResponse token)
+        {
+            int secondsToHalfwayExpire = Math.Min(token.expires_in / 2, 1800);
+            TimeSpan TimeToExpiration = token.expiration_time - DateTime.UtcNow;
+            return TimeToExpiration.TotalSeconds > secondsToHalfwayExpire;
         }
 
         protected class OAuthResponse

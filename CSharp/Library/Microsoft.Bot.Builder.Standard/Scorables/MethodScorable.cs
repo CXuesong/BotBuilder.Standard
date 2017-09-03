@@ -35,7 +35,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
@@ -49,7 +48,7 @@ namespace Microsoft.Bot.Builder.Scorables
     /// scoring process for overload resolution.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
-    // [Serialzable]
+    [Serializable]
     public sealed class MethodBindAttribute : Attribute
     {
     }
@@ -59,7 +58,7 @@ namespace Microsoft.Bot.Builder.Scorables
     /// that can be resolved by an implementation of <see cref="IResolver"/>. 
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = true, Inherited = true)]
-    // [Serialzable]
+    [Serializable]
     public sealed class EntityAttribute : Attribute
     {
         /// <summary>
@@ -87,17 +86,17 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
             var specs =
                 from method in methods
                 from bind in InheritedAttributes.For<MethodBindAttribute>(method)
-                select new {method, bind};
+                select new { method, bind };
 
             var scorables = from spec in specs
-                select new MethodScorable(spec.method);
+                            select new MethodScorable(spec.method);
 
             var all = scorables.ToArray().Fold(BindingComparer.Instance);
             return all;
         }
     }
 
-    [DataContract]
+    [Serializable]
     public abstract class MethodScorableBase : ScorableBase<IResolver, IBinding, IBinding>
     {
         public abstract MethodBase Method { get; }
@@ -142,11 +141,10 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
     /// <summary>
     /// Scorable to represent binding arguments to a method's parameters.
     /// </summary>
-    [DataContract]
+    [Serializable]
     public sealed class MethodScorable : MethodScorableBase
     {
-        [DataMember] private readonly MethodBase method;
-
+        private readonly MethodBase method;
         public MethodScorable(MethodInfo method)
         {
             SetField.NotNull(out this.method, nameof(method), method);
@@ -179,17 +177,16 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
         }
     }
 
-    [DataContract]
+    [Serializable]
     public sealed class DelegateScorable : MethodScorableBase
     {
-        [DataMember] private readonly Delegate lambda;
-
+        private readonly Delegate lambda;
         public DelegateScorable(Delegate lambda)
         {
             SetField.NotNull(out this.lambda, nameof(lambda), lambda);
         }
 
-        public override MethodBase Method => this.lambda.GetMethodInfo();
+        public override MethodBase Method => this.lambda.Method;
 
         protected override Task<IBinding> PrepareAsync(IResolver item, CancellationToken token)
         {

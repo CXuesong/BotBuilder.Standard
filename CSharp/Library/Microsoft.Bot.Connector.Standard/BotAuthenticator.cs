@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Connector
 
             return new IdentityToken(false, null);
         }
-        
+
         private async Task<IdentityToken> TryAuthenticateAsync(JwtTokenExtractor toBotFromChannelExtractor,
             JwtTokenExtractor toBotFromEmulatorExtractor,
             string scheme,
@@ -208,7 +208,7 @@ namespace Microsoft.Bot.Connector
             if (identity == null && !this.disableEmulatorTokens)
             {
                 identity = await toBotFromEmulatorExtractor.GetIdentityAsync(scheme, token);
-                
+
                 if (identity != null)
                     appId = toBotFromEmulatorExtractor.GetAppIdFromEmulatorClaimsIdentity(identity);
             }

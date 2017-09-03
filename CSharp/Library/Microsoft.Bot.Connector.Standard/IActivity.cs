@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Connector
         /// Address for the conversation that this activity is associated with
         /// </summary>
         ConversationAccount Conversation { get; set; }
-
+        
         /// <summary>
         /// Address that received the message
         /// </summary>

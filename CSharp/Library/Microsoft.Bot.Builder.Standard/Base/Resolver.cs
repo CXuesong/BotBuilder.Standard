@@ -35,11 +35,9 @@ using Microsoft.Bot.Builder.Internals.Fibers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Compatibility;
 
 namespace Microsoft.Bot.Builder.Scorables.Internals
 {
@@ -153,7 +151,7 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
 
         public override bool TryResolve(Type type, object tag, out object value)
         {
-            if (type.GetTypeInfo().IsEnum)
+            if (type.IsEnum)
             {
                 var name = tag as string;
                 if (name != null)

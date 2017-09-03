@@ -34,6 +34,7 @@
 using System;
 using Microsoft.Bot.Builder.Internals.Fibers;
 using Microsoft.Bot.Connector;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Internals
 {
@@ -60,12 +61,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
         private readonly Uri serviceUri;
         private readonly IAddress address;
         private readonly MicrosoftAppCredentials credentials;
-        public ConnectorClientFactory(IAddress address, MicrosoftAppCredentials credentials)
+
+        public ConnectorClientFactory(IAddress address, MicrosoftAppCredentials credentials, IConfiguration configurationSection)
+            : this(address, credentials, configurationSection["BotStateEndpoint"])
+        {
+            
+        }
+
+        public ConnectorClientFactory(IAddress address, MicrosoftAppCredentials credentials, string stateApiUrl)
         {
             SetField.NotNull(out this.address, nameof(address), address);
             SetField.NotNull(out this.credentials, nameof(credentials), credentials);
 
             this.serviceUri = new Uri(address.ServiceUrl);
+
+            // CXuesong: There is no static ConfigurationManager in ASP.NET Core,
+            // so we need some injection.
+            if (!string.IsNullOrEmpty(stateApiUrl))
+                MicrosoftAppCredentials.TrustServiceUrl(stateApiUrl, DateTime.MaxValue);
+            this.settingsStateApiUrl = stateApiUrl;
         }
 
         public static bool IsEmulator(IAddress address)
@@ -87,8 +101,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
             }
             else
             {
-                return new StateClient(this.credentials);
+                if (!string.IsNullOrEmpty(settingsStateApiUrl))
+                {
+                    return new StateClient(new Uri(settingsStateApiUrl), this.credentials);
+                }
+                else
+                {
+                    return new StateClient(this.credentials);
+                }
             }
         }
+
+        private readonly string settingsStateApiUrl;
+        //private readonly Lazy<string> settingsStateApiUrl;
+
+        ///// <summary>
+        ///// Get the state api endpoint from settings. 
+        ///// </summary>
+        ///// <param name="key">The key.</param>
+        ///// <returns>The state api endpoint from settings.</returns>
+        //private string GetSettingsStateApiUrl(string key = "BotStateEndpoint")
+        //{
+        //    var url = SettingsUtils.GetAppSettings(key);
+        //    if (!string.IsNullOrEmpty(url))
+        //    {
+        //        MicrosoftAppCredentials.TrustServiceUrl(url, DateTime.MaxValue);
+        //    }
+        //    return url;
+        //}
     }
 }

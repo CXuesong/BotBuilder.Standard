@@ -32,7 +32,6 @@
 //
 
 using System;
-using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -57,7 +56,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             return root.RootAsync;
         }
 
-        [DataContract]
+        [Serializable]
         private sealed class IdentityMethod<C, T>
         {
             public static readonly IdentityMethod<C, T> Instance = new IdentityMethod<C, T>();
@@ -72,12 +71,12 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             }
         }
 
-        [DataContract]
+        [Serializable]
         private sealed class LoopMethod<C, T>
         {
-            [DataMember] private readonly Rest<C, T> rest;
-            [DataMember] private int count;
-            [DataMember] private T item;
+            private readonly Rest<C, T> rest;
+            private int count;
+            private T item;
 
             public LoopMethod(Rest<C, T> rest, int count)
             {
@@ -100,8 +99,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
                 }
             }
 
-            public async Task<IWait<C>> NextAsync(IFiber<C> fiber, C context, IItem<object> ignore,
-                CancellationToken token)
+            public async Task<IWait<C>> NextAsync(IFiber<C> fiber, C context, IItem<object> ignore, CancellationToken token)
             {
                 --this.count;
                 if (this.count >= 0)
@@ -115,10 +113,10 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             }
         }
 
-        [DataContract]
+        [Serializable]
         private sealed class VoidMethod<C, T>
         {
-            [DataMember] private readonly Rest<C, T> rest;
+            private readonly Rest<C, T> rest;
 
             public VoidMethod(Rest<C, T> rest)
             {

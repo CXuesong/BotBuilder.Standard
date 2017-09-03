@@ -35,7 +35,6 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.FormFlow.Advanced;
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.FormFlow
@@ -51,23 +50,23 @@ namespace Microsoft.Bot.Builder.FormFlow
     /// <summary>
     /// Choice for clarifying an ambiguous value in <see cref="ValidateResult"/>.
     /// </summary>
-    [DataContract]
+    [Serializable]
     public class Choice
     {
         /// <summary>
         /// Value to return if choice is selected.
         /// </summary>
-        [DataMember] public object Value;
+        public object Value;
 
         /// <summary>
         /// Description of value.
         /// </summary>
-        [DataMember] public DescribeAttribute Description;
+        public DescribeAttribute Description;
 
         /// <summary>
         /// Terms to match value.
         /// </summary>
-        [DataMember] public TermsAttribute Terms;
+        public TermsAttribute Terms;
     }
 
     /// <summary>   Encapsulates the result of a <see cref="ValidateAsyncDelegate{T}"/> </summary>
@@ -211,7 +210,7 @@ namespace Microsoft.Bot.Builder.FormFlow
     /// <remarks>In the case of user quit or an exception the strongly typed exception <see cref="FormCanceledException{T}"/>
     ///          is actually thrown, but this provides simple access to the Last step.</remarks>
     #endregion
-    // [Serializable]
+    [Serializable]
     public class FormCanceledException : OperationCanceledException
     {
         #region Documentation
@@ -236,7 +235,7 @@ namespace Microsoft.Bot.Builder.FormFlow
     /// <summary>   Exception generated when form filling is canceled by user quit or exception. </summary>
     /// <typeparam name="T">    Underlying form type. </typeparam>
     #endregion
-    // [Serializable]
+    [Serializable]
     public class FormCanceledException<T> : FormCanceledException
     {
         /// <summary>   Constructor with message and inner exception. </summary>

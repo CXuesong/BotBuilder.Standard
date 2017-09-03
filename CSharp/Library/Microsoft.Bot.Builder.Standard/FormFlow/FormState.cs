@@ -33,38 +33,37 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Runtime.Serialization;
+
 using Microsoft.Bot.Builder.FormFlow.Advanced;
 
 namespace Microsoft.Bot.Builder.FormFlow
 {
-    [DataContract]
+    [Serializable]
     internal class FormState
     {
         // Last sent prompt which is used when feedback is supplied
-       [DataMember] public FormPrompt LastPrompt;
+        public FormPrompt LastPrompt;
 
         // Used when navigating to reflect choices for next
-        [DataMember] public NextStep Next;
+        public NextStep Next;
 
         // Currently executing step
-        [DataMember] public int Step;
+        public int Step;
 
         // History of executed steps
-        [DataMember] public Stack<int> History;
+        public Stack<int> History;
 
         // Current phase of each step
-        [DataMember] public StepPhase[] Phases;
+        public StepPhase[] Phases;
 
         // Internal state of a step
-        [DataMember] public object StepState;
+        public object StepState;
 
         // Field number and input
-        [DataMember] public List<Tuple<int, string>> FieldInputs;
+        public List<Tuple<int, string>> FieldInputs;
 
         // True when we have started processing FieldInputs
-        [DataMember] public bool ProcessInputs;
+        public bool ProcessInputs;
 
         public FormState(int steps)
         {

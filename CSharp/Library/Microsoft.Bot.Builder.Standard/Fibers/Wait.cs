@@ -42,7 +42,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Bot.Builder.Base;
-using Microsoft.Bot.Builder.Compatibility;
 using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Internals.Fibers
@@ -117,7 +116,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
         void Fail(Exception error);
     }
 
-    public interface IWait<C> : IWait, IDeepCloneable
+    public interface IWait<C> : IWait, ICloneable
     {
         Task<IWait<C>> PollAsync(IFiber<C> fiber, C context, CancellationToken token);
     }
@@ -161,7 +160,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             throw new InvalidNeedException(this, Need.Poll);
         }
 
-        object IDeepCloneable.Clone()
+        object ICloneable.Clone()
         {
             return NullWait<C>.Instance;
         }
@@ -190,12 +189,11 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
         }
     }
 
-    [DataContract]
-    public sealed class Wait<C, T> : IItem<T>, IWait<C, T>, IPost<T>, IAwaiter<T>, IEquatable<Wait<C, T>>
+    [Serializable]
+    public sealed class Wait<C, T> : IItem<T>, IWait<C, T>, IPost<T>, IAwaiter<T>, IEquatable<Wait<C, T>>, ISerializable
     {
-        // CXuesong: Original class implemented ISerializable
-        [DataMember] private Rest<C, T> rest;
-        [DataMember] private Need need;
+        private Rest<C, T> rest;
+        private Need need;
         private T item;
         private Exception fail;
 
@@ -203,16 +201,22 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
         {
         }
 
-        [OnDeserialized]
-        private void OnDeserialized(StreamingContext context)
+        private Wait(SerializationInfo info, StreamingContext context)
         {
-            if (rest == null) throw new ArgumentNullException(nameof(rest));
+            SetField.NotNullFrom(out this.rest, nameof(rest), info);
+            SetField.From(out this.need, nameof(need), info);
+        }
+
+        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(nameof(this.rest), this.rest);
+            info.AddValue(nameof(this.need), this.need);
         }
 
         public override string ToString()
         {
             IWait wait = this;
-            return $"Wait: {wait.Need} {wait.NeedType?.Name} for {this.rest?.Target}.{this.rest?.GetMethodInfo().Name} have {wait.ItemType?.Name} {this.item}";
+            return $"Wait: {wait.Need} {wait.NeedType?.Name} for {this.rest?.Target}.{this.rest?.Method.Name} have {wait.ItemType?.Name} {this.item}";
         }
 
         public override int GetHashCode()
@@ -244,7 +248,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             {
                 if (this.rest != null)
                 {
-                    var method = this.rest.GetMethodInfo();
+                    var method = this.rest.Method;
                     var parameters = method.GetParameters();
                     var itemType = parameters[2].ParameterType;
                     var type = itemType.GenericTypeArguments.Single();
@@ -287,7 +291,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             if (post == null)
             {
                 // then work around lack of generic type variant for value types
-                if (typeof(D).GetTypeInfo().IsValueType)
+                if (typeof(D).IsValueType)
                 {
                     var postBoxed = this as IPost<object>;
                     if (postBoxed != null)
@@ -387,7 +391,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             throw new NotImplementedException();
         }
 
-        object IDeepCloneable.Clone()
+        object ICloneable.Clone()
         {
             var clone = new Wait<C, T>();
             clone.rest = this.rest;
@@ -403,7 +407,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
         IWait<C, T> Make<T>();
     }
 
-    [DataContract]
+    [Serializable]
     public sealed class WaitFactory<C> : IWaitFactory<C>
     {
         IWait<C, T> IWaitFactory<C>.Make<T>()

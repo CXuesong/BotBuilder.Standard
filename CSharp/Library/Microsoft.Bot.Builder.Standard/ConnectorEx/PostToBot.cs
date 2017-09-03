@@ -33,11 +33,11 @@
 
 using System;
 using System.Diagnostics;
+using System.Net.Mime;
 using System.Resources;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Base;
-using Microsoft.Bot.Builder.Compatibility;
 using Microsoft.Bot.Builder.ConnectorEx;
 using Microsoft.Bot.Builder.Internals.Fibers;
 using Microsoft.Bot.Connector;
@@ -60,9 +60,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
 
     public sealed class NullPostToBot : IPostToBot
     {
+        Task IPostToBot.PostAsync(IActivity activity, CancellationToken token)
+        {
+            return Task.CompletedTask;
+        }
+    }
+
+    public sealed class PassPostToBot : IPostToBot
+    {
         private readonly IPostToBot inner;
 
-        public NullPostToBot(IPostToBot inner)
+        public PassPostToBot(IPostToBot inner)
         {
             SetField.NotNull(out this.inner, nameof(inner), inner);
         }
@@ -131,14 +139,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
         private readonly IPostToBot inner;
         private readonly IBotToUser botToUser;
         private readonly ResourceManager resources;
-        //private readonly TraceListener trace;
+        private readonly TraceListener trace;
 
-        public PostUnhandledExceptionToUser(IPostToBot inner, IBotToUser botToUser, ResourceManager resources/*, TraceListener trace*/)
+        public PostUnhandledExceptionToUser(IPostToBot inner, IBotToUser botToUser, ResourceManager resources, TraceListener trace)
         {
             SetField.NotNull(out this.inner, nameof(inner), inner);
             SetField.NotNull(out this.botToUser, nameof(botToUser), botToUser);
             SetField.NotNull(out this.resources, nameof(resources), resources);
-            //SetField.NotNull(out this.trace, nameof(trace), trace);
+            SetField.NotNull(out this.trace, nameof(trace), trace);
         }
 
         async Task IPostToBot.PostAsync(IActivity activity, CancellationToken token)
@@ -169,8 +177,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
                 }
                 catch (Exception inner)
                 {
-                    //this.trace.WriteLine(inner);
-                    Debug.WriteLine(inner);
+                    this.trace.WriteLine(inner);
                 }
 
                 throw;

@@ -33,16 +33,15 @@
 
 using System;
 using System.Linq;
-using System.Runtime.Serialization;
+
 using Microsoft.Bot.Builder.FormFlow.Advanced;
 
 namespace Microsoft.Bot.Builder.FormFlow
 {
-
     /// <summary>
     /// Abstract base class for FormFlow attributes.
     /// </summary>
-    // [Serializable]
+    [Serializable]
     public abstract class FormFlowAttribute : Attribute
     {
         /// <summary>
@@ -58,7 +57,7 @@ namespace Microsoft.Bot.Builder.FormFlow
     /// <summary>
     /// Attribute to override the default description of a field, property or enum value.
     /// </summary>
-    // [Serializable]
+    [Serializable]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Enum | AttributeTargets.Property)]
     public class DescribeAttribute : FormFlowAttribute
     {
@@ -115,7 +114,7 @@ namespace Microsoft.Bot.Builder.FormFlow
     /// maximum phrase length you specify.  If your term is a simple alphanumeric one, then it will only be matched on word boundaries with \b unless you start your
     /// expression with parentheses in which case you control the boundary matching behavior through your regular expression.
     /// </remarks>
-    // [Serializable]
+    [Serializable]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class TermsAttribute : FormFlowAttribute
     {
@@ -290,7 +289,7 @@ namespace Microsoft.Bot.Builder.FormFlow
     /// This attribute allows you to override this with one more \ref patterns strings. 
     /// The actual prompt will be randomly selected from the alternatives you provide.
     /// </remarks>
-    // [Serializable]
+    [Serializable]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class PromptAttribute : TemplateBaseAttribute
     {
@@ -567,7 +566,7 @@ namespace Microsoft.Bot.Builder.FormFlow
     /// You can also look at <see cref="FormConfiguration.Templates"/> to see all the default templates that are provided.  Templates can be overriden at the form, class/struct of field level.  
     /// They also support randomly selecting between templates which is a good way to introduce some variation in your responses.
     /// </remarks>
-    // [Serializable]
+    [Serializable]
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
     public class TemplateAttribute : TemplateBaseAttribute
     {
@@ -604,7 +603,7 @@ namespace Microsoft.Bot.Builder.FormFlow
     /// <remarks>
     /// An optional field is one where having no value is an acceptable response.  By default every field is considered required and must be filled in to complete the form.
     /// </remarks>
-    // [Serializable]
+    [Serializable]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class OptionalAttribute : Attribute
     {
@@ -621,7 +620,7 @@ namespace Microsoft.Bot.Builder.FormFlow
     /// <remarks>
     /// By default the limits are the min and max of the underlying field type.
     /// </remarks>
-    // [Serializable]
+    [Serializable]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class NumericAttribute : Attribute
     {
@@ -653,7 +652,7 @@ namespace Microsoft.Bot.Builder.FormFlow
     /// <remarks>
     /// If the regular expression is not matched the <see cref="TemplateUsage.NotUnderstood"/> template will be used for feedback.
     /// </remarks>
-    // [Serializable]
+    [Serializable]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class PatternAttribute : Attribute
     {

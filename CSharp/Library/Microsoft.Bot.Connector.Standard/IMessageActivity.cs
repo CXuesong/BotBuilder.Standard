@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Connector
         /// Collection of Entity objects, each of which contains metadata about this activity. Each Entity object is typed.
         /// </summary>
         IList<Entity> Entities { get; set; }
-
+        
         /// <summary>
         /// True if this activity has text, attachments, or channelData
         /// </summary>

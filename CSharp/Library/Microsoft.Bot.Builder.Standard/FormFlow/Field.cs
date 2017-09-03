@@ -35,7 +35,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -652,7 +651,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
             if (_promptDefinition == null)
             {
                 TemplateUsage usage = TemplateUsage.None;
-                if (_type == null || _type.GetTypeInfo().IsEnum)
+                if (_type == null || _type.IsEnum)
                 {
                     usage = _allowsMultiple ? TemplateUsage.EnumSelectMany : TemplateUsage.EnumSelectOne;
                 }
@@ -693,7 +692,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         {
             if (_recognizer == null)
             {
-                if (_type == null || _type.GetTypeInfo().IsEnum)
+                if (_type == null || _type.IsEnum)
                 {
                     _recognizer = new RecognizeEnumeration<T>(this);
                 }
@@ -720,7 +719,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
                 else if (_type.IsIEnumerable())
                 {
                     var elt = _type.GetGenericElementType();
-                    if (elt.GetTypeInfo().IsEnum)
+                    if (elt.IsEnum)
                     {
                         _recognizer = new RecognizeEnumeration<T>(this);
                     }

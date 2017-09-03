@@ -38,6 +38,7 @@ using Autofac;
 using Microsoft.Bot.Builder.ConnectorEx;
 using Microsoft.Bot.Builder.Dialogs.Internals;
 using Microsoft.Bot.Connector;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -51,16 +52,20 @@ namespace Microsoft.Bot.Builder.Dialogs
         private IContainer container;
 
         private readonly MicrosoftAppCredentials _CredentialProvider;
-        
+        private readonly IConfiguration _ConfigurationRoot;
+
         // CXuesong: We need to inject credentialProvider here.
-        public Conversation(MicrosoftAppCredentials credentialProvider) : this(credentialProvider, null)
+        public Conversation(MicrosoftAppCredentials credentialProvider, IConfiguration configurationRoot)
+            : this(credentialProvider, configurationRoot, null)
         {
         }
 
-        public Conversation(MicrosoftAppCredentials credentialProvider, Action<ContainerBuilder> builderAction)
+        public Conversation(MicrosoftAppCredentials credentialProvider, IConfiguration configurationRoot, Action<ContainerBuilder> builderAction)
         {
             if (credentialProvider == null) throw new ArgumentNullException(nameof(credentialProvider));
+            if (configurationRoot == null) throw new ArgumentNullException(nameof(configurationRoot));
             _CredentialProvider = credentialProvider;
+            _ConfigurationRoot = configurationRoot;
             UpdateContainer(builderAction);
         }
 
@@ -84,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             lock (gate)
             {
                 var builder = new ContainerBuilder();
-                builder.RegisterModule(new DialogModule_MakeRoot(_CredentialProvider));
+                builder.RegisterModule(new DialogModule_MakeRoot(_CredentialProvider, _ConfigurationRoot));
                 update?.Invoke(builder);
                 container = builder.Build();
             }
@@ -151,7 +156,41 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        protected async Task SendAsync(ILifetimeScope scope, IActivity toBot, CancellationToken token = default(CancellationToken))
+        /// <summary>
+        /// Disable a specific service type by replacing it with a pass through implementation.
+        /// </summary>
+        /// <param name="type">The service type.</param>
+        /// <param name="builder">The container builder.</param>
+        public static void Disable(Type type, ContainerBuilder builder)
+        {
+            if (typeof(IBotToUser).IsAssignableFrom(type))
+            {
+                builder
+                .RegisterType<PassBotToUser>()
+                .Keyed<IBotToUser>(type);
+            }
+
+            if (typeof(IPostToBot).IsAssignableFrom(type))
+            {
+                builder
+                .RegisterType<PassPostToBot>()
+                .Keyed<IPostToBot>(type);
+            }
+        }
+
+        /// <summary>
+        /// Disable a specific service type by replacing it with a pass through implementation.
+        /// </summary>
+        /// <param name="type">The service type.</param>
+        public void Disable(Type type)
+        {
+            UpdateContainer(builder =>
+            {
+                Disable(type, builder);
+            });
+        }
+
+        internal static async Task SendAsync(ILifetimeScope scope, IActivity toBot, CancellationToken token = default(CancellationToken))
         {
             var task = scope.Resolve<IPostToBot>();
             await task.PostAsync(toBot, token);

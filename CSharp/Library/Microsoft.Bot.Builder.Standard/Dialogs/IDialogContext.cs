@@ -34,7 +34,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-
 using Microsoft.Bot.Builder.Dialogs.Internals;
 using Microsoft.Bot.Connector;
 
@@ -83,7 +82,6 @@ namespace Microsoft.Bot.Builder.Dialogs
     {
     }
 
-
     /// <summary>
     /// Optional message properties that can be sent <see cref="Extensions.SayAsync(IBotToUser, string, string, MessageOptions, string, CancellationToken)"/>
     /// </summary>
@@ -129,7 +127,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     public static partial class Extensions
     {
         /// <summary>
-        /// Post a message to be sent to the bot, using previous messages to establish a conversation context.
+        /// Post a message to be sent to the user, using previous messages to establish a conversation context.
         /// </summary>
         /// <remarks>
         /// If the locale parameter is not set, locale of the incoming message will be used for reply.
@@ -151,6 +149,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             await botToUser.PostAsync(message, cancellationToken);
         }
+
 
         /// <summary>
         /// Post a message and optional SSML to be sent to the user, using previous messages to establish a conversation context.
@@ -189,7 +188,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             await botToUser.PostAsync(message, cancellationToken);
         }
 
-
         /// <summary>
         /// Suspend the current dialog until the user has sent a message to the bot.
         /// </summary>
@@ -210,7 +208,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="message">The message that will be posted to child dialog.</param>
         /// <param name="token">A cancellation token.</param>
         /// <returns>A task representing the Forward operation.</returns>
-        public static async Task Forward<R>(this IDialogStack stack, IDialog<R> child, ResumeAfter<R> resume, IMessageActivity message, CancellationToken token)
+        public static async Task Forward<R>(this IDialogStack stack, IDialog<R> child, ResumeAfter<R> resume, IMessageActivity message, CancellationToken token = default(CancellationToken))
         {
             await stack.Forward<R, IMessageActivity>(child, resume, message, token);
         }

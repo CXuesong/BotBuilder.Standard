@@ -36,10 +36,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace Microsoft.Bot.Builder.Luis
 {
@@ -48,7 +47,7 @@ namespace Microsoft.Bot.Builder.Luis
         public override string ToString()
         {
             var builder = new StringBuilder();
-            var properties = this.GetType().GetRuntimeProperties();
+            var properties = this.GetType().GetProperties();
             foreach (var property in properties)
             {
                 var value = property.GetValue(this);
@@ -74,46 +73,46 @@ namespace Microsoft.Bot.Builder.Luis
         {
             public enum DayPart
             {
-                // [Description("morning")]
+                [Description("morning")]
                 MO,
-                // [Description("midday")]
+                [Description("midday")]
                 MI,
-                // [Description("afternoon")]
+                [Description("afternoon")]
                 AF,
-                // [Description("evening")]
+                [Description("evening")]
                 EV,
-                // [Description("night")]
+                [Description("night")]
                 NI
             }
 
             public enum Reference
             {
-                // [Description("past")]
+                [Description("past")]
                 PAST_REF,
-                // [Description("present")]
+                [Description("present")]
                 PRESENT_REF,
-                // [Description("future")]
+                [Description("future")]
                 FUTURE_REF
             }
 
 
-            [DataContract]
+            [Serializable]
             public sealed class DateTimeResolution : Resolution, IEquatable<DateTimeResolution>
             {
-                [DataMember] public Reference? Reference { get; }
+                public Reference? Reference { get; }
 
-                [DataMember] public int? Year { get; }
-                [DataMember] public int? Month { get; }
-                [DataMember] public int? Day { get; }
+                public int? Year { get; }
+                public int? Month { get; }
+                public int? Day { get; }
 
-                [DataMember] public int? Week { get; }
-                [DataMember] public DayOfWeek? DayOfWeek { get; }
+                public int? Week { get; }
+                public DayOfWeek? DayOfWeek { get; }
 
-                [DataMember] public DayPart? DayPart { get; }
+                public DayPart? DayPart { get; }
 
-                [DataMember] public int? Hour { get; }
-                [DataMember] public int? Minute { get; }
-                [DataMember] public int? Second { get; }
+                public int? Hour { get; }
+                public int? Minute { get; }
+                public int? Second { get; }
 
                 public DateTimeResolution(
                     Reference? reference = null,

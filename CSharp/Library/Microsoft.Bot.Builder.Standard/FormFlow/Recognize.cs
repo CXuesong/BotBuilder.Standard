@@ -39,6 +39,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Chronic;
 using System.Threading;
+using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder.FormFlow.Advanced
 {
@@ -140,19 +141,21 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
             return new Prompter<T>(_helpFormat, _form, this).Prompt(state, null, args.ToArray()).Prompt;
         }
 
-        public IEnumerable<TermMatch> Matches(string input, object defaultValue)
+        public IEnumerable<TermMatch> Matches(IMessageActivity input, object defaultValue)
         {
+            var inputText = MessageActivityHelper.GetSanitizedTextInput(input);
+
             // if the user hit enter on an optional prompt, then consider taking the current choice as a low confidence option
-            bool userSkippedPrompt = string.IsNullOrWhiteSpace(input) && (defaultValue != null || _noPreference != null);
+            bool userSkippedPrompt = string.IsNullOrWhiteSpace(inputText) && (defaultValue != null || _noPreference != null);
             if (userSkippedPrompt)
             {
-                yield return new TermMatch(0, input.Length, 1.0, defaultValue);
+                yield return new TermMatch(0, inputText.Length, 1.0, defaultValue);
             }
 
             foreach (var expression in _expressions)
             {
                 double maxWords = expression.MaxWords;
-                foreach (Match match in expression.Expression.Matches(input))
+                foreach (Match match in expression.Expression.Matches(inputText))
                 {
                     var group1 = match.Groups[1];
                     var group2 = match.Groups[2];
@@ -378,20 +381,22 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         /// <returns>TermMatch if input is a match.</returns>
         public abstract TermMatch Parse(string input);
 
-        public virtual IEnumerable<TermMatch> Matches(string input, object defaultValue = null)
+        public virtual IEnumerable<TermMatch> Matches(IMessageActivity input, object defaultValue = null)
         {
-            var matchValue = input.Trim().ToLower();
+            var inputText = MessageActivityHelper.GetSanitizedTextInput(input);
+
+            var matchValue = inputText.Trim().ToLower();
             if (_noPreference != null && _noPreference.Contains(matchValue))
             {
-                yield return new TermMatch(0, input.Length, 1.0, null);
+                yield return new TermMatch(0, inputText.Length, 1.0, null);
             }
             else if ((defaultValue != null || _noPreference != null) && (matchValue == "" || _currentChoices.Contains(matchValue)))
             {
-                yield return new TermMatch(0, input.Length, 1.0, defaultValue);
+                yield return new TermMatch(0, inputText.Length, 1.0, defaultValue);
             }
             else
             {
-                var result = Parse(input);
+                var result = Parse(inputText);
                 if (result != null)
                 {
                     yield return result;
@@ -590,19 +595,19 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
 
         public override DescribeAttribute ValueDescription(object value)
         {
-            return new DescribeAttribute(((long)Convert.ChangeType(value, typeof(long))).ToString(CultureInfo.CurrentUICulture.NumberFormat));
+            return new DescribeAttribute(((long)Convert.ChangeType(value, typeof(long))).ToString(Thread.CurrentThread.CurrentUICulture.NumberFormat));
         }
 
         public override IEnumerable<string> ValidInputs(object value)
         {
-            yield return ((long)value).ToString(CultureInfo.CurrentUICulture.NumberFormat);
+            yield return ((long)value).ToString(Thread.CurrentThread.CurrentUICulture.NumberFormat);
         }
 
         public override TermMatch Parse(string input)
         {
             TermMatch result = null;
             long number;
-            if (long.TryParse(input, NumberStyles.Integer, CultureInfo.CurrentUICulture.NumberFormat, out number))
+            if (long.TryParse(input, NumberStyles.Integer, Thread.CurrentThread.CurrentUICulture.NumberFormat, out number))
             {
                 if (number >= _min && number <= _max)
                 {
@@ -654,19 +659,19 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
 
         public override DescribeAttribute ValueDescription(object value)
         {
-            return new DescribeAttribute(((double)Convert.ChangeType(value, typeof(double))).ToString(CultureInfo.CurrentUICulture.NumberFormat));
+            return new DescribeAttribute(((double)Convert.ChangeType(value, typeof(double))).ToString(Thread.CurrentThread.CurrentUICulture.NumberFormat));
         }
 
         public override IEnumerable<string> ValidInputs(object value)
         {
-            yield return ((double)value).ToString(CultureInfo.CurrentUICulture.NumberFormat);
+            yield return ((double)value).ToString(Thread.CurrentThread.CurrentUICulture.NumberFormat);
         }
 
         public override TermMatch Parse(string input)
         {
             TermMatch result = null;
             double number;
-            if (double.TryParse(input, NumberStyles.Float, CultureInfo.CurrentUICulture.NumberFormat, out number))
+            if (double.TryParse(input, NumberStyles.Float, Thread.CurrentThread.CurrentUICulture.NumberFormat, out number))
             {
                 if (number >= _min && number <= _max)
                 {
@@ -724,10 +729,10 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         public override TermMatch Parse(string input)
         {
             TermMatch match = null;
-            if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName != "en")
+            if (Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName != "en")
             {
                 DateTime dt;
-                if (DateTime.TryParse(input, CultureInfo.CurrentUICulture.DateTimeFormat, DateTimeStyles.None, out dt))
+                if (DateTime.TryParse(input, Thread.CurrentThread.CurrentUICulture.DateTimeFormat, DateTimeStyles.None, out dt))
                 {
                     match = new TermMatch(0, input.Length, 1.0, dt);
                 }
@@ -750,7 +755,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
 
         public override DescribeAttribute ValueDescription(object value)
         {
-            return new DescribeAttribute(((DateTime)value).ToString(CultureInfo.CurrentUICulture.DateTimeFormat));
+            return new DescribeAttribute(((DateTime)value).ToString(Thread.CurrentThread.CurrentUICulture.DateTimeFormat));
         }
 
         private Parser _parser;

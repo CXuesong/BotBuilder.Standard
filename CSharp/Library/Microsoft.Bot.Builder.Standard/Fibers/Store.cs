@@ -31,105 +31,23 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-//#define DEBUG_STREAMS
-#define STRICT_REF_RESOLVER
-
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
-using System.Text;
-using Microsoft.Bot.Builder.Fibers;
-using Microsoft.Bot.Builder.Scorables.Internals;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Internals.Fibers
 {
-
-    //public sealed class FormatterStore<T> : IStore<T>
-    //{
-    //    private readonly Stream stream;
-    //    private readonly IFormatter formatter;
-    //    public FormatterStore(Stream stream, IFormatter formatter)
-    //    {
-    //        SetField.NotNull(out this.stream, nameof(stream), stream);
-    //        SetField.NotNull(out this.formatter, nameof(formatter), formatter);
-    //    }
-
-    //    void IStore<T>.Reset()
-    //    {
-    //        this.stream.SetLength(0);
-    //    }
-
-    //    bool IStore<T>.TryLoad(out T item)
-    //    {
-    //        if (this.stream.Length > 0)
-    //        {
-    //            this.stream.Position = 0;
-    //            using (var gzip = new GZipStream(this.stream, CompressionMode.Decompress, leaveOpen: true))
-    //            {
-    //                item = (T)this.formatter.Deserialize(gzip);
-    //                return true;
-    //            }
-    //        }
-
-    //        item = default(T);
-    //        return false;
-    //    }
-
-    //    void IStore<T>.Save(T item)
-    //    {
-    //        this.stream.Position = 0;
-    //        using (var gzip = new GZipStream(this.stream, CompressionMode.Compress, leaveOpen: true))
-    //        {
-    //            formatter.Serialize(gzip, item);
-    //        }
-
-    //        this.stream.SetLength(this.stream.Position);
-    //    }
-
-    //    void IStore<T>.Flush()
-    //    {
-    //        this.stream.Flush();
-    //    }
-    //}
-
-    public sealed class DataContractStore<T> : IStore<T>
+    public sealed class FormatterStore<T> : IStore<T>
     {
         private readonly Stream stream;
-        private readonly JsonSerializer serializer;
-#if STRICT_REF_RESOLVER
-        private readonly StrictJsonReferenceResolver refResolver = new StrictJsonReferenceResolver();
-#endif
-        public DataContractStore(Stream stream, IResolver resolver)
+        private readonly IFormatter formatter;
+        public FormatterStore(Stream stream, IFormatter formatter)
         {
             SetField.NotNull(out this.stream, nameof(stream), stream);
-            SetField.CheckNull(nameof(resolver), resolver);
-
-            // CXuesong: Tweak the settings later.
-            //           - Done.
-            serializer = new JsonSerializer
-            {
-                TypeNameHandling = TypeNameHandling.Objects,
-                ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-                ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-#if STRICT_REF_RESOLVER
-                ReferenceResolver = refResolver,
-#endif
-                Converters =
-                {
-                    DelegateJsonConverter.Default,
-                    MethodInfoJsonConverter.Default,
-                    new ContextualJsonConvertHandler(new ResolvableObjectJsonConverter(resolver),
-                        ContextualRegexConverter.Default,
-                        ContextualEnumConverter.Default)
-                }
-            };
+            SetField.NotNull(out this.formatter, nameof(formatter), formatter);
         }
 
         void IStore<T>.Reset()
@@ -143,20 +61,8 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             {
                 this.stream.Position = 0;
                 using (var gzip = new GZipStream(this.stream, CompressionMode.Decompress, leaveOpen: true))
-                using (var reader = new StreamReader(gzip, Encoding.UTF8, true, 1024, true))
                 {
-#if STRICT_REF_RESOLVER
-                    refResolver.Clear();
-#endif
-#if DEBUG || DEBUG_STREAMS
-                    // For sake of debugging the JSON.
-                    var s = reader.ReadToEnd();
-                    using (var sr = new StringReader(s))
-                        item = (T) serializer.Deserialize(sr, typeof(T));
-#else
-
-                    item = (T)serializer.Deserialize(reader, typeof(T));
-#endif
+                    item = (T)this.formatter.Deserialize(gzip);
                     return true;
                 }
             }
@@ -167,26 +73,10 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
 
         void IStore<T>.Save(T item)
         {
-            // CXuesong: Hint
-            //      T   Can be
-            // Microsoft.Bot.Builder.Internals.Fibers.Fiber<Microsoft.Bot.Builder.Dialogs.Internals.DialogTask>
             this.stream.Position = 0;
             using (var gzip = new GZipStream(this.stream, CompressionMode.Compress, leaveOpen: true))
-            using (var writer = new StreamWriter(gzip, Encoding.UTF8, 1024, true))
             {
-#if STRICT_REF_RESOLVER
-                refResolver.Clear();
-#endif
-#if DEBUG || DEBUG_STREAMS
-                // For sake of debugging the JSON.
-                using (var sw = new StringWriter())
-                {
-                    serializer.Serialize(sw, item);
-                    writer.Write(sw.ToString());
-                }
-#else
-                serializer.Serialize(writer, item);
-#endif
+                formatter.Serialize(gzip, item);
             }
 
             this.stream.SetLength(this.stream.Position);
@@ -201,7 +91,6 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
     public sealed class ErrorResilientStore<T> : IStore<T>
     {
         private readonly IStore<T> store;
-
         public ErrorResilientStore(IStore<T> store)
         {
             SetField.NotNull(out this.store, nameof(store), store);
@@ -241,7 +130,6 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
     {
         private readonly IStore<T> store;
         private readonly Func<T> factory;
-
         public FactoryStore(IStore<T> store, Func<T> factory)
         {
             SetField.NotNull(out this.store, nameof(store), store);

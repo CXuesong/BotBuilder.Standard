@@ -41,11 +41,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Compatibility;
 
 namespace Microsoft.Bot.Builder.Scorables.Internals
 {
@@ -84,12 +82,12 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
     /// <summary>
     /// Scorable to represent a specific LUIS intent recommendation.
     /// </summary>
-    [DataContract]
+    [Serializable]
     public sealed class LuisIntentScorable<InnerState, InnerScore> : ResolverScorable<LuisIntentScorable<InnerState, InnerScore>.Scope, IntentRecommendation, InnerState, InnerScore>
     {
-        [DataMember] private readonly ILuisService service;
-        [DataMember] private readonly ILuisModel model;
-        [DataMember] private readonly LuisIntentAttribute intent;
+        private readonly ILuisService service;
+        private readonly ILuisModel model;
+        private readonly LuisIntentAttribute intent;
 
         public sealed class Scope : ResolverScope<InnerScore>
         {

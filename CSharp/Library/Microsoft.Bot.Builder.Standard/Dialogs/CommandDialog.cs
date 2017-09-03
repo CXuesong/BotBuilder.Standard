@@ -46,37 +46,37 @@ namespace Microsoft.Bot.Builder.Dialogs
     #region Documentation
     /// <summary> Dialog that dispatches based on a regex matching input. </summary>
     #endregion
-    [DataContract]
+    [Serializable]
     public class CommandDialog<T> : IDialog<T>
     {
         #region Documentation
         /// <summary>   A single command. </summary>
         #endregion
-        [DataContract]
+        [Serializable]
         public class Command
         {
             #region Documentation
             /// <summary>   Gets or sets the command ID used for persisting currently running command handler. </summary>
             /// <value> Command ID. </value>
             #endregion
-            [DataMember] public string CommandId { set; get; }
+            public string CommandId { set; get; }
 
             #region Documentation
             /// <summary>   Gets or sets the regular expression for matching command. </summary>
             /// <value> The regular expression. </value>
             #endregion
-            [DataMember] public Regex Expression { set; get; }
+            public Regex Expression { set; get; }
 
             #region Documentation
             /// <summary>   Gets or sets the command handler. </summary>
             /// <value> The command handler. </value>
             #endregion
-            [DataMember] public ResumeAfter<Connector.IMessageActivity> CommandHandler { set; get; }
+            public ResumeAfter<Connector.IMessageActivity> CommandHandler { set; get; }
         }
 
-        [DataMember] private Command defaultCommand;
-        [DataMember] private readonly List<Command> commands = new List<Command>();
-        [DataMember] private readonly Dictionary<string, Delegate> resultHandlers = new Dictionary<string, Delegate>();
+        private Command defaultCommand;
+        private readonly List<Command> commands = new List<Command>();
+        private readonly Dictionary<string, Delegate> resultHandlers = new Dictionary<string, Delegate>();
 
         async Task IDialog<T>.StartAsync(IDialogContext context)
         {

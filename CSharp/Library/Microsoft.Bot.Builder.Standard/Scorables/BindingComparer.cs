@@ -34,12 +34,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Compatibility;
 
 namespace Microsoft.Bot.Builder.Scorables.Internals
 {
@@ -122,10 +120,16 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
         }
     }
 
+    [Serializable]
     public sealed class MethodResolutionException : Exception
     {
         public MethodResolutionException(string message, IBinding one, IBinding two)
             : base($"{message}: {one} and {two}")
+        {
+        }
+
+        private MethodResolutionException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

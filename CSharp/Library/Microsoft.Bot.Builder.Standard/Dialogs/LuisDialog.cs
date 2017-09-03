@@ -50,13 +50,13 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// Associate a LUIS intent with a dialog method.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
-    [DataContract]
+    [Serializable]
     public class LuisIntentAttribute : AttributeString
     {
         /// <summary>
         /// The LUIS intent name.
         /// </summary>
-        [DataMember] public readonly string IntentName;
+        public readonly string IntentName;
 
         /// <summary>
         /// Construct the association between the LUIS intent and a dialog method.
@@ -69,7 +69,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         protected override string Text
         {
-            get { return this.IntentName; }
+            get
+            {
+                return this.IntentName;
+            }
         }
     }
 
@@ -88,13 +91,12 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <param name="message">The dialog message.</param>
     /// <param name="luisResult">The LUIS result.</param>
     /// <returns>A task representing the completion of the intent processing.</returns>
-    public delegate Task IntentActivityHandler(
-        IDialogContext context, IAwaitable<IMessageActivity> message, LuisResult luisResult);
+    public delegate Task IntentActivityHandler(IDialogContext context, IAwaitable<IMessageActivity> message, LuisResult luisResult);
 
     /// <summary>
     /// An exception for invalid intent handlers.
     /// </summary>
-    //[Serializable]
+    [Serializable]
     public sealed class InvalidIntentHandlerException : InvalidOperationException
     {
         public readonly MethodInfo Method;
@@ -105,10 +107,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             SetField.NotNull(out this.Method, nameof(method), method);
         }
 
-        //private InvalidIntentHandlerException(SerializationInfo info, StreamingContext context)
-        //    : base(info, context)
-        //{
-        //}
+        private InvalidIntentHandlerException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
     }
 
     /// <summary>
@@ -135,19 +137,19 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// A dialog specialized to handle intents and entities from LUIS.
     /// </summary>
     /// <typeparam name="TResult">The result type.</typeparam>
-    [DataContract]
+    [Serializable]
     public class LuisDialog<TResult> : IDialog<TResult>
     {
-        [DataMember] protected readonly IReadOnlyList<ILuisService> services;
+        protected readonly IReadOnlyList<ILuisService> services;
 
         /// <summary>   Mapping from intent string to the appropriate handler. </summary>
-        //[NonSerialized]
-        [DataMember] protected Dictionary<string, IntentActivityHandler> handlerByIntent;
+        [NonSerialized]
+        protected Dictionary<string, IntentActivityHandler> handlerByIntent;
 
         public ILuisService[] MakeServicesFromAttributes()
         {
             var type = this.GetType();
-            var luisModels = type.GetTypeInfo().GetCustomAttributes<LuisModelAttribute>(inherit: true);
+            var luisModels = type.GetCustomAttributes<LuisModelAttribute>(inherit: true);
             return luisModels.Select(m => new LuisService(m)).Cast<ILuisService>().ToArray();
         }
 
@@ -207,43 +209,50 @@ namespace Microsoft.Bot.Builder.Dialogs
             var message = await item;
             var messageText = await GetLuisQueryTextAsync(context, message);
 
-            // Modify request by the service to add attributes and then by the dialog to reflect the particular query
-            var tasks = this.services
-                .Select(s => s.QueryAsync(ModifyLuisRequest(s.ModifyRequest(new LuisRequest(messageText))),
-                    context.CancellationToken)).ToArray();
-            var results = await Task.WhenAll(tasks);
-
-            var winners = from result in results.Select((value, index) => new {value, index})
-                let resultWinner = BestIntentFrom(result.value)
-                where resultWinner != null
-                select new LuisServiceResult(result.value, resultWinner, this.services[result.index]);
-
-            var winner = this.BestResultFrom(winners);
-
-            if (winner == null)
+            if (messageText != null)
             {
-                throw new InvalidOperationException("No winning intent selected from Luis results.");
-            }
+                // Modify request by the service to add attributes and then by the dialog to reflect the particular query
+                var tasks = this.services.Select(s => s.QueryAsync(ModifyLuisRequest(s.ModifyRequest(new LuisRequest(messageText))), context.CancellationToken)).ToArray();
+                var results = await Task.WhenAll(tasks);
 
-            if (winner.Result.Dialog?.Status == DialogResponse.DialogStatus.Question)
-            {
+                var winners = from result in results.Select((value, index) => new { value, index })
+                              let resultWinner = BestIntentFrom(result.value)
+                              where resultWinner != null
+                              select new LuisServiceResult(result.value, resultWinner, this.services[result.index]);
+
+                var winner = this.BestResultFrom(winners);
+
+                if (winner == null)
+                {
+                    throw new InvalidOperationException("No winning intent selected from Luis results.");
+                }
+
+                if (winner.Result.Dialog?.Status == DialogResponse.DialogStatus.Question)
+                {
 #pragma warning disable CS0618
-                var childDialog = await MakeLuisActionDialog(winner.LuisService,
-                    winner.Result.Dialog.ContextId,
-                    winner.Result.Dialog.Prompt);
+                    var childDialog = await MakeLuisActionDialog(winner.LuisService,
+                                                                 winner.Result.Dialog.ContextId,
+                                                                 winner.Result.Dialog.Prompt);
 #pragma warning restore CS0618
-                context.Call(childDialog, LuisActionDialogFinished);
+                    context.Call(childDialog, LuisActionDialogFinished);
+                }
+                else
+                {
+                    await DispatchToIntentHandler(context, item, winner.BestIntent, winner.Result);
+                }
             }
             else
             {
-                await DispatchToIntentHandler(context, item, winner.BestIntent, winner.Result);
+                var intent = new IntentRecommendation() { Intent = string.Empty, Score = 1.0 };
+                var result = new LuisResult() { TopScoringIntent = intent };
+                await DispatchToIntentHandler(context, item, intent, result);
             }
         }
 
         protected virtual async Task DispatchToIntentHandler(IDialogContext context,
-            IAwaitable<IMessageActivity> item,
-            IntentRecommendation bestIntent,
-            LuisResult result)
+                                                            IAwaitable<IMessageActivity> item,
+                                                            IntentRecommendation bestIntent,
+                                                            LuisResult result)
         {
             if (this.handlerByIntent == null)
             {
@@ -278,8 +287,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         [Obsolete("Action binding in LUIS should be replaced with code.")]
-        protected virtual async Task<IDialog<LuisResult>> MakeLuisActionDialog(ILuisService luisService,
-            string contextId, string prompt)
+        protected virtual async Task<IDialog<LuisResult>> MakeLuisActionDialog(ILuisService luisService, string contextId, string prompt)
         {
 #pragma warning disable CS0618
             return new LuisActionDialog(luisService, contextId, prompt);
@@ -289,7 +297,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         protected virtual async Task LuisActionDialogFinished(IDialogContext context, IAwaitable<LuisResult> item)
         {
             var result = await item;
-            var messageActivity = (IMessageActivity) context.Activity;
+            var messageActivity = (IMessageActivity)context.Activity;
             await DispatchToIntentHandler(context, Awaitable.FromItem(messageActivity), BestIntentFrom(result), result);
         }
     }
@@ -297,13 +305,13 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// The dialog wrapping Luis dialog feature.
     /// </summary>
-    [DataContract]
+    [Serializable]
     [Obsolete("Action binding in LUIS should be replaced with code.")]
     public class LuisActionDialog : IDialog<LuisResult>
     {
-        [DataMember] private readonly ILuisService luisService;
-        [DataMember] private string contextId;
-        [DataMember] private string prompt;
+        private readonly ILuisService luisService;
+        private string contextId;
+        private string prompt;
 
         /// <summary>
         /// Creates an instance of LuisActionDialog.
@@ -328,9 +336,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         protected virtual async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> item)
         {
             var message = await item;
-            var luisRequest = new LuisRequest(query: message.Text, contextId: this.contextId);
-            var result = await luisService.QueryAsync(luisService.BuildUri(luisService.ModifyRequest(luisRequest)),
-                context.CancellationToken);
+            var luisRequest = new LuisRequest(query: message.Text) { ContextId = this.contextId };
+            var result = await luisService.QueryAsync(luisService.BuildUri(luisService.ModifyRequest(luisRequest)), context.CancellationToken);
             if (result.Dialog.Status != DialogResponse.DialogStatus.Finished)
             {
                 this.contextId = result.Dialog.ContextId;
@@ -358,36 +365,57 @@ namespace Microsoft.Bot.Builder.Dialogs
             var methods = type.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             foreach (var method in methods)
             {
-                // CXuesong: We prefer an Exception-free approach. It's slightly faster than Exception-then-catch.
                 var intents = method.GetCustomAttributes<LuisIntentAttribute>(inherit: true).ToArray();
-                if (intents.Length == 0) continue;
-                IntentActivityHandler intentHandler;
-                if (method.IsGenericMethod)
-                    throw new InvalidIntentHandlerException("LUIS intent handler function shoud not be generic.",
-                        method);
-                var methodParams = method.GetParameters();
-                if (methodParams.Length == 2)
+                IntentActivityHandler intentHandler = null;
+
+                try
                 {
-                    // For compatibility
-                    var handler = (IntentHandler) method.CreateDelegate(typeof(IntentHandler), dialog);
-                    // thunk from new to old delegate type
-                    intentHandler = (context, message, result) => handler(context, result);
+                    intentHandler = (IntentActivityHandler)Delegate.CreateDelegate(typeof(IntentActivityHandler), dialog, method, throwOnBindFailure: false);
                 }
-                else if (methodParams.Length == 3)
+                catch (ArgumentException)
                 {
-                    intentHandler =
-                        (IntentActivityHandler) method.CreateDelegate(typeof(IntentActivityHandler), dialog);
+                    // "Cannot bind to the target method because its signature or security transparency is not compatible with that of the delegate type."
+                    // https://github.com/Microsoft/BotBuilder/issues/634
+                    // https://github.com/Microsoft/BotBuilder/issues/435
+                }
+
+                // fall back for compatibility
+                if (intentHandler == null)
+                {
+                    try
+                    {
+                        var handler = (IntentHandler)Delegate.CreateDelegate(typeof(IntentHandler), dialog, method, throwOnBindFailure: false);
+
+                        if (handler != null)
+                        {
+                            // thunk from new to old delegate type
+                            intentHandler = (context, message, result) => handler(context, result);
+                        }
+                    }
+                    catch (ArgumentException)
+                    {
+                        // "Cannot bind to the target method because its signature or security transparency is not compatible with that of the delegate type."
+                        // https://github.com/Microsoft/BotBuilder/issues/634
+                        // https://github.com/Microsoft/BotBuilder/issues/435
+                    }
+                }
+
+                if (intentHandler != null)
+                {
+                    var intentNames = intents.Select(i => i.IntentName).DefaultIfEmpty(method.Name);
+
+                    foreach (var intentName in intentNames)
+                    {
+                        var key = string.IsNullOrWhiteSpace(intentName) ? string.Empty : intentName;
+                        yield return new KeyValuePair<string, IntentActivityHandler>(intentName, intentHandler);
+                    }
                 }
                 else
                 {
-                    throw new InvalidIntentHandlerException("The method should have 2 or 3 parameters.", method);
-                }
-
-                var intentNames = intents.Select(i => i.IntentName).DefaultIfEmpty(method.Name);
-                foreach (var intentName in intentNames)
-                {
-                    var key = string.IsNullOrWhiteSpace(intentName) ? string.Empty : intentName;
-                    yield return new KeyValuePair<string, IntentActivityHandler>(intentName, intentHandler);
+                    if (intents.Length > 0)
+                    {
+                        throw new InvalidIntentHandlerException(string.Join(";", intents.Select(i => i.IntentName)), method);
+                    }
                 }
             }
         }

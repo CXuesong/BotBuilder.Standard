@@ -37,7 +37,6 @@ using Microsoft.Bot.Connector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -46,7 +45,6 @@ using System.Threading;
 using Microsoft.Bot.Builder.Dialogs;
 using System.Threading.Tasks;
 using System.Text;
-using Microsoft.Bot.Builder.Compatibility;
 
 namespace Microsoft.Bot.Builder.FormFlow
 {
@@ -61,7 +59,7 @@ namespace Microsoft.Bot.Builder.FormFlow
         {
             if (resourceAssembly == null)
             {
-                resourceAssembly = typeof(T).GetTypeInfo().Assembly;
+                resourceAssembly = typeof(T).Assembly;
             }
             if (resourceName == null)
             {
@@ -81,18 +79,8 @@ namespace Microsoft.Bot.Builder.FormFlow
                     return prompt;
                 };
             }
-            // TODO CXuesong: Maybe later we can emit the warning into ILogger
             var lang = resourceAssembly.GetCustomAttribute<NeutralResourcesLanguageAttribute>();
-            if (string.IsNullOrWhiteSpace(lang?.CultureName))
-            {
-#if DEBUG
-                if (resourceAssembly.GetManifestResourceNames().Length > 0)
-                    Debug.WriteLine(
-                        "FormBuilderBase+IForm, Warning: No NeutralResourcesLanguageAttribute found for assembly {0}. Will not localize the dialog.",
-                        resourceAssembly);
-#endif
-            }
-            else
+            if (lang != null && !string.IsNullOrWhiteSpace(lang.CultureName))
             {
                 IEnumerable<string> missing, extra;
                 string name = null;
@@ -105,26 +93,20 @@ namespace Microsoft.Bot.Builder.FormFlow
                         break;
                     }
                 }
-                if (name == null)
+                if (name != null)
                 {
-                    Debug.WriteLine(
-                        "FormBuilderBase+IForm, Warning: No Resource found for {0}. Will not localize the dialog.",
-                        resourceName);
-                } else {
                     var rm = new ResourceManager(name, resourceAssembly);
-                    var resourceSetEnumerator = rm.GetResourceSetEnumerator(CultureInfo.CurrentUICulture, true, true);
-                    _form.Localize(resourceSetEnumerator, out missing, out extra);
+                    var rs = rm.GetResourceSet(Thread.CurrentThread.CurrentUICulture, true, true);
+                    _form.Localize(rs.GetEnumerator(), out missing, out extra);
                     if (missing.Any())
                     {
-                        throw new MissingManifestResourceException($"Missing resource items: {missing}.");
+                        throw new MissingManifestResourceException($"Missing resources {missing}");
                     }
                 }
             }
             Validate();
             return this._form;
         }
-
-
 
         public FormConfiguration Configuration { get { return _form.Configuration; } }
 
@@ -333,13 +315,13 @@ namespace Microsoft.Bot.Builder.FormFlow
                 _resources.Save(writer);
             }
 
-            public override void Localize(IDictionaryEnumerator rm, out IEnumerable<string> missing, out IEnumerable<string> extra)
+            public override void Localize(IDictionaryEnumerator reader, out IEnumerable<string> missing, out IEnumerable<string> extra)
             {
                 foreach (var step in _steps)
                 {
                     step.SaveResources();
                 }
-                _resources = _resources.Load(rm, out missing, out extra);
+                _resources = _resources.Load(reader, out missing, out extra);
                 foreach (var step in _steps)
                 {
                     step.Localize();
@@ -488,7 +470,7 @@ namespace Microsoft.Bot.Builder.FormFlow
 
         private void TypePaths(Type type, string path, List<string> paths)
         {
-            if (type.GetTypeInfo().IsClass)
+            if (type.IsClass)
             {
                 if (type == typeof(string))
                 {
@@ -497,7 +479,7 @@ namespace Microsoft.Bot.Builder.FormFlow
                 else if (type.IsIEnumerable())
                 {
                     var elt = type.GetGenericElementType();
-                    if (elt.GetTypeInfo().IsEnum)
+                    if (elt.IsEnum)
                     {
                         paths.Add(path);
                     }
@@ -511,7 +493,7 @@ namespace Microsoft.Bot.Builder.FormFlow
                     FieldPaths(type, path, paths);
                 }
             }
-            else if (type.GetTypeInfo().IsEnum)
+            else if (type.IsEnum)
             {
                 paths.Add(path);
             }
@@ -527,7 +509,7 @@ namespace Microsoft.Bot.Builder.FormFlow
             {
                 paths.Add(path);
             }
-            else if (type.IsNullable() && type.GetTypeInfo().IsValueType)
+            else if (type.IsNullable() && type.IsValueType)
             {
                 paths.Add(path);
             }

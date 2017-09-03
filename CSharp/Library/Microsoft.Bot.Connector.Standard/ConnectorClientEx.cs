@@ -49,14 +49,14 @@ namespace Microsoft.Bot.Connector
         {
             this.Credentials = credentials;
         }
-
+        
         private static DelegatingHandler[] AddJwtTokenRefresher(DelegatingHandler[] srcHandlers, MicrosoftAppCredentials credentials)
         {
             var handlers = new List<DelegatingHandler>(srcHandlers);
             handlers.Add(new JwtTokenRefresher(credentials));
             return handlers.ToArray();
         }
-
+        
         // client defaults to sending the expect: continue header, which isn't very efficient, 
         partial void CustomInitialize()
         {

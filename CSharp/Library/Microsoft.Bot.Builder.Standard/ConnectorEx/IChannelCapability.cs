@@ -67,9 +67,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>True if the channel support number of buttons; false otherwise.</returns>
         bool SupportsKeyboards(int buttonCount);
 
-    /// <summary>
+        /// <summary>
         /// Indicates if channel is TTS enabled.
-    /// </summary>
+        /// </summary>
         /// <returns>True if channel support TTS and the bot can set <see cref="Connector.Activity.Speak"/>; false otherwise.</returns>
         bool SupportsSpeak();
 
@@ -92,12 +92,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         public bool NeedsInputHint()
         {
             return this.address.ChannelId == ChannelIds.Cortana;
-    }
+        }
 
         public bool SupportsKeyboards(int buttonCount)
         {
             switch (this.address.ChannelId)
-    {
+            {
                 case ChannelIds.Facebook:
                     return buttonCount <= 10;
                 case ChannelIds.Kik:
@@ -118,9 +118,9 @@ namespace Microsoft.Bot.Builder.Dialogs
     }
 
     public static class ChannelCapabilityEx
-        {
+    {
         public static bool ShouldSetInputHint(this IChannelCapability channelCapability, IMessageActivity activity)
-            {
+        {
             return channelCapability.NeedsInputHint()
                 && activity.Type == ActivityTypes.Message
                 && string.IsNullOrEmpty(activity.InputHint);

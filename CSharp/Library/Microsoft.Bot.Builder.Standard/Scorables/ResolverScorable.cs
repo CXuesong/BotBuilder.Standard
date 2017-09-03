@@ -34,7 +34,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,11 +57,11 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
         }
     }
 
-    [DataContract]
+    [Serializable]
     public abstract class ResolverScorable<OuterState, OuterScore, InnerState, InnerScore> : ScorableAggregator<IResolver, OuterState, OuterScore, IResolver, InnerState, InnerScore>
         where OuterState : ResolverScope<InnerScore>
     {
-        [DataMember] protected readonly IScorable<IResolver, InnerScore> inner;
+        protected readonly IScorable<IResolver, InnerScore> inner;
 
         public ResolverScorable(IScorable<IResolver, InnerScore> inner)
         {

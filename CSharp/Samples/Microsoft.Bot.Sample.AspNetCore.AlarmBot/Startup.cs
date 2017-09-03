@@ -50,7 +50,9 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot
             builder.Populate(services);
 
             // register the Bot Builder module
-            builder.RegisterModule(new DialogModule(new MicrosoftAppCredentials(Configuration)));
+            // Passed configuration section is used in ConnectorClientFactory.ctor.
+            builder.RegisterModule(new DialogModule(new MicrosoftAppCredentials(Configuration),
+                Configuration.GetSection("Conversation")));
             // register the alarm dependencies
             builder.RegisterModule(new AlarmModule());
 

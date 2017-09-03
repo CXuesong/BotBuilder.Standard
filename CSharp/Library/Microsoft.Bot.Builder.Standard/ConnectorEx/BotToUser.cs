@@ -32,16 +32,15 @@
 //
 
 using System;
-using Microsoft.Bot.Builder.Internals.Fibers;
-using Microsoft.Bot.Connector;
 using System.Collections.Generic;
-
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.ConnectorEx;
+using Microsoft.Bot.Builder.Internals.Fibers;
+using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder.Dialogs.Internals
 {
@@ -82,6 +81,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
         Task IBotToUser.PostAsync(IMessageActivity message, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
+        }
+    }
+
+    public sealed class PassBotToUser : IBotToUser
+    {
+        private readonly IBotToUser inner;
+        public PassBotToUser(IBotToUser inner)
+        {
+            SetField.NotNull(out this.inner, nameof(inner), inner);
+        }
+
+        IMessageActivity IBotToUser.MakeMessage()
+        {
+            return this.inner.MakeMessage();
+        }
+
+        async Task IBotToUser.PostAsync(IMessageActivity message, CancellationToken cancellationToken)
+        {
+            await this.inner.PostAsync(message, cancellationToken);
         }
     }
 
@@ -242,7 +260,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
             return message;
         }
     }
-    
+
 #pragma warning restore CS0618
 
     public sealed class SetLocalTimestampMapper : IMessageActivityMapper
@@ -279,7 +297,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
 
         public IMessageActivity MakeMessage()
         {
-            return this.inner.MakeMessage(); 
+            return this.inner.MakeMessage();
         }
     }
 

@@ -34,7 +34,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -47,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// A dialog specialized to dispatch an IScorable.
     /// </summary>
     /// <typeparam name="TResult">The result type.</typeparam>
-    [DataContract]
+    [Serializable]
     public class DispatchDialog<TResult> : Dispatcher, IDialog<TResult>
     {
         public virtual async Task StartAsync(IDialogContext context)
@@ -55,9 +54,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             context.Wait(ActivityReceivedAsync);
         }
 
-        //[NonSerialized]
+        [NonSerialized]
         private IReadOnlyList<object> services;
-
         protected override IReadOnlyList<object> MakeServices()
         {
             return this.services;
@@ -86,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// This non-generic dialog is intended for use as a top-level dialog that will not
     /// return to any calling parent dialog (and therefore the result type is object).
     /// </remarks>
-    [DataContract]
+    [Serializable]
     public class DispatchDialog : DispatchDialog<object>
     {
     }

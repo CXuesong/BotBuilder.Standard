@@ -36,7 +36,6 @@ using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -55,22 +54,22 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// The key that minimally and completely identifies a bot's conversation with a user on a channel. 
     /// </summary>
-    [DataContract]
+    [Serializable]
     public sealed class Address : IAddress, IEquatable<IAddress>
     {
         public static Address FromActivity(IActivity activity)
         {
             return new Address
-            (
-                // purposefully using named arguments because these all have the same type
-                botId: activity.Recipient.Id,
-                channelId: activity.ChannelId,
-                userId: activity.From.Id,
-                conversationId: activity.Conversation.Id,
-                serviceUrl: activity.ServiceUrl
-            );
+                (
+                    // purposefully using named arguments because these all have the same type
+                    botId: activity.Recipient.Id,
+                    channelId: activity.ChannelId,
+                    userId: activity.From.Id,
+                    conversationId: activity.Conversation.Id,
+                    serviceUrl: activity.ServiceUrl
+                );
         }
-        // CXuesong: This attribute is already here before my revision…
+
         [JsonConstructor]
         public Address(string botId, string channelId, string userId, string conversationId, string serviceUrl)
         {
@@ -86,30 +85,20 @@ namespace Microsoft.Bot.Builder.Dialogs
             this.ConversationId = conversationId;
             this.ServiceUrl = serviceUrl;
         }
-
-        [DataMember]
         public string BotId { get; }
-
-        [DataMember]
         public string ChannelId { get; }
-
-        [DataMember]
         public string UserId { get; }
-
-        [DataMember]
         public string ConversationId { get; }
-
-        [DataMember]
         public string ServiceUrl { get; }
 
         public bool Equals(IAddress other)
         {
             return other != null
-                   && object.Equals(this.BotId, other.BotId)
-                   && object.Equals(this.ChannelId, other.ChannelId)
-                   && object.Equals(this.UserId, other.UserId)
-                   && object.Equals(this.ConversationId, other.ConversationId)
-                   && object.Equals(this.ServiceUrl, other.ServiceUrl)
+                && object.Equals(this.BotId, other.BotId)
+                && object.Equals(this.ChannelId, other.ChannelId)
+                && object.Equals(this.UserId, other.UserId)
+                && object.Equals(this.ConversationId, other.ConversationId)
+                && object.Equals(this.ServiceUrl, other.ServiceUrl)
                 ;
         }
 
@@ -121,11 +110,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         public override int GetHashCode()
         {
             var code
-                    = this.BotId.GetHashCode()
-                      ^ this.ChannelId.GetHashCode()
-                      ^ this.UserId.GetHashCode()
-                      ^ this.ConversationId.GetHashCode()
-                      ^ this.ServiceUrl.GetHashCode()
+                = this.BotId.GetHashCode()
+                ^ this.ChannelId.GetHashCode()
+                ^ this.UserId.GetHashCode()
+                ^ this.ConversationId.GetHashCode()
+                ^ this.ServiceUrl.GetHashCode()
                 ;
 
             return code;

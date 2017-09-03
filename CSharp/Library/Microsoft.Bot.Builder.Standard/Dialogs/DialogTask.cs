@@ -34,8 +34,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -112,10 +110,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
         /// Adjust the calling convention from Dialog's to Fiber's delegates
         /// for IDialog.StartAsync.
         /// </summary>
-        [DataContract]
+        [Serializable]
         private sealed class ThunkStart : IThunk
         {
-            [DataMember] private readonly StartAsync start;
+            private readonly StartAsync start;
             public ThunkStart(StartAsync start)
             {
                 SetField.NotNull(out this.start, nameof(start), start);
@@ -123,7 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
 
             public override string ToString()
             {
-                return $"{this.start.Target}.{this.start.GetMethodInfo().Name}";
+                return $"{this.start.Target}.{this.start.Method.Name}";
             }
 
             Delegate IThunk.Method => this.start;
@@ -145,10 +143,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
         /// Adjust the calling convention from Dialog's to Fiber's delegates
         /// for IDialog's <see cref="ResumeAfter{T}"/>. 
         /// </summary>
-        [DataContract]
+        [Serializable]
         private sealed class ThunkResume<T> : IThunk
         {
-            [DataMember] private readonly ResumeAfter<T> resume;
+            private readonly ResumeAfter<T> resume;
             public ThunkResume(ResumeAfter<T> resume)
             {
                 SetField.NotNull(out this.resume, nameof(resume), resume);
@@ -156,7 +154,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
 
             public override string ToString()
             {
-                return $"{this.resume.Target}.{this.resume.GetMethodInfo().Name}";
+                return $"{this.resume.Target}.{this.resume.Method.Name}";
             }
 
             Delegate IThunk.Method => this.resume;
@@ -438,6 +436,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
         }
     }
 
+
     public sealed class QueueDrainingDialogTask : IPostToBot
     {
         private readonly IPostToBot inner;
@@ -457,6 +456,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
             await this.messageQueue.DrainQueueAsync(this.botToUser, token);
         }
     }
+
 
     /// <summary>
     /// This dialog task loads the dialog stack from <see cref="IBotData"/> before handling the incoming

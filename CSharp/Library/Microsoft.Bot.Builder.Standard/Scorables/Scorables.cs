@@ -36,12 +36,9 @@ using Microsoft.Bot.Builder.Scorables.Internals;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using Microsoft.Bot.Builder.Compatibility;
 using Microsoft.Bot.Builder.Luis;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Luis.Models;
@@ -102,7 +99,7 @@ namespace Microsoft.Bot.Builder.Scorables
             // complicated because IScorable<Item, Score> is variant on generic parameter,
             // so generic type arguments of NullScorable<,> may not match generic type
             // arguments of IScorable<,>
-            var type = scorable.GetType().GetTypeInfo();
+            var type = scorable.GetType();
             if (type.IsGenericType)
             {
                 var definition = type.GetGenericTypeDefinition();
@@ -214,7 +211,7 @@ namespace Microsoft.Bot.Builder.Scorables
 
 namespace Microsoft.Bot.Builder.Scorables.Internals
 {
-    [DataContract]
+    [Serializable]
     public sealed class NullScorable<Item, Score> : IScorable<Item, Score>
     {
         public static readonly IScorable<Item, Score> Instance = new NullScorable<Item, Score>();
@@ -249,10 +246,10 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
         }
     }
 
-    [DataContract]
+    [Serializable]
     public sealed class WhereScoreScorable<Item, Score> : DelegatingScorable<Item, Score>
     {
-        [DataMember] private readonly Func<Item, Score, bool> predicate;
+        private readonly Func<Item, Score, bool> predicate;
 
         public WhereScoreScorable(IScorable<Item, Score> scorable, Func<Item, Score, bool> predicate)
             : base(scorable)
@@ -275,11 +272,11 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
         }
     }
 
-    [DataContract]
+    [Serializable]
     public sealed class SelectItemScorable<OuterItem, InnerItem, Score> : ScorableAggregator<OuterItem, Token<InnerItem, Score>, Score, InnerItem, object, Score>
     {
-        [DataMember] private readonly IScorable<InnerItem, Score> scorable;
-        [DataMember] private readonly Func<OuterItem, InnerItem> selector;
+        private readonly IScorable<InnerItem, Score> scorable;
+        private readonly Func<OuterItem, InnerItem> selector;
 
         public SelectItemScorable(IScorable<InnerItem, Score> scorable, Func<OuterItem, InnerItem> selector)
         {
@@ -305,10 +302,10 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
         }
     }
 
-    [DataContract]
+    [Serializable]
     public sealed class SelectScoreScorable<Item, SourceScore, TargetScore> : DelegatingScorable<Item, SourceScore>, IScorable<Item, TargetScore>
     {
-        [DataMember] private readonly Func<Item, SourceScore, TargetScore> selector;
+        private readonly Func<Item, SourceScore, TargetScore> selector;
 
         public SelectScoreScorable(IScorable<Item, SourceScore> scorable, Func<Item, SourceScore, TargetScore> selector)
             : base(scorable)

@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.ConnectorEx
         /// Content type of keyboard card for <see cref="Attachment.ContentType"/>.
         /// </summary>
         public const string ContentType = "application/vnd.microsoft.card.keyboard";
-        
+
         /// <summary>
         /// Constructs an instance of the keyboard card.
         /// </summary>
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.ConnectorEx
             ContentType = contentType;
             Title = title;
             Payload = payload;
-            Image = image; 
+            Image = image;
         }
 
         [JsonProperty(PropertyName = "content_type")]
@@ -137,9 +137,9 @@ namespace Microsoft.Bot.Builder.ConnectorEx
 #pragma warning disable CS0618
         public static Attachment ToAttachment(this KeyboardCard keyboard)
         {
-            return  new Attachment
+            return new Attachment
             {
-                ContentType = KeyboardCard.ContentType, 
+                ContentType = KeyboardCard.ContentType,
                 Content = keyboard
             };
         }
@@ -159,7 +159,7 @@ namespace Microsoft.Bot.Builder.ConnectorEx
         /// <param name="keyboard"> The keyboard card.</param>
         public static FacebookMessage ToFacebookMessage(this KeyboardCard keyboard)
         {
-            return  new FacebookMessage(text: keyboard.Text, quickReplies: keyboard.Buttons.Select(b => b.ToFacebookQuickReply()).ToList());
+            return new FacebookMessage(text: keyboard.Text, quickReplies: keyboard.Buttons.Select(b => b.ToFacebookQuickReply()).ToList());
         }
 #pragma warning restore CS0618
 

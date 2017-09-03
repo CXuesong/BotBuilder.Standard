@@ -34,12 +34,9 @@
 using System;
 using System.Runtime.Serialization;
 
-// CXuesong: Unfortunately, currently there seems no way to properly serialize an exception.
-//           See https://github.com/dotnet/coreclr/issues/2715.
-
 namespace Microsoft.Bot.Builder.Internals.Fibers
 {
-    [DataContract]
+    [Serializable]
     public abstract class InvalidWaitException : InvalidOperationException
     {
         private readonly IWait wait;
@@ -51,9 +48,19 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
         {
             SetField.NotNull(out this.wait, nameof(wait), wait);
         }
+        protected InvalidWaitException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            SetField.NotNullFrom(out this.wait, nameof(this.wait), info);
+        }
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+            info.AddValue(nameof(this.wait), wait);
+        }
     }
 
-    [DataContract]
+    [Serializable]
     public sealed class InvalidNeedException : InvalidWaitException
     {
         private readonly Need need;
@@ -67,9 +74,22 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             this.need = need;
             this.have = wait.Need;
         }
+        private InvalidNeedException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            this.need = (Need)info.GetValue(nameof(this.need), typeof(Need));
+            this.have = (Need)info.GetValue(nameof(this.have), typeof(Need));
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+            info.AddValue(nameof(this.need), this.need);
+            info.AddValue(nameof(this.have), this.have);
+        }
     }
 
-    [DataContract]
+    [Serializable]
     public sealed class InvalidTypeException : InvalidWaitException
     {
         private readonly Type type;
@@ -79,25 +99,44 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
         {
             SetField.NotNull(out this.type, nameof(type), type);
         }
+        private InvalidTypeException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            SetField.NotNullFrom(out this.type, nameof(this.type), info);
+        }
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+            info.AddValue(nameof(this.type), type);
+        }
     }
 
-    [DataContract]
+    [Serializable]
     public sealed class InvalidNextException : InvalidWaitException
     {
         public InvalidNextException(IWait wait)
             : base($"invalid next: {wait}", wait)
         {
         }
+        private InvalidNextException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
     }
 
+    [Serializable]
     public sealed class ClosureCaptureException : SerializationException
     {
+        [NonSerialized]
         public readonly object Instance;
-
         public ClosureCaptureException(object instance)
             : base($"anonymous method closures that capture the environment are not serializable, consider removing environment capture or using a reflection serialization surrogate: {instance}")
         {
             this.Instance = instance;
+        }
+        private ClosureCaptureException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
         }
     }
 }

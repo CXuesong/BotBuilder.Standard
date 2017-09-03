@@ -37,7 +37,9 @@ namespace Microsoft.Bot.Sample.AspNetCore.Echo
                 _.GetService<ILoggerFactory>().CreateLogger<MicrosoftAppCredentials>()));
             services.AddSingleton(_ =>
             {
-                var c = new Conversation(_.GetService<MicrosoftAppCredentials>());
+                // Passed configuration section is used in ConnectorClientFactory.ctor.
+                var c = new Conversation(_.GetService<MicrosoftAppCredentials>(),
+                    Configuration.GetSection("Conversation"));
                 MessagesController.ConfigureConversation(c);
                 return c;
             });

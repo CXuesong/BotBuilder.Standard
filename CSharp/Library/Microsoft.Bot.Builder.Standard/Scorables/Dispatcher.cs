@@ -41,7 +41,6 @@ using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.Bot.Builder.Scorables.Internals;
 using Microsoft.Bot.Builder.Luis;
-using System.Runtime.Serialization;
 
 namespace Microsoft.Bot.Builder.Scorables
 {
@@ -50,7 +49,7 @@ namespace Microsoft.Bot.Builder.Scorables
         Task<bool> TryPostAsync(CancellationToken token);
     }
 
-    [DataContract]
+    [Serializable]
     public class Dispatcher : IDispatcher
     {
         protected virtual IReadOnlyList<object> MakeServices()
@@ -81,7 +80,7 @@ namespace Microsoft.Bot.Builder.Scorables
             return new Regex(pattern);
         }
 
-        [DataMember] private bool continueAfterPost;
+        private bool continueAfterPost;
 
         protected void ContinueWithNextGroup()
         {

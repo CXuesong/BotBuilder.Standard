@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// The root of the exception hierarchy related to <see cref="Internals.IDialogStack"/> .
     /// </summary>
-    //[Serializable]
+    [Serializable]
     public abstract class DialogStackException : Exception
     {
         /// <summary>
@@ -55,16 +55,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             : base(message, inner)
         {
         }
-        //protected DialogStackException(SerializationInfo info, StreamingContext context)
-        //    : base(info, context)
-        //{
-        //}
+        protected DialogStackException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
     }
 
     /// <summary>
     /// The exception representing no resume handler specified for the dialog stack.
     /// </summary>
-    //[Serializable]
+    [Serializable]
     public sealed class NoResumeHandlerException : DialogStackException
     {
         /// <summary>
@@ -75,16 +75,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             : base("IDialog method execution finished with no resume handler specified through IDialogStack.", inner)
         {
         }
-        //private NoResumeHandlerException(SerializationInfo info, StreamingContext context)
-        //    : base(info, context)
-        //{
-        //}
+        private NoResumeHandlerException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
     }
 
     /// <summary>
     /// The exception representing multiple resume handlers specified for the dialog stack.
     /// </summary>
-    //[Serializable]
+    [Serializable]
     public sealed class MultipleResumeHandlerException : DialogStackException
     {
         /// <summary>
@@ -95,16 +95,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             : base("IDialog method execution finished with multiple resume handlers specified through IDialogStack.", inner)
         {
         }
-        //private MultipleResumeHandlerException(SerializationInfo info, StreamingContext context)
-        //    : base(info, context)
-        //{
-        //}
+        private MultipleResumeHandlerException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
     }
 
     /// <summary>
     /// The root of the exception hierarchy related to prompts.
     /// </summary>
-    //[Serializable]
+    [Serializable]
     public abstract class PromptException : Exception
     {
         /// <summary>
@@ -115,16 +115,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             : base(message)
         {
         }
-        //protected PromptException(SerializationInfo info, StreamingContext context)
-        //    : base(info, context)
-        //{
-        //}
+        protected PromptException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
     }
 
     /// <summary>
     /// The exception representing too many attempts by the user to answer the question asked by the prompt.
     /// </summary>
-    //[Serializable]
+    [Serializable]
     public sealed class TooManyAttemptsException : PromptException
     {
         /// <summary>
@@ -135,9 +135,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             : base(message)
         {
         }
-        //private TooManyAttemptsException(SerializationInfo info, StreamingContext context)
-        //    : base(info, context)
-        //{
-        //}
+        private TooManyAttemptsException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
     }
 }

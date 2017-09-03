@@ -30,7 +30,6 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Microsoft.Bot.Builder.FormFlow.Advanced;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,7 +83,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
                 }
             }
             // Convert value types to null if appropriate
-            return (ftype.GetTypeInfo().IsEnum
+            return (ftype.IsEnum
                 ? ((int)current == 0 ? null : current)
                 : (ftype == typeof(DateTime) && ((DateTime)current) == DateTime.MinValue)
                     ? null
@@ -123,7 +122,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
                     {
                         if (value == null)
                         {
-                            if (!ftype.IsNullable() && (ftype.GetTypeInfo().IsEnum || ftype.IsIntegral() || ftype.IsDouble()))
+                            if (!ftype.IsNullable() && (ftype.IsEnum || ftype.IsIntegral() || ftype.IsDouble()))
                             {
                                 // Null value for non-nullable numbers and enums is 0
                                 newValue = 0;
@@ -184,7 +183,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
             {
                 var step = _path.Last();
                 var ftype = StepType(step);
-                if (ftype.GetTypeInfo().IsValueType && ftype.GetTypeInfo().IsEnum)
+                if (ftype.IsValueType && ftype.IsEnum)
                 {
                     unknown = ((int)value == 0);
                 }
@@ -206,7 +205,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
             var field = step as FieldInfo;
             var prop = step as PropertyInfo;
             var ftype = StepType(step);
-            if (ftype.GetTypeInfo().IsEnum)
+            if (ftype.IsEnum)
             {
                 SetValue(state, 0);
             }
@@ -261,11 +260,11 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
                     _keepZero = true;
                     ftype = Nullable.GetUnderlyingType(ftype);
                 }
-                else if (ftype.GetTypeInfo().IsEnum || ftype.GetTypeInfo().IsClass)
+                else if (ftype.IsEnum || ftype.IsClass)
                 {
                     _isNullable = true;
                 }
-                if (ftype.GetTypeInfo().IsClass)
+                if (ftype.IsClass)
                 {
                     if (ftype == typeof(string))
                     {
@@ -278,7 +277,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
                         _type = elt;
                         _allowsMultiple = true;
                         ProcessFieldAttributes(field);
-                        if (elt.GetTypeInfo().IsEnum)
+                        if (elt.IsEnum)
                         {
                             ProcessEnumAttributes(elt);
                         }
@@ -290,7 +289,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
                 }
                 else
                 {
-                    if (ftype.GetTypeInfo().IsEnum)
+                    if (ftype.IsEnum)
                     {
                         ProcessFieldAttributes(field);
                         ProcessEnumAttributes(ftype);
@@ -336,9 +335,9 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         {
             if (!_ignoreAnnotations)
             {
-                foreach (var attribute in type.GetTypeInfo().GetCustomAttributes<TemplateAttribute>())
+                foreach (var attribute in type.GetCustomAttributes(typeof(TemplateAttribute)))
                 {
-                    AddTemplate(attribute);
+                    AddTemplate((TemplateAttribute)attribute);
                 }
             }
         }
@@ -372,7 +371,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
                 }
                 else
                 {
-                    _terms = new TermsAttribute(Language.GenerateTerms(Language.CamelCase(name), 3));
+                    _terms = new TermsAttribute(Language.GenerateTerms((string.IsNullOrWhiteSpace(_description.Description) ? Language.CamelCase(name) : _description.Description), 3));
                 }
 
                 if (prompt != null)

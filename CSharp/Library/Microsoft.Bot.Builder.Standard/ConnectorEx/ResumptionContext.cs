@@ -1,14 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
-using System.Runtime.Serialization.Formatters;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Internals.Fibers;
 using Microsoft.Bot.Connector;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.ConnectorEx
 {
@@ -91,14 +90,12 @@ namespace Microsoft.Bot.Builder.ConnectorEx
         /// <returns> An instance of <see cref="ConversationReference"/></returns>
         public static ConversationReference GZipDeserialize(string str)
         {
-            // CXuesong: It seems that ConversationReference is for JSON…
             byte[] bytes = Convert.FromBase64String(str);
 
             using (var stream = new MemoryStream(bytes))
             using (var gz = new GZipStream(stream, CompressionMode.Decompress))
-            using (var reader = new StreamReader(gz))
             {
-                return JsonConvert.DeserializeObject<ConversationReference>(reader.ReadToEnd());
+                return (ConversationReference)(new BinaryFormatter().Deserialize(gz));
             }
         }
     }
@@ -166,12 +163,10 @@ namespace Microsoft.Bot.Builder.ConnectorEx
         public static string GZipSerialize(this ConversationReference conversationReference)
         {
             using (var cmpStream = new MemoryStream())
+            using (var stream = new GZipStream(cmpStream, CompressionMode.Compress))
             {
-                using (var stream = new GZipStream(cmpStream, CompressionMode.Compress))
-                using (var writer = new StreamWriter(stream))
-                {
-                    writer.Write(JsonConvert.SerializeObject(conversationReference));
-                }
+                new BinaryFormatter().Serialize(stream, conversationReference);
+                stream.Close();
                 return Convert.ToBase64String(cmpStream.ToArray());
             }
         }

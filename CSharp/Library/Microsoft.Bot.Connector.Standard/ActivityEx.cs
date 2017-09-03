@@ -281,14 +281,14 @@ namespace Microsoft.Bot.Connector
             {
                 if (activity.ChannelData == null)
                 {
-            return false;
-        }
+                    return false;
+                }
 
                 instance = GetChannelData<TypeT>(activity);
                 return true;
             }
             catch
-        {
+            {
                 return false;
             }
         }
@@ -333,9 +333,9 @@ namespace Microsoft.Bot.Connector
         public static string RemoveMentionText(this IMessageActivity activity, string id)
         {
             foreach (var mention in activity.GetMentions().Where(mention => mention.Mentioned.Id == id))
-        {
+            {
                 activity.Text = Regex.Replace(activity.Text, mention.Text, "", RegexOptions.IgnoreCase);
-        }
+            }
             return activity.Text;
         }
     }

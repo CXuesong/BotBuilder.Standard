@@ -31,22 +31,22 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using Microsoft.Bot.Builder.Internals.Fibers;
-using Microsoft.Bot.Connector;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.Bot.Builder.Base;
 using Microsoft.Bot.Builder.ConnectorEx;
+using Microsoft.Bot.Builder.Internals.Fibers;
+using Microsoft.Bot.Connector;
 using Microsoft.Rest;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Internals
 {
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
         /// <param name="botStoreType">The bot store type.</param>
         /// <param name="data"> The data that should be saved.</param>
         /// <param name="cancellationToken"> The cancellation token.</param>
-        /// <returns>throw <see cref="HttpOperationException"/> if update fails</returns>
+        /// <returns>throw HttpException(HttpStatusCode.PreconditionFailed) if update fails</returns>
         Task SaveAsync(IAddress key, BotStoreType botStoreType, T data, CancellationToken cancellationToken);
         Task<bool> FlushAsync(IAddress key, CancellationToken cancellationToken);
     }
@@ -141,6 +141,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
         {
             if (botData.ETag != "*" && Deserialize(value).ETag != botData.ETag)
             {
+                // CXuesong: We do not have HttpOperationException here.
                 throw new HttpOperationException("Inconsistent SaveAsync based on ETag!");
             }
         }
@@ -174,8 +175,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
             {
                 var serializedJSon = JsonConvert.SerializeObject(data);
                 streamWriter.Write(serializedJSon);
-                streamWriter.Dispose();
-                stream.Dispose();
+                streamWriter.Close();
+                stream.Close();
                 return Convert.ToBase64String(cmpStream.ToArray());
             }
         }
@@ -453,7 +454,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
         private readonly ILocaleFinder localeFinder;
         private readonly IActivity activity;
 
-        
+
         public DialogTaskManagerBotDataLoader(IBotData inner, IDialogTaskManager dialogTaskManager, IActivity activity, ILocaleFinder localeFinder)
         {
             SetField.NotNull(out this.inner, nameof(inner), inner);
@@ -474,8 +475,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
             // the serialized instance.
             using (var localeScope = new LocalizedScope(locale))
             {
-            await this.dialogTaskManager.LoadDialogTasks(token);
-        }
+                await this.dialogTaskManager.LoadDialogTasks(token);
+            }
         }
 
         public async Task FlushAsync(CancellationToken token)
@@ -484,7 +485,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
             await this.inner.FlushAsync(token);
         }
     }
-    
+
     public abstract class BotDataBase<T> : IBotData
     {
         protected readonly IBotDataStore<BotData> botDataStore;
@@ -723,11 +724,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Internals
             this.bag.SetValue(this.key, blob);
         }
 
-        /// <inheritdoc />
-        protected override void Dispose(bool disposing)
+        public override void Close()
         {
-            if (disposing) this.Flush();
-            base.Dispose(disposing);
+            this.Flush();
+            base.Close();
         }
     }
 }

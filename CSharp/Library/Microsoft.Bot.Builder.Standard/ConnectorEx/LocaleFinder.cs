@@ -41,29 +41,29 @@ namespace Microsoft.Bot.Builder.ConnectorEx
         {
             if (string.IsNullOrEmpty(this.locale))
             {
-            var resumptionData = await this.resumptionContext.LoadDataAsync(token);
+                var resumptionData = await this.resumptionContext.LoadDataAsync(token);
 
-            if (resumptionData != null && resumptionData.IsTrustedServiceUrl)
-            {
-                MicrosoftAppCredentials.TrustServiceUrl(this.conversationReference.ServiceUrl);
-            }
+                if (resumptionData != null && resumptionData.IsTrustedServiceUrl)
+                {
+                    MicrosoftAppCredentials.TrustServiceUrl(this.conversationReference.ServiceUrl);
+                }
 
                 this.locale = (activity as IMessageActivity)?.Locale;
 
-            // if locale is null or whitespace in the incoming request,
-            // try to set it from the ResumptionContext
+                // if locale is null or whitespace in the incoming request,
+                // try to set it from the ResumptionContext
                 if (string.IsNullOrWhiteSpace(this.locale))
-            {
+                {
                     this.locale = resumptionData?.Locale;
-            }
+                }
 
-            // persist resumptionData with updated information
-            var data = new ResumptionData
-            {
+                // persist resumptionData with updated information
+                var data = new ResumptionData
+                {
                     Locale = this.locale,
-                IsTrustedServiceUrl = MicrosoftAppCredentials.IsTrustedServiceUrl(this.conversationReference.ServiceUrl)
-            };
-            await this.resumptionContext.SaveDataAsync(data, token);
+                    IsTrustedServiceUrl = MicrosoftAppCredentials.IsTrustedServiceUrl(this.conversationReference.ServiceUrl)
+                };
+                await this.resumptionContext.SaveDataAsync(data, token);
             }
             return this.locale;
         }

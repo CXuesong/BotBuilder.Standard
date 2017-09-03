@@ -33,7 +33,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder.Scorables.Internals
@@ -73,19 +72,19 @@ namespace Microsoft.Bot.Builder.Scorables.Internals
                     {
                         if (activity.Type != null)
                         {
-                        // then make sure the IActivity.Type allows the desired type
-                        Type allowedType;
-                        if (TypeByName.TryGetValue(activity.Type, out allowedType))
-                        {
-                            if (type.IsAssignableFrom(allowedType))
+                            // then make sure the IActivity.Type allows the desired type
+                            Type allowedType;
+                            if (TypeByName.TryGetValue(activity.Type, out allowedType))
                             {
-                                // and make sure the actual CLR type also allows the desired type
-                                // (this is true most of the time since Activity implements all of the interfaces)
-                                Type clrType = activity.GetType();
-                                if (allowedType.IsAssignableFrom(clrType))
+                                if (type.IsAssignableFrom(allowedType))
                                 {
-                                    value = activity;
-                                    return true;
+                                    // and make sure the actual CLR type also allows the desired type
+                                    // (this is true most of the time since Activity implements all of the interfaces)
+                                    Type clrType = activity.GetType();
+                                    if (allowedType.IsAssignableFrom(clrType))
+                                    {
+                                        value = activity;
+                                        return true;
                                     }
                                 }
                             }

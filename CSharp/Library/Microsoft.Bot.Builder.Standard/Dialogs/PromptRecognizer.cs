@@ -7,7 +7,6 @@ using System.Resources;
 using System.Globalization;
 using Microsoft.Bot.Builder.Dialogs.Internals;
 using System.Collections.Concurrent;
-using System.Runtime.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -148,7 +147,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
     internal class ResourcesCache<T> : ConcurrentDictionary<string, LocalizedDictionary<T>> { }
 
-    [DataContract]
+    [Serializable]
     public class PromptRecognizer : IPromptRecognizer
     {
         private const string ResourceKeyCardinals = "NumberTerms";

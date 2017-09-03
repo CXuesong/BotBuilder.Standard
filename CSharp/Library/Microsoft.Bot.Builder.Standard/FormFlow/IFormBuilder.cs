@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.FormFlow
     /// <item>A prompt sent to the user where the response is to fill in a form state value.</item>
     /// <item>A confirmation of the current state with the user.</item>
     /// </list>
-    /// By default the steps are executed in the order of the <see cref="Message"/>, <see cref="Field{T}"/> and <see cref="Confirm"/> calls.
+    /// By default the steps are executed in the order of the <see cref="Message"/>, <see cref="Field"/> and <see cref="Confirm"/> calls.
     /// If you do not take explicit control, the steps will be executed in the order defined in the 
     /// form state with a final confirmation.
     /// This interface allows you to flently build a form by composing together fields,

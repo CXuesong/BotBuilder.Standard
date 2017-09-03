@@ -34,7 +34,6 @@
 using Microsoft.Bot.Builder.Resource;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -189,7 +188,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         /// <returns>Enumeration of plural word regex.</returns>
         public static IEnumerable<string> OptionalPlurals(IEnumerable<string> words)
         {
-            bool addS = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "en";
+            bool addS = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName == "en";
             foreach (var original in words)
             {
                 var word = original.ToLower();
@@ -247,7 +246,7 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         /// </remarks>
         public static string ANormalization(string input)
         {
-            if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "en")
+            if (System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName == "en")
             {
                 var builder = new StringBuilder();
                 var last = 0;
@@ -304,7 +303,6 @@ namespace Microsoft.Bot.Builder.FormFlow.Advanced
         /// <returns>   A normalized string. </returns>
         public static string Normalize(string value, CaseNormalization normalization)
         {
-            if (value == null) throw new ArgumentNullException(nameof(value));
             switch (normalization)
             {
                 case CaseNormalization.InitialUpper:

@@ -5,7 +5,7 @@
     <AssemblyName>Microsoft.Bot.Builder</AssemblyName>
     <RootNamespace>Microsoft.Bot.Builder</RootNamespace>
     <PackageId>CXuesong.Ported.Microsoft.Bot.Builder</PackageId>
-    <Version>3.9.0</Version>
+    <Version>3.9.0-int0</Version>
     <Authors>Microsoft (Original), CXuesong (Ported)</Authors>
     <Company />
     <Product>Microsoft Bot Builder</Product>

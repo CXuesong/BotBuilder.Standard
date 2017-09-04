@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <AssemblyTitle>Microsoft.Bot.Connector</AssemblyTitle>
-    <VersionPrefix>3.5.1</VersionPrefix>
+    <Version>3.9.0-int0</Version>
     <TargetFramework>netstandard1.6</TargetFramework>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -20,7 +20,6 @@ This library implements C# classes for using the Bot Framework Connector REST AP
     <RepositoryUrl>https://github.com/CXuesong/BotBuilder.Standard</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>See https://github.com/CXuesong/BotBuilder.Standard/releases .</PackageReleaseNotes>
-    <Version>3.8.1</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 

@@ -8,7 +8,7 @@
     <Authors>Microsoft (Original), CXuesong (Ported)</Authors>
     <Company />
     <Product>Microsoft Bot Builder</Product>
-    <Version>3.5.1</Version>
+    <Version>3.9.0-int0</Version>
     <Description>This is an unofficial ported version of Microsoft's Microsoft.Bot.Builder.FormFlow.Json package.</Description>
     <PackageProjectUrl>https://github.com/CXuesong/BotBuilder.Standard</PackageProjectUrl>
     <RepositoryUrl>https://github.com/CXuesong/BotBuilder.Standard</RepositoryUrl>

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.4</TargetFramework>
     <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
-    <Version>3.8.1</Version>
+    <Version>3.9.0-int0</Version>
     <Description>This is an unofficial ported version of Microsoft's Microsoft.Bot.Connector package, to use it with Asp.Net Core, please install CXuesong.Ported.Microsoft.Bot.Connector.AspNetCore instead of this.
 This library implements C# classes for using the Bot Framework Connector REST API.</Description>
     <PackageProjectUrl>https://github.com/CXuesong/BotBuilder.Standard</PackageProjectUrl>

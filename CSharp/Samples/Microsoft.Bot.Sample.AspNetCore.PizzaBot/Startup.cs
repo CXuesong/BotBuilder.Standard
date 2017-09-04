@@ -32,7 +32,8 @@ namespace Microsoft.Bot.Sample.AspNetCore.PizzaBot
             // Authentication for Microsoft Bot Framework.
             services.AddSingleton(_ => new MicrosoftAppCredentials(Configuration,
                 _.GetService<ILoggerFactory>().CreateLogger<MicrosoftAppCredentials>()));
-            services.AddSingleton<Conversation>();
+            services.AddSingleton(_ => new Conversation(_.GetService<MicrosoftAppCredentials>(),
+                Configuration.GetSection("Conversation")));
 
             // Add framework services.
             services.AddMvc(options =>

@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector;
 using Microsoft.Bot.Builder.Dialogs.Internals;
 using Microsoft.Bot.Builder.Internals.Fibers;
+using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models
 {
@@ -20,11 +19,11 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models
     {
     }
 
-    [DataContract]
+    [Serializable]
     public sealed class AlarmService : IAlarmService
     {
-        [DataMember] private readonly IAlarmScheduler scheduler;
-        [DataMember] private readonly ConversationReference cookie;
+        private readonly IAlarmScheduler scheduler;
+        private readonly ConversationReference cookie;
         public AlarmService(IAlarmScheduler scheduler, ConversationReference cookie)
         {
             SetField.NotNull(out this.scheduler, nameof(scheduler), scheduler);

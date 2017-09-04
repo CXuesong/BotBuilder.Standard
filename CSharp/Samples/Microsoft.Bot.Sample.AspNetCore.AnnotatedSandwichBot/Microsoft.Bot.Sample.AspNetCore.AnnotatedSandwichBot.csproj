@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="AnnotatedSandwich.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="1.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.1" />
@@ -32,15 +36,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Resource\DynamicSandwich.Designer.cs">
-      <DependentUpon>DynamicSandwich.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
+      <DependentUpon>DynamicSandwich.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resource\Microsoft.Bot.Sample.JsonSandwichBot.SandwichOrder.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Microsoft.Bot.Sample.JsonSandwichBot.SandwichOrder.resx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Resource\DynamicSandwich.resx">
-      <LastGenOutput>DynamicSandwich.Designer.cs</LastGenOutput>
       <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>DynamicSandwich.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Resource\Microsoft.Bot.Sample.JsonSandwichBot.SandwichOrder.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

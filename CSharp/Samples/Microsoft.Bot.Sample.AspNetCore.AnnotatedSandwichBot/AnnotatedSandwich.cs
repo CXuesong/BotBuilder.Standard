@@ -5,14 +5,13 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Threading;
-using Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot.Resource;
-using Newtonsoft.Json.Linq;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.FormFlow;
 using Microsoft.Bot.Builder.FormFlow.Advanced;
-using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.FormFlow.Json;
+using Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot.Resource;
+using Newtonsoft.Json.Linq;
 
 #pragma warning disable 649
 
@@ -56,7 +55,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot
         Mustard, Oil, Pepper, Ranch, SweetOnion, Vinegar
     };
 
-    [DataContract]
+    [Serializable]
     [Template(TemplateUsage.NotUnderstood, "I do not understand \"{0}\".", "Try again, I don't get \"{0}\".")]
     [Template(TemplateUsage.EnumSelectOne, "What kind of {&} would you like on your sandwich? {||}")]
     // [Template(TemplateUsage.EnumSelectOne, "What kind of {&} would you like on your sandwich? {||}", ChoiceStyle = ChoiceStyleOptions.PerLine)]
@@ -66,51 +65,41 @@ namespace Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot
         [Describe(Image = @"https://placeholdit.imgix.net/~text?txtsize=16&txt=Sandwich&w=125&h=40&txttrack=0&txtclr=000&txtfont=bold")]
         // [Prompt("What kind of {&} would you like? {||}", ChoiceFormat ="{1}")]
         // [Prompt("What kind of {&} would you like?")]
-        [DataMember]
         public SandwichOptions? Sandwich;
 
         [Prompt("What size of sandwich do you want? {||}")]
-        [DataMember]
         public LengthOptions? Length;
 
         // Specify Title and SubTitle if generating cards
         [Describe(Title = "Sandwich Bot", SubTitle = "Bread Picker")]
-        [DataMember]
         public BreadOptions? Bread;
 
         // An optional annotation means that it is possible to not make a choice in the field.
         [Optional]
-        [DataMember]
         public CheeseOptions? Cheese;
 
         [Optional]
-        [DataMember]
         public List<ToppingOptions> Toppings { get; set; }
 
         [Optional]
-        [DataMember]
         public List<SauceOptions> Sauces;
 
         [Optional]
         [Template(TemplateUsage.NoPreference, "None")]
-        [DataMember]
         public string Specials;
 
-        [DataMember] public string DeliveryAddress;
+        public string DeliveryAddress;
 
         [Pattern(@"(\(\d{3}\))?\s*\d{3}(-|\s*)\d{4}")]
-        [DataMember]
         public string PhoneNumber;
 
         [Optional]
         [Template(TemplateUsage.StatusFormat, "{&}: {:t}", FieldCase = CaseNormalization.None)]
-        [DataMember]
         public DateTime? DeliveryTime;
 
         [Numeric(1, 5)]
         [Optional]
         [Describe("your experience today")]
-        [DataMember]
         public double? Rating;
 
         public static IForm<SandwichOrder> BuildForm()
@@ -185,7 +174,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot
 
         public static IForm<JObject> BuildJsonForm()
         {
-            using (var stream = typeof(SandwichOrder).GetTypeInfo().Assembly.GetManifestResourceStream("Microsoft.Bot.Sample.AnnotatedSandwichBot.AnnotatedSandwich.json"))
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Microsoft.Bot.Sample.AnnotatedSandwichBot.AnnotatedSandwich.json"))
             {
                 var schema = JObject.Parse(new StreamReader(stream).ReadToEnd());
                 return new FormBuilderJson(schema)
@@ -196,7 +185,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot
 
         public static IForm<JObject> BuildJsonFormExplicit()
         {
-            using (var stream = typeof(SandwichOrder).GetTypeInfo().Assembly.GetManifestResourceStream("Microsoft.Bot.Sample.AnnotatedSandwichBot.AnnotatedSandwich.json"))
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Microsoft.Bot.Sample.AnnotatedSandwichBot.AnnotatedSandwich.json"))
             {
                 var schema = JObject.Parse(new StreamReader(stream).ReadToEnd());
                 OnCompletionAsyncDelegate<JObject> processOrder = async (context, state) =>
@@ -281,7 +270,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot
 
         public static IForm<SandwichOrder> BuildLocalizedForm()
         {
-            var culture = CultureInfo.CurrentUICulture;
+            var culture = Thread.CurrentThread.CurrentUICulture;
             IForm<SandwichOrder> form;
             if (!_forms.TryGetValue(culture, out form))
             {
@@ -300,8 +289,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot
                         .Field(nameof(Toppings),
                             validate: async (state, value) =>
                             {
-                                // CXuesong: Fix for Microsoft/BotBuilder#2780
-                                var values = ((List<object>)value)?.OfType<ToppingOptions>();
+                                var values = ((List<object>)value).OfType<ToppingOptions>();
                                 var result = new ValidateResult { IsValid = true, Value = values };
                                 if (values != null && values.Contains(ToppingOptions.Everything))
                                 {

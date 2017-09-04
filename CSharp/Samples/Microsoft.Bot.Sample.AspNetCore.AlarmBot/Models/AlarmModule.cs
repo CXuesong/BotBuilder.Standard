@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Reflection;
-using Microsoft.Bot.Connector;
-using Microsoft.Bot.Sample.AspNetCore.AlarmBot.Dialogs;
 using Autofac;
-using Microsoft.Bot.Builder.Luis;
-using Microsoft.Bot.Builder.Internals.Fibers;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Internals;
+using Microsoft.Bot.Builder.Internals.Fibers;
+using Microsoft.Bot.Builder.Luis;
+using Microsoft.Bot.Connector;
+using Microsoft.Bot.Sample.AspNetCore.AlarmBot.Dialogs;
 
 namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models
 {
     /// <summary>
     /// These are the services (and their dependency structure) for the alarm sample.
     /// </summary>
-    public sealed class AlarmModule : Autofac.Module
+    public sealed class AlarmModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {
@@ -36,8 +35,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models
             builder.RegisterType<NaiveAlarmScheduler>().Keyed<IAlarmScheduler>(FiberModule.Key_DoNotSerialize).AsImplementedInterfaces().SingleInstance();
 
             // register some objects dependent on the incoming message
-            builder.Register(c => new RenderingAlarmService(new AlarmService(c.Resolve<IAlarmScheduler>(), c.Resolve<ConversationReference>()), c.Resolve<Func<IAlarmRenderer>>(), c.Resolve<IBotToUser>(), c.Resolve<IClock>()))
-                .Keyed<IAlarmService>(FiberModule.Key_DoNotSerialize).AsImplementedInterfaces().InstancePerMatchingLifetimeScope(DialogModule.LifetimeScopeTag);
+            builder.Register(c => new RenderingAlarmService(new AlarmService(c.Resolve<IAlarmScheduler>(), c.Resolve<ConversationReference>()), c.Resolve<Func<IAlarmRenderer>>(), c.Resolve<IBotToUser>(), c.Resolve<IClock>())).Keyed<IAlarmService>(FiberModule.Key_DoNotSerialize).AsImplementedInterfaces().InstancePerMatchingLifetimeScope(DialogModule.LifetimeScopeTag);
             builder.RegisterType<AlarmScorable>().Keyed<AlarmScorable>(FiberModule.Key_DoNotSerialize).AsImplementedInterfaces().InstancePerMatchingLifetimeScope(DialogModule.LifetimeScopeTag);
             builder.RegisterType<AlarmRenderer>().Keyed<IAlarmRenderer>(FiberModule.Key_DoNotSerialize).AsImplementedInterfaces().InstancePerMatchingLifetimeScope(DialogModule.LifetimeScopeTag);
         }

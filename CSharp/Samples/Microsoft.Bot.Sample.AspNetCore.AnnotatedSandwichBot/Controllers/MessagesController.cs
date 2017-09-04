@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Bot.Connector;
-using Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot;
-using Newtonsoft.Json.Linq;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.FormFlow;
+using Microsoft.Bot.Connector;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot
+namespace Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot.Controllers
 {
     [Route("api/[controller]")]
     public class MessagesController : Controller

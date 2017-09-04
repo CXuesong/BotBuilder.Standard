@@ -1,23 +1,22 @@
 ﻿using System;
-using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models
 {
-    [DataContract]
+    [Serializable]
     public sealed class Alarm : IEquatable<Alarm>, IAlarmable
     {
         // these are the basic properties of an alarm
-        [DataMember] public string Title { get; set; }
-        [DataMember] public DateTime? When { get; set; }
-        [DataMember] public bool State { get; set; }
+        public string Title { get; set; }
+        public DateTime? When { get; set; }
+        public bool State { get; set; }
 
         // these are the properties necessary to handle a external event and proactively post a message to the user
         public delegate Task NextDelegate(Alarm alarm, DateTime now, CancellationToken token);
-        [DataMember] public NextDelegate Next { get; set; }
-        [DataMember] public ConversationReference Cookie { get; set; }
+        public NextDelegate Next { get; set; }
+        public ConversationReference Cookie { get; set; }
         public override string ToString()
         {
             var state = this.State ? "enabled" : "disabled";

@@ -1,30 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models;
-using Microsoft.Bot.Builder.Luis;
-using Microsoft.Bot.Builder.Internals.Fibers;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Internals.Fibers;
+using Microsoft.Bot.Builder.Luis;
 using Microsoft.Bot.Builder.Luis.Models;
 using Microsoft.Bot.Builder.Scorables;
 using Microsoft.Bot.Connector;
-using System.Linq;
+using Microsoft.Bot.Sample.AspNetCore.AlarmBot.Models;
 
 namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Dialogs
 {
+    public sealed class MyLuisModelAttribute : LuisModelAttribute
+    {
+        public MyLuisModelAttribute()
+            : base(modelID: "unitTestMockReturnedFromMakeService", subscriptionKey: "unitTestMockReturnedFromMakeService")
+        {
+        }
+    }
+
     /// <summary>
     /// The top-level natural language dialog for the alarm sample.
     /// </summary>
-    [DataContract]
-    [LuisModel("unitTestMockReturnedFromMakeService", "unitTestMockReturnedFromMakeService")]
+    [Serializable]
+    [MyLuisModel]
     public sealed class AlarmDispatchDialog : DispatchDialog
     {
-        [DataMember] private readonly IAlarmService service;
-        [DataMember] private readonly IEntityToType entityToType;
-        [DataMember] private readonly ILuisService luis;
-        [DataMember] private readonly IClock clock;
-
+        private readonly IAlarmService service;
+        private readonly IEntityToType entityToType;
+        private readonly ILuisService luis;
+        private readonly IClock clock;
         public AlarmDispatchDialog(IAlarmService service, IEntityToType entityToType, ILuisService luis, IClock clock)
         {
             SetField.NotNull(out this.service, nameof(service), service);
@@ -115,7 +121,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.AlarmBot.Dialogs
             EntityRecommendation entity;
             if (result.TryFindEntity(BuiltIn.Alarm.Alarm_State, out entity))
             {
-                state = entity.Entity.Equals("on", StringComparison.OrdinalIgnoreCase);
+                state = entity.Entity.Equals("on", StringComparison.InvariantCultureIgnoreCase);
             }
 
             var now = this.clock.Now;

@@ -1,23 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.FormFlow;
-using Microsoft.Bot.Builder.Luis.Models;
 using Microsoft.Bot.Builder.Luis;
-using Newtonsoft.Json;
+using Microsoft.Bot.Builder.Luis.Models;
 
 namespace Microsoft.Bot.Sample.AspNetCore.PizzaBot
 {
     [LuisModel("4311ccf1-5ed1-44fe-9f10-a6adbad05c14", "6d0966209c6e4f6b835ce34492f3e6d9", LuisApiVersion.V2)]
-    [DataContract]
+    [Serializable]
     class PizzaOrderDialog : LuisDialog<PizzaOrder>
     {
-        [DataMember] private readonly BuildFormDelegate<PizzaOrder> MakePizzaForm;
+        private readonly BuildFormDelegate<PizzaOrder> MakePizzaForm;
 
-        [JsonConstructor]
         internal PizzaOrderDialog(BuildFormDelegate<PizzaOrder> makePizzaForm)
         {
             this.MakePizzaForm = makePizzaForm;

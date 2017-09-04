@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot
                         .Field(nameof(Toppings),
                             validate: async (state, value) =>
                             {
-                                var values = ((List<object>)value).OfType<ToppingOptions>();
+                                var values = ((List<object>)value)?.OfType<ToppingOptions>();
                                 var result = new ValidateResult { IsValid = true, Value = values };
                                 if (values != null && values.Contains(ToppingOptions.Everything))
                                 {
@@ -289,7 +289,7 @@ namespace Microsoft.Bot.Sample.AspNetCore.AnnotatedSandwichBot
                         .Field(nameof(Toppings),
                             validate: async (state, value) =>
                             {
-                                var values = ((List<object>)value).OfType<ToppingOptions>();
+                                var values = ((List<object>)value)?.OfType<ToppingOptions>();
                                 var result = new ValidateResult { IsValid = true, Value = values };
                                 if (values != null && values.Contains(ToppingOptions.Everything))
                                 {

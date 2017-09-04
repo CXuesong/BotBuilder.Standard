@@ -33,10 +33,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Text;
 
 namespace Microsoft.Bot.Builder.Internals.Fibers
 {
@@ -60,6 +62,16 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
             if (this.stream.Length > 0)
             {
                 this.stream.Position = 0;
+                using (var gzip = new GZipStream(this.stream, CompressionMode.Decompress, leaveOpen: true))
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        gzip.CopyTo(ms);
+                        var x = Encoding.ASCII.GetString(ms.ToArray());
+                        Debug.WriteLine(x);
+                    }
+                }
+                stream.Position = 0;
                 using (var gzip = new GZipStream(this.stream, CompressionMode.Decompress, leaveOpen: true))
                 {
                     item = (T)this.formatter.Deserialize(gzip);

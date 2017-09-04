@@ -269,6 +269,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
 
             ISerializationSurrogate ISurrogateSelector.GetSurrogate(Type type, StreamingContext context, out ISurrogateSelector selector)
             {
+                Debug.Assert(type.Name != "TypeLoadExceptionHolder", "ISSUE: A type-load failure has been detected.");
                 int maximumPriority = -int.MaxValue;
                 ISurrogateProvider maximumProvider = null;
                 for (int index = 0; index < this.providers.Count; ++index)

@@ -1,4 +1,4 @@
-# Notes on the .NET Core 2.0 ported Bot Builder SDK
+# Notes on the .NET Core 2.0 Ported Bot Builder SDK
 
 >   For Half Moon. Though I might have wandered much, much too far from the Tribe or the Clans.
 
@@ -71,7 +71,7 @@ The primary problem is that, though re-introduced in 2.0, it seems that MS still
 
 >   As the nature of binary serialization allows the modification of private members inside an object and therefore changing the state of it, other serialization frameworks like JSON.NET which operate on the public API surface are recommended.
 
-And by [making most of the core library types non-serializable](https://github.com/dotnet/corefx/issues/19119), it seems that the Binary Serialization is only intended to be used for compatibility purpose. From [the list of serializable types](https://docs.microsoft.com/en-us/dotnet/standard/serialization/binary-serialization#serializable-types) in MS's documentation, exceptions other than `Exception` and `AggregateException`, delegates, `Type`, `MemberInfo`, etc. are not serializable. So I wrote some `ISerializationSurrogate` implementations to take over the serialization logic for these types in [Library/Microsoft.Bot.Builder.Standard/Fibers/NetStandardSerialization.cs](CSharp/Library/Microsoft.Bot.Builder.Standard/Fibers/NetStandardSerialization.cs). Currently, the following types in CLR or FX are surrogated to be serializable
+And by [making most of the core library types non-serializable](https://github.com/dotnet/corefx/issues/19119), it seems that the Binary Serialization is only intended to be used for compatibility purpose. From [the list of serializable types](https://docs.microsoft.com/en-us/dotnet/standard/serialization/binary-serialization#serializable-types) in MS's documentation, exceptions other than `Exception` and `AggregateException`, delegates, `Type`, `MemberInfo`, etc. are not serializable. So I wrote some `ISerializationSurrogate` implementations to take over the serialization logic for these types in [Microsoft.Bot.Builder.Standard/Fibers/NetStandardSerialization.cs](Library/Microsoft.Bot.Builder.Standard/Fibers/NetStandardSerialization.cs). Currently, the following types in CLR or FX are surrogated to be serializable
 
 * Type (and derived types)
 * MemberInfo (and derived types)

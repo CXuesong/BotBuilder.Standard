@@ -59,7 +59,7 @@ This is still where the hard work lies. I had to try out the example projects, f
 
 #### Things other than serialization
 
-I have stripped `static` qualifier from `Microsoft.Bot.Builder.Dialogs.Conversation`, simply because it needs credential information, which cannot be loaded via `MicrosoftAppCredentials`'s parameterless constructor in .NET Core. Now `Conversation` should be registered as an singleton in `ConfigureServices`. You may take a look at [Samples/Microsoft.Bot.Sample.AspNetCore.EchoBot/Startup.cs](CSharp/Samples/Microsoft.Bot.Sample.AspNetCore.EchoBot/Startup.cs). When you need  `Conversation`, just use DI.
+I have stripped `static` qualifier from `Microsoft.Bot.Builder.Dialogs.Conversation`, simply because it needs credential information, which cannot be loaded via `MicrosoftAppCredentials`'s parameterless constructor in .NET Core. Now `Conversation` should be registered as an singleton in `ConfigureServices`. You may take a look at [Samples/Microsoft.Bot.Sample.AspNetCore.EchoBot/Startup.cs](Samples/Microsoft.Bot.Sample.AspNetCore.EchoBot/Startup.cs). When you need  `Conversation`, just use DI.
 
 I have ported Chronic to .NET Standard. The package is `CXuesong.Ported.Chronic`.
 

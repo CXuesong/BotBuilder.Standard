@@ -1,3 +1,6 @@
+>   #### Archived Document
+>   The following notes apply to .NET Standard 1.6 and .NET Core 1.x ported library, and is kept for archiving purpose. For the notes on .NET Standard/Core 2.0 ported library, see [README_NETCORE2.md](README_NETCORE2.md). For the .NET Core 1.x branch, see [`portable`](https://github.com/CXuesong/BotBuilder.Standard/tree/portable).
+
 # Notes on the Portable Version of Microsoft Bot Builder
 
 >   For Half Moon. Though I might have wandered much too far from the Tribe or the Clans.

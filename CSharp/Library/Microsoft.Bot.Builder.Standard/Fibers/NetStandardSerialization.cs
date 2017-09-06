@@ -167,7 +167,7 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
                         var bindingFlags = BindingAttr;
                         var paramTypes = Parameters;
                         var methods = DeclaringType.GetMember(Name, MemberType, bindingFlags);
-                        Debug.Assert(paramTypes.All(t => t != null));
+                        Debug.Assert(paramTypes.All(t => t != null), "Detected null argument type in the method signature.");
                         try
                         {
                             return methods.Cast<MethodBase>().First(m =>
@@ -237,7 +237,6 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
                     // The further reference has not been deserialized.
                     // Caller, i.e. ObjectManager.ResolveObjectReference will retry later.
                     if (Delegates[0] == null || !Delegates[0].IsValid) return null;
-                    Debug.WriteLine(string.Join("|", Delegates.Select(x => x?.ToString())));
                     var d = Delegates[0].ToDelegate();
                     for (int i = 1; i < Delegates.Length; i++)
                         d = Delegate.Combine(d, Delegates[i].ToDelegate());
@@ -311,44 +310,6 @@ namespace Microsoft.Bot.Builder.Internals.Fibers
                 if (typeof(Regex).IsAssignableFrom(type))
                 {
                     priority = LowestPriority;
-                    return true;
-                }
-                priority = 0;
-                return false;
-            }
-        }
-
-        // Though MethodInfo, Regex, etc. does implement ISerializable in .NET Standard 2.0
-        // They are not marked as [Serializable] and GetObjectData will throw PlatformNotSupportedException
-        [Obsolete("This class is preserved for future use.")]
-        internal sealed class ISerializableSerializationSurrogate : Serialization.ISurrogateProvider
-        {
-
-            public void GetObjectData(object obj, SerializationInfo info, StreamingContext context)
-            {
-                var isr = (ISerializable)obj;
-                isr.GetObjectData(info, context);
-            }
-
-            private static readonly Type[] deserializationCtorParams =
-                {typeof(SerializationInfo), typeof(StreamingContext)};
-
-            public object SetObjectData(object obj, SerializationInfo info, StreamingContext context,
-                ISurrogateSelector selector)
-            {
-                var ctor = info.ObjectType.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic, null,
-                    deserializationCtorParams, null);
-                if (ctor == null)
-                    throw new MissingMethodException(info.ObjectType.FullName,
-                        ".ctor(SerializationInfo, StreamingContext)");
-                return ctor.Invoke(obj, new object[] { info, context });
-            }
-
-            public bool Handles(Type type, StreamingContext context, out int priority)
-            {
-                if (!type.IsSerializable && typeof(ISerializable).IsAssignableFrom(type))
-                {
-                    priority = LowestPriority - 2;
                     return true;
                 }
                 priority = 0;

@@ -4,18 +4,19 @@
     <TargetFrameworks>net46;netstandard2.0</TargetFrameworks>
     <AssemblyName>Microsoft.Bot.Builder.Autofac</AssemblyName>
     <RootNamespace>Microsoft.Bot.Builder.Autofac</RootNamespace>
-    <PackageId>Microsoft.Bot.Builder.Autofac</PackageId>
+    <PackageId>CXuesong.Ported.Microsoft.Bot.Builder.Autofac</PackageId>
     <Product>Microsoft Bot Builder SDK</Product>
     <Version>3.9.1</Version>
-    <Authors>Microsoft</Authors>
+    <Authors>Microsoft, CXuesong</Authors>
     <Product>Microsoft Bot Builder</Product>
-    <PackageProjectUrl>https://github.com/Microsoft/BotBuilder</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Microsoft/BotBuilder</RepositoryUrl>
-    <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
+    <Description>
+      This is the Microsoft.Bot.Builder.Autofac assembly of an unofficial .NET Core 2.0/.NET Framework 4.5 ported version of Microsoft's Microsoft.Bot.Builder package.
+    </Description>
+    <PackageProjectUrl>https://github.com/CXuesong/BotBuilder.Standard</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/CXuesong/BotBuilder.Standard</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <RepositoryType>git</RepositoryType>
     <NoWarn>0419;1591;1701;1702;1705;1998</NoWarn>
   </PropertyGroup>
   

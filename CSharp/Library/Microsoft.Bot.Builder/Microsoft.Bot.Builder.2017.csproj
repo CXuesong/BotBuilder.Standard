@@ -4,11 +4,14 @@
     <TargetFrameworks>net46;netstandard2.0</TargetFrameworks>
     <AssemblyName>Microsoft.Bot.Builder</AssemblyName>
     <RootNamespace>Microsoft.Bot.Builder</RootNamespace>
-    <PackageId>Microsoft.Bot.Builder</PackageId>
+    <PackageId>CXuesong.Ported.Microsoft.Bot.Builder</PackageId>
     <Product>Microsoft Bot Builder SDK</Product>
     <Version>3.9.1</Version>
-    <Authors>Microsoft</Authors>
+    <Authors>Microsoft, CXuesong</Authors>
     <Description>
+      This is an unofficial .NET Core 2.0/.NET Framework 4.5 ported version of Microsoft's Microsoft.Bot.Builder package.
+      Before using this package in your project, please manually add the NuGet package CXuesong.Ported.Microsoft.BotBuilder.Autofac.
+      
       Microsoft Bot Builder is a powerful framework for constructing bots that can handle both freeform interactions and more guided ones where the possibilities are explicitly shown to the user. It is easy to use and leverages C# to provide a natural way to write bots.
 
       High Level Features:
@@ -20,9 +23,8 @@
 
       You might also be interested in the NuGet package Microsoft.Bot.Builder.FormFlow.Json that extends the Bot Builder with the abilitity to declaratively define FormFlow dialogs with JSON Schema.
     </Description>
-    <PackageProjectUrl>https://github.com/Microsoft/BotBuilder</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Microsoft/BotBuilder</RepositoryUrl>
-    <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/CXuesong/BotBuilder.Standard</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/CXuesong/BotBuilder.Standard</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <NeutralLanguage>en-US</NeutralLanguage>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>

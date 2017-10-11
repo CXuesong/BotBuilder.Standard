@@ -4,14 +4,17 @@
     <TargetFrameworks>net45;netstandard1.6</TargetFrameworks>
     <AssemblyName>Microsoft.Bot.Connector</AssemblyName>
     <RootNamespace>Microsoft.Bot.Connector</RootNamespace>
-    <PackageId>Microsoft.Bot.Connector</PackageId>
+    <PackageId>CXuesong.Ported.Microsoft.Bot.Connector</PackageId>
     <Version>3.8.0</Version>
-    <Description>This library implements C# classes for using the Bot Framework Connector REST API</Description>
-    <Authors>Microsoft</Authors>
+    <Description>
+      This is an unofficial .NET Core 2.0/.NET Framework 4.5 ported version of Microsoft.Bot.Connector package.
+
+      This library implements C# classes for using the Bot Framework Connector REST API
+    </Description>
+    <Authors>Microsoft, CXuesong</Authors>
     <Product>Microsoft Bot Framework</Product>
-    <PackageProjectUrl>https://github.com/Microsoft/BotBuilder</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Microsoft/BotBuilder</RepositoryUrl>
-    <PackageIconUrl>https://bots.botframework.com/Client/Images/bot-framework-default-7.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/CXuesong/BotBuilder.Standard</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/CXuesong/BotBuilder.Standard</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>

@@ -4,17 +4,18 @@
     <TargetFrameworks>net46;netstandard2.0</TargetFrameworks>
     <AssemblyName>Microsoft.Bot.Builder.History</AssemblyName>
     <RootNamespace>Microsoft.Bot.Builder.History</RootNamespace>
-    <PackageId>Microsoft.Bot.Builder.History</PackageId>
+    <PackageId>CXuesong.Ported.Microsoft.Bot.Builder.History</PackageId>
     <Product>Microsoft Bot Builder SDK</Product>
     <Version>3.0.6</Version>
-    <Authors>Microsoft</Authors>
+    <Authors>Microsoft, CXuesong</Authors>
     <Description>
+      This is an unofficial .NET Core 2.0/.NET Framework 4.5 ported version of Microsoft.Bot.Builder.History package.
+
       Provide interfaces and classes for working with conversation histories in the Microsoft Bot Builder.
       In particular this includes facilities to walk across stored histories and replay them.
     </Description>
     <PackageProjectUrl>https://github.com/Microsoft/BotBuilder</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Microsoft/BotBuilder</RepositoryUrl>
-    <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
     <RepositoryType>git</RepositoryType>
     <NeutralLanguage>en-US</NeutralLanguage>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>

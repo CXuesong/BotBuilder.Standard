@@ -5,7 +5,7 @@
     <AssemblyName>Microsoft.Bot.Connector</AssemblyName>
     <RootNamespace>Microsoft.Bot.Connector</RootNamespace>
     <PackageId>CXuesong.Ported.Microsoft.Bot.Connector</PackageId>
-    <Version>3.8.0</Version>
+    <Version>3.11.1</Version>
     <Description>
       This is an unofficial .NET Core 2.0/.NET Framework 4.5 ported version of Microsoft.Bot.Connector package.
 

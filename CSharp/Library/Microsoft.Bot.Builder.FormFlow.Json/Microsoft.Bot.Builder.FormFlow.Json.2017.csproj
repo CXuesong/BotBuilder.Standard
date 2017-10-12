@@ -7,7 +7,7 @@
     <PackageId>CXuesong.Ported.Microsoft.Bot.Builder.FormFlow.Json</PackageId>
     <Authors>Microsoft, CXuesong</Authors>
     <Product>Microsoft Bot Builder</Product>
-    <Version>3.1.3</Version>
+    <Version>3.1.4</Version>
     <Description>
       This is an unofficial .NET Core 2.0/.NET Framework 4.5 ported version of Microsoft.Bot.Builder.FormFlow.Json package.
 

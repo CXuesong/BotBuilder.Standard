@@ -6,7 +6,7 @@
     <RootNamespace>Microsoft.Bot.Builder</RootNamespace>
     <PackageId>CXuesong.Ported.Microsoft.Bot.Builder</PackageId>
     <Product>Microsoft Bot Builder SDK</Product>
-    <Version>3.9.1</Version>
+    <Version>3.11.0</Version>
     <Authors>Microsoft, CXuesong</Authors>
     <Description>
       This is an unofficial .NET Core 2.0/.NET Framework 4.5 ported version of Microsoft's Microsoft.Bot.Builder package.

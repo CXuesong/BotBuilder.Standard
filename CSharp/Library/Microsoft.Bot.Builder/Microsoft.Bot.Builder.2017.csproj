@@ -11,7 +11,7 @@
     <Description>
       This is an unofficial .NET Core 2.0/.NET Framework 4.5 ported version of Microsoft's Microsoft.Bot.Builder package.
       Before using this package in your project, please manually add the NuGet package CXuesong.Ported.Microsoft.BotBuilder.Autofac.
-      
+
       Microsoft Bot Builder is a powerful framework for constructing bots that can handle both freeform interactions and more guided ones where the possibilities are explicitly shown to the user. It is easy to use and leverages C# to provide a natural way to write bots.
 
       High Level Features:
@@ -31,16 +31,15 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <NoWarn>0419;1591;1701;1702;1705;1998</NoWarn>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <Compile Remove="Properties\**\*" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.1" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.2017.csproj" />
   </ItemGroup>
@@ -49,11 +48,12 @@
     <Reference Include="System.Web" />
     <PackageReference Include="Chronic.Signed" Version="0.3.2" />
   </ItemGroup>
-  
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-    <PackageReference Include="CXuesong.Ported.Chronic" Version="1.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.0.0" />
+    <PackageReference Include="CXuesong.Ported.Chronic" Version="1.1.0" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Compile Update="Resource\Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>

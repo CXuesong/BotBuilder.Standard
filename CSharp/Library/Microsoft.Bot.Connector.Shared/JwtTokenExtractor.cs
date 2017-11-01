@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Connector
 #endif
             });
 
-            _endorsementsData = _endorsementsCache.GetOrAdd(metadataUrl, key =>
+                _endorsementsData = _endorsementsCache.GetOrAdd(metadataUrl, key =>
             {
                 var retriever = new EndorsementsRetriever();
                 return new ConfigurationManager<IDictionary<string, string[]>>(metadataUrl, retriever, retriever);
@@ -168,7 +168,7 @@ namespace Microsoft.Bot.Connector
 
             Claim versionClaim = identity.Claims.FirstOrDefault(c => c.Type == "ver");
 
-            Claim appIdClaim = identity.Claims.FirstOrDefault(c => _tokenValidationParameters.ValidIssuers.Contains(c.Issuer) && 
+            Claim appIdClaim = identity.Claims.FirstOrDefault(c => _tokenValidationParameters.ValidIssuers.Contains(c.Issuer) &&
                 ((versionClaim != null && versionClaim.Value == "2.0" && c.Type == "azp") || c.Type == "appid"));
             if (appIdClaim == null)
                 return null;
@@ -232,7 +232,7 @@ namespace Microsoft.Bot.Connector
                         }
                     }
                 }
-                
+
                 if (_allowedSigningAlgorithms != null)
                 {
                     string algorithm = parsedJwtToken?.Header?.Alg;

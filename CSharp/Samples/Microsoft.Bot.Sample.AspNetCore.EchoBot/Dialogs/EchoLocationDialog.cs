@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Sample.EchoBot
 {
-    [DataContract]
+    [Serializable]
     public class EchoLocationDialog : EchoDialog
     {
         public override async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> argument)
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Sample.EchoBot
         }
     }
 
-    [DataContract]
+    [Serializable]
     public class FacebookLocationDialog : IDialog<Place>
     {
         public async Task StartAsync(IDialogContext context)

@@ -8,7 +8,7 @@ using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Sample.EchoBot
 {
-    [DataContract]
+    [Serializable]
     public class EchoAttachmentDialog : EchoDialog
     {
         public override async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> argument)

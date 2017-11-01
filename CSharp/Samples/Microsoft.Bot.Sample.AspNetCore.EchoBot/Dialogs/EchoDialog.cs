@@ -7,10 +7,10 @@ using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Sample.EchoBot
 {
-    [DataContract]
+    [Serializable]
     public class EchoDialog : IDialog<object>
     {
-        [DataMember] protected int count = 1;
+        protected int count = 1;
 
         public async Task StartAsync(IDialogContext context)
         {
@@ -20,6 +20,12 @@ namespace Microsoft.Bot.Sample.EchoBot
         public virtual async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> argument)
         {
             var message = await argument;
+            if (message.Attachments != null && message.Attachments.Count > 0)
+            {
+                var attachment = message.Attachments[0];
+                var client = new ConnectorClient(new Uri(context.Activity.ServiceUrl), new MicrosoftAppCredentials());
+                var content = await client.HttpClient.GetByteArrayAsync(attachment.ContentUrl);
+            }
             if (message.Text == "reset")
             {
                 PromptDialog.Confirm(

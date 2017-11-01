@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Sample.EchoBot
 {
-    [DataContract]
+    [Serializable]
     public class EchoCommandDialog
     {
         public static readonly CommandDialog<object> dialog = new CommandDialog<object>().On<bool>(new Regex("^reset"), async (context, msg) =>

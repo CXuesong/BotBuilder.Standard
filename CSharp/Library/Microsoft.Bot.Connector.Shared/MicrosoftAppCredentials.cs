@@ -42,14 +42,13 @@ namespace Microsoft.Bot.Connector
 
 #if !NET45
         protected ILogger logger;
-#endif
+#endif 
 
-#if NET45
         public MicrosoftAppCredentials(string appId = null, string password = null)
         {
             MicrosoftAppId = appId;
             MicrosoftAppPassword = password;
-
+#if NET45
             if(appId == null)
             {
                 MicrosoftAppId = ConfigurationManager.AppSettings[MicrosoftAppIdKey] ?? Environment.GetEnvironmentVariable(MicrosoftAppIdKey, EnvironmentVariableTarget.Process);
@@ -59,24 +58,24 @@ namespace Microsoft.Bot.Connector
             {
                 MicrosoftAppPassword = ConfigurationManager.AppSettings[MicrosoftAppPasswordKey] ?? Environment.GetEnvironmentVariable(MicrosoftAppPasswordKey, EnvironmentVariableTarget.Process);
             }
-
+#endif
             TokenCacheKey = $"{MicrosoftAppId}-cache";
         }
-#else
-        public MicrosoftAppCredentials(string appId = null, string password = null, ILogger logger = null)
+
+#if !NET45
+        public MicrosoftAppCredentials(string appId, string password, ILogger logger)
+            : this(appId, password)
         {
-            MicrosoftAppId = appId ?? SettingsUtils.GetAppSettings(MicrosoftAppIdKey);
-            MicrosoftAppPassword = password ?? SettingsUtils.GetAppSettings(MicrosoftAppPasswordKey);
-            TokenCacheKey = $"{MicrosoftAppId}-cache";
             this.logger = logger;
         }
+#endif
 
+#if !NET45
         public MicrosoftAppCredentials(IConfiguration configuration, ILogger logger = null)
             : this(configuration.GetSection(MicrosoftAppIdKey)?.Value, configuration.GetSection(MicrosoftAppPasswordKey)?.Value, logger)
         {
         }
 #endif
-
 
 
         public string MicrosoftAppId { get; set; }

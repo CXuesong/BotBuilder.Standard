@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             using (var memory = new MemoryStream())
             {
                 using (var gzip = new GZipStream(memory, CompressionMode.Compress))
-                using (var writer = new BsonWriter(gzip))
+                using (var writer = new BsonDataWriter(gzip))
                 {
                     var serializer = JsonSerializer.CreateDefault();
                     serializer.Serialize(writer, item);
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 #endif
             using (var memory = new MemoryStream(buffer))
             using (var gzip = new GZipStream(memory, CompressionMode.Decompress))
-            using (var reader = new BsonReader(gzip))
+            using (var reader = new BsonDataReader(gzip))
             {
                 var serializer = JsonSerializer.CreateDefault();
                 var item = serializer.Deserialize<T>(reader);

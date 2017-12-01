@@ -6,7 +6,7 @@
     <RootNamespace>Microsoft.Bot.Builder.Calling</RootNamespace>
     <PackageId>CXuesong.Ported.Microsoft.Bot.Builder.Calling</PackageId>
     <Product>Microsoft Bot Builder SDK</Product>
-    <Version>3.12.2.4</Version>
+    <Version>3.12.2.5</Version>
     <Authors>Microsoft, CXuesong</Authors>
     <Description>
       This is an unofficial .NET Core 2.0/.NET Framework 4.5 ported version of Microsoft.Bot.Builder.Calling package.

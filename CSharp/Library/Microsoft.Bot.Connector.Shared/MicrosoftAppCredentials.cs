@@ -46,10 +46,10 @@ namespace Microsoft.Bot.Connector
 
         public MicrosoftAppCredentials(string appId = null, string password = null)
         {
-            MicrosoftAppId = appId;
-            MicrosoftAppPassword = password;
+            MicrosoftAppId = appId ?? SettingsUtils.GetAppSettings(MicrosoftAppIdKey);
+            MicrosoftAppPassword = password ?? SettingsUtils.GetAppSettings(MicrosoftAppPasswordKey);
 #if NET45
-            if(appId == null)
+            if (appId == null)
             {
                 MicrosoftAppId = ConfigurationManager.AppSettings[MicrosoftAppIdKey] ?? Environment.GetEnvironmentVariable(MicrosoftAppIdKey, EnvironmentVariableTarget.Process);
             }

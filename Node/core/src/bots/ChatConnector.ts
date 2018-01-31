@@ -44,6 +44,7 @@ import * as url from 'url';
 import * as http from 'http';
 import * as jwt from 'jsonwebtoken';
 import * as zlib from 'zlib';
+import * as Promise from 'promise';
 import urlJoin = require('url-join');
 
 var pjson = require('../../package.json');
@@ -98,6 +99,7 @@ export class ChatConnector implements IConnector, IBotStorage {
     private accessTokenExpires: number;
     private botConnectorOpenIdMetadata: OpenIdMetadata;
     private emulatorOpenIdMetadata: OpenIdMetadata;
+    private refreshingToken: Promise.IThenable<string>;
 
     constructor(protected settings: IChatConnectorSettings = {}) {
         if (!this.settings.endpoint) {
@@ -122,17 +124,26 @@ export class ChatConnector implements IConnector, IBotStorage {
     }
 
     public listen(): IWebMiddleware {
+        function defaultNext() { }
         return (req: IWebRequest, res: IWebResponse, next: Function) => {
             if (req.body) {
-                this.verifyBotFramework(req, res, next);
+                this.verifyBotFramework(req, res, next || defaultNext);
             } else {
                 var requestData = '';
                 req.on('data', (chunk: string) => {
                     requestData += chunk
                 });
                 req.on('end', () => {
-                    req.body = JSON.parse(requestData);
-                    this.verifyBotFramework(req, res, next);
+                    try {
+                        req.body = JSON.parse(requestData);
+                    } catch (err) {
+                        logger.error('ChatConnector: receive - invalid request data received.');
+                        res.send(400);
+                        res.end();
+                        return;
+                    }
+
+                    this.verifyBotFramework(req, res, next || defaultNext);
                 });
             }
         };
@@ -271,14 +282,22 @@ export class ChatConnector implements IConnector, IBotStorage {
             try {
                 if (msg.type == 'delay') {
                     setTimeout(cb, (<any>msg).value);
-                } else if (msg.address && (<IChatConnectorAddress>msg.address).serviceUrl) {
-                    this.postMessage(msg, (idx == messages.length - 1), (err, address) => {
-                        addresses.push(address);
-                        cb(err);
-                    });
                 } else {
-                    logger.error('ChatConnector: send - message is missing address or serviceUrl.')
-                    cb(new Error('Message missing address or serviceUrl.'));
+                    const addressExists = !!msg.address;
+                    const serviceUrlExists = addressExists && !!(<IChatConnectorAddress>msg.address).serviceUrl;
+
+                    // checking for address exists is redundant here, its part of the def of serviceUrlExists
+                    if(serviceUrlExists) {
+                        this.postMessage(msg, (idx == messages.length - 1), (err, address) => {
+                            addresses.push(address);
+                            cb(err);
+                        });
+                    } else {
+                        const msg = `Message is missing ${addressExists ? 'address and serviceUrl' : 'serviceUrl'} `;
+
+                        logger.error(`ChatConnector: send - ${msg}`)
+                        cb(new Error(msg));
+                    }
                 }
             } catch (e) {
                 cb(e);
@@ -676,33 +695,40 @@ export class ChatConnector implements IConnector, IBotStorage {
     }
 
     private refreshAccessToken(cb: (err: Error, accessToken: string) => void): void {
-        var opt: request.Options = {
-            method: 'POST',
-            url: this.settings.endpoint.refreshEndpoint,
-            form: {
-                grant_type: 'client_credentials',
-                client_id: this.settings.appId,
-                client_secret: this.settings.appPassword,
-                scope: this.settings.endpoint.refreshScope
-            }
-        };
-        this.addUserAgent(opt);
-        request(opt, (err, response, body) => {
-            if (!err) {
-                if (body && response.statusCode < 300) {
-                    // Subtract 5 minutes from expires_in so they'll we'll get a
-                    // new token before it expires.
-                    var oauthResponse = JSON.parse(body);
-                    this.accessToken = oauthResponse.access_token;
-                    this.accessTokenExpires = new Date().getTime() + ((oauthResponse.expires_in - 300) * 1000);
-                    cb(null, this.accessToken);
-                } else {
-                    cb(new Error('Refresh access token failed with status code: ' + response.statusCode), null);
-                }
-            } else {
-                cb(err, null);
-            }
-        });
+        // Get token only on first access. Other callers will block while waiting for token.
+        if (!this.refreshingToken) {
+            this.refreshingToken = new Promise<string>((resolve, reject) => {
+                var opt: request.Options = {
+                    method: 'POST',
+                    url: this.settings.endpoint.refreshEndpoint,
+                    form: {
+                        grant_type: 'client_credentials',
+                        client_id: this.settings.appId,
+                        client_secret: this.settings.appPassword,
+                        scope: this.settings.endpoint.refreshScope
+                    }
+                };
+                this.addUserAgent(opt);
+                request(opt, (err, response, body) => {
+                    if (!err) {
+                        if (body && response.statusCode < 300) {
+                            // Subtract 5 minutes from expires_in so they'll we'll get a
+                            // new token before it expires.
+                            var oauthResponse = JSON.parse(body);
+                            this.accessToken = oauthResponse.access_token;
+                            this.accessTokenExpires = new Date().getTime() + ((oauthResponse.expires_in - 300) * 1000);
+                            this.refreshingToken = undefined;
+                            resolve(this.accessToken);
+                        } else {
+                            reject(new Error('Refresh access token failed with status code: ' + response.statusCode));
+                        }
+                    } else {
+                        reject(err);
+                    }
+                });
+            })
+        }
+        this.refreshingToken.then((token) => cb(null, token), (err) => cb(err, null));
     }
 
     public getAccessToken(cb: (err: Error, accessToken: string) => void): void {

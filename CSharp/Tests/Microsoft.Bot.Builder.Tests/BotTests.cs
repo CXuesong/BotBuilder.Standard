@@ -753,7 +753,7 @@ namespace Microsoft.Bot.Builder.Tests
 
                 var settings = new JsonSerializerSettings()
                 {
-                    ContractResolver = new FormTests.OrderedContractResolver(),
+                    ContractResolver = new OrderedContractResolver(),
                     NullValueHandling = NullValueHandling.Ignore,
                 };
 
@@ -807,6 +807,7 @@ namespace Microsoft.Bot.Builder.Tests
             return mock.Object;
         }
 
+        [Ignore]
         [TestMethod]
         [DeploymentItem(@"Scripts\BotDispatcher.script")]
         public async Task BotDispatcher()

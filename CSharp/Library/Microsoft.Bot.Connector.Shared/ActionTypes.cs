@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 namespace Microsoft.Bot.Connector
 {
@@ -19,7 +16,7 @@ namespace Microsoft.Bot.Connector
         public const string ImBack = "imBack";
 
         /// <summary>
-        /// Client will post message to bot privately, so other participants inside conversation will not see that was posted. 
+        /// Client will post message to bot privately, so other participants inside conversation will not see that was posted.
         /// </summary>
         public const string PostBack = "postBack";
 
@@ -52,5 +49,10 @@ namespace Microsoft.Bot.Connector
         /// Post message to bot
         /// </summary>
         public const string MessageBack = "messageBack";
+
+        /// <summary>
+        /// Post invoke activity to bot
+        /// </summary>
+        public const string Invoke = "invoke";
     }
 }

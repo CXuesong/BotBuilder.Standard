@@ -6,7 +6,7 @@
     <RootNamespace>Microsoft.Bot.Builder.Autofac</RootNamespace>
     <PackageId>CXuesong.Ported.Microsoft.Bot.Builder.Autofac</PackageId>
     <Product>Microsoft Bot Builder SDK</Product>
-    <Version>3.12.2.5</Version>
+    <Version>3.13.0.3</Version>
     <Authors>Microsoft, CXuesong</Authors>
     <Product>Microsoft Bot Builder</Product>
     <Description>

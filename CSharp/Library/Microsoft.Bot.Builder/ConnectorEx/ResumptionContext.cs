@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Internals.Fibers;
 using Microsoft.Bot.Connector;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.ConnectorEx
 {
@@ -83,6 +84,8 @@ namespace Microsoft.Bot.Builder.ConnectorEx
     public sealed class ConversationReferenceHelpers
     {
 
+        internal static readonly JsonSerializer ConversationReferenceSerializer = new JsonSerializer();
+
         /// <summary>
         /// Deserializes the GZip serialized <see cref="ConversationReference"/> using <see cref="Extensions.GZipSerialize(ConversationReference)"/>.
         /// </summary>
@@ -94,8 +97,9 @@ namespace Microsoft.Bot.Builder.ConnectorEx
 
             using (var stream = new MemoryStream(bytes))
             using (var gz = new GZipStream(stream, CompressionMode.Decompress))
+            using (var reader = new StreamReader(gz))
             {
-                return (ConversationReference)(new BinaryFormatter().Deserialize(gz));
+                return (ConversationReference)ConversationReferenceSerializer.Deserialize(reader, typeof(ConversationReference));
             }
         }
     }
@@ -163,10 +167,12 @@ namespace Microsoft.Bot.Builder.ConnectorEx
         public static string GZipSerialize(this ConversationReference conversationReference)
         {
             using (var cmpStream = new MemoryStream())
-            using (var stream = new GZipStream(cmpStream, CompressionMode.Compress))
             {
-                new BinaryFormatter().Serialize(stream, conversationReference);
-                stream.Close();
+                using (var stream = new GZipStream(cmpStream, CompressionMode.Compress, true))
+                using (var writer = new StreamWriter(stream))
+                {
+                    ConversationReferenceHelpers.ConversationReferenceSerializer.Serialize(writer, conversationReference);
+                }
                 return Convert.ToBase64String(cmpStream.ToArray());
             }
         }
